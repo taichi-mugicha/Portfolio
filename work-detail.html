@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作品詳細 — Work Detail</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-nav">
+  <a class="brand" href="index.html">◼ Wireframes</a>
+  <nav>
+    <a href="index.html">Index</a>
+    <a href="pattern-a.html">A · Grid</a>
+    <a href="pattern-b.html">B · Editorial</a>
+    <a href="pattern-c.html">C · Sidebar</a>
+  </nav>
+</header>
+
+<main class="detail" id="detailRoot"><!-- rendered by script --></main>
+
+<nav class="page-foot" id="pageFoot"><!-- rendered by script --></nav>
+
+<script>
+/* ===================== 作品データ（実データ・6件） ===================== */
+const WORKS = [
+  {
+    title:"NEW COCORO HOME", tag:"IoT・アプリ",
+    role:"UIデザイン", year:"2022 — 2023", client:"シャープ", platform:"iOS・Android",
+    summary:"IoT家電アプリ「ココロホーム」の主要機能を統合した、新しいトップ画面のUIデザイン。",
+    overview:[
+      "ココロホームの主要機能「タイムライン・機器リスト・サービスリスト」を統合した新しいトップ画面を提案。IoT家電をより素早く、積極的に使えるかたちを目指しました。",
+      "入り乱れた機能をTOP画面に再レイアウトし、ユーザーが迷わず操作したい家電にたどり着ける構成にしています。"
+    ],
+    challenge:"「IoT家電の多様な機能とサービスが入り乱れたカオス状態」が課題でした。機能ごとに情報量が統一されておらず、必要な情報が埋もれていました。",
+    callout:"家電のお知らせだけをフィルタした通知バーで、必要な情報が埋もれないように。",
+    roles:["トップ画面のUIデザイン","家電カードUIのリデザイン","お知らせ／通知バーの情報設計"],
+    solutions:[
+      "家電のカードUIをリデザインし、ぱっと見で操作したい家電を選べるように。",
+      "家電のお知らせだけをフィルタリングした通知バーで、必要な情報が埋もれないように。",
+      "家電未登録の状態も、つないだ後のワクワク感をイラストで演出。"
+    ],
+    outcomes:[
+      "カオス状態だった情報を整理し、ユーザーがIoT家電を素早く選んで操作できるトップ画面の方向性を提示。",
+      "バラバラだった家電カードの情報量を統一し、一覧性を向上。"
+    ],
+  },
+  {
+    title:"COCORO AIR リデザイン", tag:"IoT・リデザイン",
+    role:"UIデザイン / リデザイン", year:"2020 — 2021", client:"シャープ", platform:"iOS・Android",
+    summary:"IoT空調家電アプリ「ココロエアー」を、操作の可否が一目で伝わるUIへリデザイン。",
+    overview:[
+      "エアコンや空気清浄機の遠隔操作、付属品の消耗度が確認できる「ココロエアー」を、ユーザビリティとサービス体験の両面からリデザインしました。",
+      "「操作の可否を明確に伝えるUI」を軸に、表示と操作の距離を縮めています。"
+    ],
+    challenge:"設定温度やモードの「表示箇所」と「操作箇所」が離れており、どこが操作できるか分かりづらい状態でした。お手入れや電気代確認などの機能も、階層の深くに隠れていました。",
+    callout:"リデザイン後のユーザビリティテストでは、被験者11名全員が「新デザインの方が使いやすい」と回答。",
+    roles:["全体UIのリデザイン","操作UIの再設計","ナビゲーション構造の見直し"],
+    solutions:[
+      "誤操作が多い情報表示部をボタン化し、機能が伝わるアイコンへ変更。部屋の状態（上部）はカラー、機器操作（下部）はグレーで区別。",
+      "ヘッダーの3点メニューに隠れていた「お手入れ・消耗品状況」をボトムナビに配置し、機器操作以外の価値も前面化。"
+    ],
+    outcomes:[
+      "ユーザビリティテストで、被験者11名全員が新デザインを支持。",
+      "ボトムナビを各機能へのナビゲーションに転用し、今後のタッチポイントも拡張可能に。"
+    ],
+  },
+  {
+    title:"家電登録フロー改善", tag:"UX・フロー改善",
+    role:"UIデザイン", year:"2022 — 2023", client:"シャープ", platform:"iOS・Android",
+    summary:"ココロホームの機器登録UIを、一目で操作が分かるフローへ改善。",
+    overview:[
+      "ココロホームに家電を登録する際の「機器登録UI」を改善。利用頻度が少ないUIだからこそ、一目で操作が分かるデザインを目指しました。",
+      "「情報を分かりやすく／視覚的なメリハリ／心理的負担の軽減」の3点で改善しています。"
+    ],
+    challenge:"従来はテキストで説明する画面が多く、情報に視覚的な強弱がないため、直感的に操作が分かりませんでした。",
+    callout:"家電のジャンルやモデルで分岐する100超の画面遷移を、Figmaに描き起こして整理。",
+    roles:["機器登録フロー全体のUIデザイン","100超の画面遷移の可視化・整理"],
+    solutions:[
+      "テキストボタンからカードUIに変更し、画像で視覚的に説明。",
+      "ボタンを「塗り」「枠線」で順位付けし、説明文やボタン文言を最小限まで削減。",
+      "登録フローのステップ数を表示し、事前準備画面を追加して心理的負担を軽減。"
+    ],
+    outcomes:[
+      "利用頻度の低い登録フローでも迷わず進められるよう、視覚的なメリハリと事前準備のガイドで操作のわかりやすさを向上。",
+      "100超の遷移を可視化し、関係者間の議論のたたき台に。"
+    ],
+  },
+  {
+    title:"省エネレポート", tag:"データ可視化",
+    role:"UIデザイン", year:"2023", client:"シャープ", platform:"iOS・Android",
+    summary:"冷蔵庫の省エネ運転効果を「杉の木インジケーター」で楽しく可視化したUI。",
+    overview:[
+      "冷蔵庫の省エネ運転で削減できたCO2量をレポート。年間14kg（杉の木1本の年間CO2吸収量）を100%とした「杉の木インジケーター」で、イメージしづらい削減量を直感的に表現しました。",
+      "少しずつ色づく杉の木をチェックする楽しさと、達成感のある体験を設計しました。"
+    ],
+    challenge:"初期仕様は週間／年間のCO2削減量とイラストを積み上げただけで、ユーザーが何をすべきか分からない画面でした。",
+    callout:"年間14kg以上の削減で小鳥がお祝いする隠し要素を用意し、達成感を演出。",
+    roles:["省エネレポートのUIデザイン","企画とのコンセプト明文化・すり合わせ"],
+    solutions:[
+      "杉の木メーターで、イメージしづらいCO2削減量を直感的に表現。",
+      "目標達成で小鳥が登場する隠し要素で、チェックする楽しさを設計。",
+      "年間／週間に振り切った案を提案し、未定義だったコンセプトを企画と明文化。"
+    ],
+    outcomes:[
+      "数値だけでは伝わりにくい省エネ成果を、ゲーム的なインジケーターで「楽しく実感できる」体験に。"
+    ],
+  },
+  {
+    title:"COCORO STORE アイコン", tag:"アイコン・グラフィック",
+    role:"グラフィックデザイン", year:"2023", client:"シャープ", platform:"iOS・Android",
+    summary:"シャープ公式ECアプリ「ココロストア」の、既存サービスに埋没しないアプリアイコン。",
+    overview:[
+      "シャープの公式ECサイト「ココロストア」のアプリアイコンをデザイン。40〜60代がメインユーザーで、健やかな生活に寄与したい担当者の想いをかたちにしました。",
+      "ココロピンクとビタミンカラーのグラデーションでエネルギッシュさを、ショッパーモチーフで「気軽にお買い物できる」イメージを表現しました。"
+    ],
+    challenge:"ココロサービスのランチャーアイコンはフォーマット化され個性に乏しいのが課題でした。立ち位置の異なるココロストアが、既存に埋没しないアイコンを求められました。",
+    callout:"ストアやホーム画面での見え方を常にプレビューしながら、綿密に検討。",
+    roles:["アイコンのコンセプト立案・デザイン","実機プレビューでの方向性検証"],
+    solutions:[
+      "既存ココロサービスに埋没しない、エネルギッシュな配色。",
+      "気軽さを伝えるショッパーモチーフ。",
+      "実機プレビューで見え方を確認しながら、具象・抽象の両面から検討。"
+    ],
+    outcomes:[
+      "フォーマット化された既存アイコン群でも埋もれず、ECストアらしい親しみと活気が伝わるアイコンに。"
+    ],
+  },
+  {
+    title:"データ分析ツール導入提案", tag:"データ分析",
+    role:"データ分析", year:"2022", client:"シャープ", platform:"Web",
+    summary:"スマホWebアプリ「ココロエアー」へのデータ分析ツール導入を提案し、導入を実現。",
+    overview:[
+      "「ココロエアー」に Google Analytics と User Insight を導入する提案。定性調査が中心だった開発に、データ分析による定量調査のアプローチを持ち込みました。",
+      "事業部の課題に寄り添い、導入後の効果を具体的に思い描いてもらえる提案にしました。"
+    ],
+    challenge:"定性調査が中心で、事業部にはデータ分析の経験がありませんでした。",
+    callout:"事業部のリテラシーに寄り添い、疑問点を一つずつ解消して導入へ。",
+    roles:["データ分析ツール導入の提案","事業部リテラシーに合わせた資料作成・説明"],
+    solutions:[
+      "データ分析初心者に向けた、基礎的な知識からの導入。",
+      "事業部のやりたいことを一緒に考えながら、必要性を想起。",
+      "導入予定アプリでできることの紹介と、他アプリの利用実績の提示。"
+    ],
+    outcomes:[
+      "事業部の疑問点を一つずつ解消し、データ分析ツールの導入を実現。",
+      "定性中心だった改善プロセスに、定量の視点を追加。"
+    ],
+  },
+];
+
+/* ===================== レンダリング ===================== */
+function getIndex(){
+  const p = new URLSearchParams(location.search).get('w');
+  const i = parseInt(p,10);
+  return (Number.isInteger(i) && i>=0 && i<WORKS.length) ? i : 0;
+}
+function n2(i){return String(i+1).padStart(2,'0');}
+
+function render(){
+  const i = getIndex();
+  const w = WORKS[i];
+  const prev = (i-1+WORKS.length)%WORKS.length;
+  const next = (i+1)%WORKS.length;
+  document.title = `${w.title} — 作品詳細`;
+
+  const overviewHtml = w.overview.map(p=>`<p>${p}</p>`).join('');
+  const rolesHtml = w.roles.map(r=>`<li>${r}</li>`).join('');
+  const solHtml = w.solutions.map(s=>`<figure class="detail-figure"><span class="ph"></span><figcaption>${s}</figcaption></figure>`).join('');
+  const outHtml = w.outcomes.map(o=>`<li>${o}</li>`).join('');
+  const calloutHtml = w.callout ? `<div class="detail-callout">${w.callout}</div>` : '';
+
+  document.getElementById('detailRoot').innerHTML = `
+    <div class="detail-breadcrumb">
+      <a href="index.html">Index</a><span>/</span>
+      <a href="pattern-a.html">実績</a><span>/</span>
+      <span>${w.title}</span>
+    </div>
+
+    <header class="detail-head">
+      <div class="eyebrow">Case Study · ${n2(i)}</div>
+      <h1>${w.title}</h1>
+      <p class="summary">${w.summary}</p>
+    </header>
+
+    <div class="ph detail-cover"></div>
+
+    <section class="detail-meta">
+      <div class="cell"><div class="k">担当</div><div class="v">${w.role}</div></div>
+      <div class="cell"><div class="k">期間</div><div class="v">${w.year}</div></div>
+      <div class="cell"><div class="k">プラットフォーム</div><div class="v">${w.platform}</div></div>
+      <div class="cell"><div class="k">クライアント</div><div class="v">${w.client}</div></div>
+    </section>
+
+    <section class="detail-section">
+      <h2>概要</h2>
+      ${overviewHtml}
+    </section>
+
+    <section class="detail-section">
+      <h2>課題</h2>
+      <p>${w.challenge}</p>
+      ${calloutHtml}
+    </section>
+
+    <section class="detail-section">
+      <h2>担当</h2>
+      <ul>${rolesHtml}</ul>
+    </section>
+
+    <section class="detail-section">
+      <h2>解決策</h2>
+      ${solHtml}
+    </section>
+
+    <section class="detail-section">
+      <h2>成果</h2>
+      <ul>${outHtml}</ul>
+    </section>
+
+    <div class="detail-credits">
+      <strong>Credits</strong> — Design：伊藤太一（Taichi Ito）／ Client：${w.client}
+    </div>
+  `;
+
+  document.getElementById('pageFoot').innerHTML = `
+    <a class="home" href="index.html">← Index</a>
+    <a href="pattern-a.html">← 実績一覧へ戻る</a>
+    <a href="work-detail.html?w=${next}">Next：${WORKS[next].title} →</a>
+  `;
+}
+render();
+window.addEventListener('popstate', render);
+</script>
+
+</body>
+</html>

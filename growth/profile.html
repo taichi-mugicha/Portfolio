@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>プロフィール — 伊藤太一 Portfolio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="gnav">
+  <a class="brand" href="index.html">伊藤 太一<span>これまでと、これから</span></a>
+  <nav>
+    <a href="index.html">比較</a>
+    <a href="grid.html">作品</a>
+    <a href="profile.html" class="is-active">プロフィール</a>
+  </nav>
+</header>
+
+<main class="prof">
+  <div class="intro">
+    <div>
+      <p class="kicker">Profile</p>
+      <h1 class="serif">繋がりの線の、結び目として。</h1>
+      <p class="bio">UI/UXデザイナー。シャープでIoT家電アプリ「ココロ」シリーズのUIデザイン・ディレクションに従事してきました。「使う人の迷いを減らす」ことを軸に、リサーチからUI、ディレクション、グラフィック、データ分析まで領域をまたいで手を動かしています。<br><br>このポートフォリオは、未熟だった頃の作品も愛おしく保存しながら、その延長線上に「これから作るもの」を置く場所。今は愛せなくても、いつか「あの時の自分も頑張っていたな」と思える記録を目指しています。</p>
+    </div>
+    <div class="meta-cols">
+      <div class="mc"><div class="l">領域</div><p>UIデザイン / UXデザイン<br>ディレクション / グラフィック / データ分析</p></div>
+      <div class="mc"><div class="l">ツール</div><p>Figma · Photoshop · Illustrator<br>After Effects · Adobe Firefly</p></div>
+      <div class="mc"><div class="l">興味</div><p>生成AIとプロダクト体験 / 余白と情報設計<br>「続けること」をデザインで支える仕組み</p></div>
+    </div>
+  </div>
+
+  <p class="net-cap">Connections — このサイトを通じて出会った、人とプロジェクトの線</p>
+  <div class="net">
+    <svg id="net" viewBox="0 0 1100 420" aria-label="繋がりのネットワーク図"></svg>
+  </div>
+</main>
+
+<footer class="foot">
+  <span class="serif">伊藤 太一 — UI / UX Designer</span>
+  <span>© 2025 · 線は、切れることなく続いていく。</span>
+</footer>
+
+<script src="data.js"></script>
+<script>
+/* 時間軸（横）＋ 出会いのノード（縦に枝分かれ）。最近の繋がりは glow。 */
+const NET = [
+  // {year, label, side(+1下/-1上), recent}
+  {year:2020, label:"デザイン部門 / NOOK 読者", side:-1, recent:false},
+  {year:2021, label:"ココロエアー 事業部", side:+1, recent:false},
+  {year:2021, label:"H社 OEM チーム", side:-1, recent:false},
+  {year:2022, label:"データ分析の協働", side:+1, recent:false},
+  {year:2023, label:"ココロホーム 開発チーム", side:-1, recent:true},
+  {year:2023, label:"BD・企画チーム", side:+1, recent:true},
+  {year:2024, label:"生成AI プロジェクト", side:-1, recent:true},
+  {year:2024, label:"— これから出会う人", side:+1, recent:true, future:true},
+];
+
+function buildNet(){
+  const svg=document.getElementById('net');
+  const W=1100, axisY=210, L=70, R=W-70;
+  const span=(R-L)/(YEARS.length-1);
+  const xOf=y=>L+(y-YEARS[0])*span;
+
+  let html=`<path class="axis" d="M0,${axisY} L${L},${axisY}`;
+  // 2022 揺らぎ
+  for(let i=0;i<YEARS.length-1;i++){
+    const x1=xOf(YEARS[i]),x2=xOf(YEARS[i+1]);
+    if(YEARS[i]===2022||YEARS[i+1]===2022){
+      const s=(x2-x1)/4;
+      html+=` C${x1+s},${axisY-14} ${x1+s},${axisY+14} ${x1+s*2},${axisY} C${x1+s*3},${axisY-14} ${x1+s*3},${axisY+14} ${x2},${axisY}`;
+    }else html+=` L${x2},${axisY}`;
+  }
+  html+=` L${W},${axisY}"/>`;
+
+  // 年ラベル＋軸ノード
+  YEARS.forEach(y=>{
+    html+=`<text class="yr" x="${xOf(y)}" y="${axisY+34}" text-anchor="middle">${y}</text>`;
+    html+=`<circle class="dot ${y===2024?'recent':''}" cx="${xOf(y)}" cy="${axisY}" r="4"/>`;
+  });
+
+  // 枝＋出会いノード
+  NET.forEach((n,k)=>{
+    const x=xOf(n.year) + ((k%2)?22:-22);
+    const len=70+(k%3)*36;
+    const y=axisY + n.side*len;
+    const warm = n.recent ? ' warm' : '';
+    html+=`<path class="branch${warm}" d="M${xOf(n.year)},${axisY} Q${x},${(axisY+y)/2} ${x},${y}"/>`;
+    html+=`<circle class="dot ${n.recent?'recent':''}" cx="${x}" cy="${y}" r="${n.future?7:5.5}"/>`;
+    const anchor = x<140?'start':(x>W-160?'end':'middle');
+    const ty = n.side<0 ? y-14 : y+22;
+    html+=`<text class="lab" x="${x}" y="${ty}" text-anchor="${anchor}" ${n.future?'fill="#b08a4a"':''}>${n.label}</text>`;
+  });
+
+  svg.innerHTML=html;
+}
+buildNet();
+</script>
+</body>
+</html>

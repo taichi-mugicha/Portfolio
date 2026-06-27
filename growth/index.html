@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>これまでと、これから — 伊藤太一 Portfolio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="gnav">
+  <a class="brand" href="index.html">伊藤 太一<span>これまでと、これから</span></a>
+  <nav>
+    <a href="index.html" class="is-active">比較</a>
+    <a href="grid.html">作品</a>
+    <a href="profile.html">プロフィール</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <p class="kicker">これまでと、これから</p>
+  <h1 class="serif">同じ画角で、ふたつの年を見つめる。<br>成長の軌跡は、余白と線と光のなかに。</h1>
+  <p class="lead">未熟さも含めた過去を愛おしく保存しながら、その延長線上に「これから作られるもの」を置く。年ごとの一点を並べて、変化をそのまま受け取るためのポートフォリオです。</p>
+</section>
+
+<section class="compare">
+  <div class="axisline">
+    <svg class="timeline" id="axis" viewBox="0 0 1180 60" preserveAspectRatio="none" aria-hidden="true"></svg>
+  </div>
+
+  <div class="pair" id="pair"><!-- rendered by script --></div>
+
+  <div class="stepper" id="stepper"></div>
+</section>
+
+<footer class="foot">
+  <span class="serif">伊藤 太一 — UI / UX Designer</span>
+  <span>© 2025 · 完璧さよりも、全身全霊の記録を。</span>
+</footer>
+
+<script src="data.js"></script>
+<script>
+/* ---------- 時間の線（揺らぎは波打つ。切れずに続く） ---------- */
+function buildAxis(){
+  const svg=document.getElementById('axis');
+  const W=1180, midY=30;
+  const xs = YEARS.map((y,i)=> 70 + i*( (W-140)/(YEARS.length-1) ));
+  // 2022（揺らぎの時期）周辺を波打たせる
+  const wobbleYear=2022;
+  let d=`M0,${midY} L${xs[0]},${midY}`;
+  for(let i=0;i<xs.length-1;i++){
+    const x1=xs[i], x2=xs[i+1];
+    if(YEARS[i]===wobbleYear || YEARS[i+1]===wobbleYear){
+      const seg=(x2-x1)/4;
+      d+=` C${x1+seg},${midY-16} ${x1+seg},${midY+16} ${x1+seg*2},${midY}`
+       + ` C${x1+seg*3},${midY-16} ${x1+seg*3},${midY+16} ${x2},${midY}`;
+    }else{
+      d+=` L${x2},${midY}`;
+    }
+  }
+  d+=` L${W},${midY}`;
+  let html=`<path d="${d}"/>`;
+  YEARS.forEach((y,i)=>{
+    const isNow = y===YEARS[YEARS.length-1];
+    html+=`<circle class="node ${isNow?'now glow':''}" cx="${xs[i]}" cy="${midY}" r="4.5"/>`;
+    html+=`<text class="tick" x="${xs[i]}" y="${midY+24}" text-anchor="middle">${y}</text>`;
+  });
+  svg.innerHTML=html;
+}
+
+/* ---------- 比較ペアの描画 ---------- */
+let pairIdx = PAIRS.length-1; // 初期は最新ペア（…|これから）
+
+function sideHtml(year){
+  const w = WORKS[BEST[year]];
+  const eraClass = w.era==='future' ? 'is-future' : (w.era==='recent'?'is-recent':'is-past');
+  const label = w.era==='future' ? 'これから' : (year===YEARS[YEARS.length-1]?'いま':'これまで');
+  return `
+    <div class="side">
+      <div class="yr"><small>${label}</small>${year}</div>
+      <div class="framewrap">
+        <div class="frame ${eraClass}" data-rotate>
+          <div class="art">${artSvg(w.hue, w.id, w.era)}</div>
+        </div>
+        <div class="rotate-hint">▷ タップで回転（奥行きを見る）</div>
+      </div>
+      <h3 class="wtitle serif">${w.title}${w.status?` <span style="font-family:var(--sans);font-size:12px;color:var(--accent)">（${w.status}）</span>`:''}</h3>
+      <p class="wmeta">${w.cat} · ${w.type}${w.domain?` · ${w.domain}`:''}</p>
+      <div class="ctas">
+        <a class="btn" href="work.html?w=${w.id}">作品詳細へ</a>
+        <a class="btn ghost" href="grid.html?year=${year}">${year} の作品リスト →</a>
+      </div>
+    </div>`;
+}
+
+function renderPair(){
+  const [a,b]=PAIRS[pairIdx];
+  document.getElementById('pair').innerHTML =
+    sideHtml(a) + `<div class="vs serif">丨</div>` + sideHtml(b);
+  // 回転インタラクション
+  document.querySelectorAll('[data-rotate]').forEach(el=>{
+    el.addEventListener('click',()=>el.classList.toggle('tilt'));
+  });
+  // stepper active
+  [...document.querySelectorAll('.stepper button[data-i]')].forEach(btn=>{
+    btn.classList.toggle('on', +btn.dataset.i===pairIdx);
+  });
+}
+
+function buildStepper(){
+  const s=document.getElementById('stepper');
+  let html=`<span class="arrow" id="prevPair">‹</span>`;
+  PAIRS.forEach((p,i)=>{ html+=`<button data-i="${i}">${p[0]}｜${p[1]}</button>`; });
+  html+=`<span class="arrow" id="nextPair">›</span>`;
+  s.innerHTML=html;
+  s.querySelectorAll('button[data-i]').forEach(b=>b.addEventListener('click',()=>{pairIdx=+b.dataset.i;renderPair();}));
+  document.getElementById('prevPair').addEventListener('click',()=>{pairIdx=(pairIdx-1+PAIRS.length)%PAIRS.length;renderPair();});
+  document.getElementById('nextPair').addEventListener('click',()=>{pairIdx=(pairIdx+1)%PAIRS.length;renderPair();});
+}
+
+buildAxis();
+buildStepper();
+renderPair();
+</script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Wireframes — 3 Patterns (Monochrome)</title>
+<style>
+  :root{
+    --ink:#000;
+    --line:#d9d9d9;
+    --line-dark:#b3b3b3;
+    --ph:#ebebeb;          /* placeholder */
+    --sidebar:#f7f7f7;
+    --t-dark:#333;
+    --t-mid:#808080;
+    --canvas:#efefef;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,"Helvetica Neue","Inter",Arial,"Hiragino Kaku Gothic ProN",sans-serif;
+    background:var(--canvas);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- layout scaffold ---------- */
+  .page-head{padding:48px 48px 8px;}
+  .page-head h1{font-size:24px;margin:0 0 6px;letter-spacing:-.02em;}
+  .page-head p{margin:0;color:var(--t-mid);font-size:13px;}
+
+  .columns{
+    display:flex;
+    gap:64px;
+    padding:32px 48px 96px;
+    align-items:flex-start;
+    overflow-x:auto;
+  }
+  .col{flex:0 0 auto;}
+  .col > .col-head{margin-bottom:20px;}
+  .col-head h2{font-size:28px;margin:0 0 4px;letter-spacing:-.02em;}
+  .col-head .sub{font-size:15px;color:var(--t-dark);margin:0 0 2px;}
+  .col-head .desc{font-size:12px;color:var(--t-mid);margin:0;}
+
+  .device-label{
+    font-size:12px;font-weight:600;color:var(--t-dark);
+    margin:28px 0 8px;letter-spacing:.04em;
+  }
+
+  /* device frames */
+  .frame{
+    background:#fff;
+    border:1px solid var(--ink);
+    overflow:hidden;
+  }
+  .frame.pc{width:1440px;transform-origin:top left;}
+  .frame.mobile{width:375px;}
+
+  /* scale PC frames down so they fit comfortably; toggle with .actual-size on body */
+  .frame.pc{ width:720px; }                 /* visually half; inner uses its own scale */
+  .pc-inner{ width:1440px; transform:scale(.5); transform-origin:top left; }
+  .pc-spacer{ /* reserves height for the scaled content */ }
+
+  /* ---------- shared wireframe atoms ---------- */
+  .ph{background:var(--ph);display:block;}
+  .divider{height:1px;background:var(--line);width:100%;}
+  .divider.dark{background:var(--line-dark);}
+  .divider.black{background:var(--ink);}
+  .eyebrow{font-size:12px;color:var(--t-mid);letter-spacing:.12em;}
+  .muted{color:var(--t-mid);}
+  .dark{color:var(--t-dark);}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:var(--ink);color:#fff;padding:12px 20px;font-size:13px;}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink);}
+  .tag{display:inline-flex;padding:4px 10px;border:1px solid var(--ink);border-radius:999px;font-size:11px;}
+  .row{display:flex;}
+  .between{justify-content:space-between;}
+  .center{align-items:center;}
+  .logo-mark{width:24px;height:24px;background:var(--ink);border-radius:4px;display:inline-block;}
+  .burger{display:inline-flex;flex-direction:column;gap:4px;}
+  .burger span{display:block;width:20px;height:1.5px;background:var(--ink);}
+
+  /* =========================================================
+     PATTERN A — Grid Minimal
+     ========================================================= */
+  .a-header{display:flex;justify-content:space-between;align-items:center;padding:28px 64px;}
+  .a-nav{display:flex;gap:32px;font-size:14px;}
+  .a-hero{padding:140px 64px;}
+  .a-hero .name{font-size:88px;font-weight:700;line-height:1;letter-spacing:-.03em;margin:20px 0 0;}
+  .a-sec{display:flex;justify-content:space-between;align-items:center;padding:80px 64px 40px;}
+  .a-grid{padding:0 64px 80px;display:grid;grid-template-columns:repeat(3,1fr);gap:40px;}
+  .a-card .ph{height:300px;margin-bottom:16px;}
+  .a-card h4{margin:0 0 4px;font-size:18px;}
+  .a-card .meta{font-size:13px;color:var(--t-mid);}
+  .a-footer{display:flex;justify-content:space-between;padding:48px 64px;font-size:13px;color:var(--t-mid);}
+
+  /* mobile A */
+  .am-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .am-hero{padding:60px 20px;}
+  .am-hero .name{font-size:36px;font-weight:700;line-height:1.05;letter-spacing:-.02em;margin:14px 0 0;}
+  .am-sec{display:flex;justify-content:space-between;padding:32px 20px 20px;}
+  .am-list{padding:0 20px 48px;display:flex;flex-direction:column;gap:24px;}
+  .am-card .ph{height:220px;margin-bottom:12px;}
+  .am-card h4{margin:0 0 2px;font-size:16px;}
+  .am-card .meta{font-size:12px;color:var(--t-mid);}
+  .am-footer{padding:32px 20px;}
+
+  /* =========================================================
+     PATTERN B — Editorial Hero
+     ========================================================= */
+  .b-nav{display:flex;justify-content:space-between;align-items:center;padding:24px 48px;font-size:13px;}
+  .b-nav .links{display:flex;gap:28px;}
+  .b-hero{display:flex;padding:60px 48px 80px;}
+  .b-hero .left{width:240px;flex:0 0 240px;font-size:13px;color:var(--t-dark);}
+  .b-hero .left .meta{color:var(--t-mid);margin-bottom:4px;}
+  .b-hero .stmt{flex:1;font-size:128px;font-weight:700;line-height:.96;letter-spacing:-.04em;margin:0;}
+  .b-featlabel{display:flex;justify-content:space-between;padding:32px 48px 24px;font-size:12px;}
+  .b-feat{display:flex;gap:40px;padding:0 48px 64px;}
+  .b-feat .ph{flex:1;height:540px;}
+  .b-feat .meta{width:360px;flex:0 0 360px;}
+  .b-feat .meta h3{font-size:32px;margin:0 0 16px;}
+  .b-feat .meta p{font-size:14px;color:var(--t-dark);margin:0 0 16px;}
+  .b-feat .tags{display:flex;gap:8px;margin-bottom:16px;}
+  .b-listlabel{display:flex;justify-content:space-between;padding:40px 48px 0;font-size:12px;}
+  .b-list{padding:0 48px 32px;}
+  .b-list .item{display:flex;align-items:center;padding:28px 0;gap:0;border-bottom:1px solid var(--line);}
+  .b-list .item:first-child{border-top:1px solid var(--ink);}
+  .b-list .num{width:80px;font-size:32px;font-weight:700;}
+  .b-list .nm{width:280px;font-size:28px;font-weight:600;}
+  .b-list .sub{flex:1;font-size:16px;color:var(--t-dark);}
+  .b-list .cat{width:160px;font-size:14px;color:var(--t-mid);}
+  .b-list .yr{width:60px;font-size:14px;color:var(--t-dark);}
+  .b-cta{padding:120px 48px;}
+  .b-cta .big{font-size:96px;font-weight:700;line-height:1;letter-spacing:-.03em;margin:12px 0;}
+  .b-footer{display:flex;justify-content:space-between;padding:32px 48px;font-size:12px;color:var(--t-mid);}
+
+  /* mobile B */
+  .bm-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;font-size:11px;}
+  .bm-hero{padding:32px 20px 40px;}
+  .bm-hero .stmt{font-size:44px;font-weight:700;line-height:.98;letter-spacing:-.03em;margin:10px 0;}
+  .bm-hero p{font-size:13px;color:var(--t-dark);}
+  .bm-featlabel{display:flex;justify-content:space-between;padding:24px 20px 16px;font-size:10px;}
+  .bm-feat{padding:0 20px 32px;}
+  .bm-feat .ph{height:260px;margin-bottom:16px;}
+  .bm-feat h3{font-size:24px;margin:0 0 8px;}
+  .bm-feat p{font-size:13px;color:var(--t-dark);margin:0 0 12px;}
+  .bm-feat .tags{display:flex;gap:6px;margin-bottom:16px;}
+  .bm-list{padding:8px 20px 32px;}
+  .bm-list .item{display:flex;gap:12px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);}
+  .bm-list .item:first-child{border-top:1px solid var(--ink);}
+  .bm-list .num{width:28px;font-size:16px;font-weight:700;}
+  .bm-list .body{flex:1;}
+  .bm-list .body .nm{font-size:15px;font-weight:600;}
+  .bm-list .body .sub{font-size:11px;color:var(--t-mid);}
+  .bm-cta{padding:60px 20px;}
+  .bm-cta .big{font-size:40px;font-weight:700;line-height:1;letter-spacing:-.03em;margin:10px 0;}
+  .bm-footer{padding:24px 20px;font-size:10px;color:var(--t-mid);}
+
+  /* =========================================================
+     PATTERN C — Sidebar Asymmetric
+     ========================================================= */
+  .c-layout{display:flex;align-items:stretch;}
+  .c-sidebar{width:340px;flex:0 0 340px;background:var(--sidebar);border-right:1px solid var(--line-dark);padding:48px 40px;display:flex;flex-direction:column;gap:40px;}
+  .c-bio .ph{width:72px;height:72px;border-radius:999px;margin-bottom:12px;}
+  .c-bio h3{font-size:22px;margin:0 0 12px;}
+  .c-bio p{font-size:13px;color:var(--t-dark);margin:0 0 12px;}
+  .c-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t-dark);}
+  .c-status .dot{width:8px;height:8px;border-radius:999px;background:var(--ink);}
+  .c-nav .label,.c-contact .label{font-size:10px;font-weight:600;color:var(--t-mid);letter-spacing:.08em;margin-bottom:14px;}
+  .c-nav .nitem{display:flex;align-items:center;gap:16px;margin-bottom:14px;font-size:15px;}
+  .c-nav .nitem .n{font-size:11px;color:var(--t-mid);}
+  .c-nav .nitem.active{font-weight:600;}
+  .c-contact .citem{font-size:13px;color:var(--t-dark);margin-bottom:6px;}
+  .c-foot{font-size:11px;color:var(--t-mid);}
+  .c-main{flex:1;}
+  .c-hero{padding:120px 80px 80px;}
+  .c-hero .big{font-size:80px;font-weight:700;line-height:1;letter-spacing:-.03em;margin:32px 0;}
+  .c-meta{display:flex;gap:48px;}
+  .c-meta .mcol{width:220px;}
+  .c-meta .label{font-size:10px;font-weight:600;color:var(--t-mid);margin-bottom:4px;}
+  .c-meta p{font-size:13px;color:var(--t-dark);margin:0;line-height:1.5;}
+  .c-case{padding:80px;display:flex;flex-direction:column;gap:32px;}
+  .c-case .crow{display:flex;justify-content:space-between;font-size:11px;color:var(--t-mid);}
+  .c-case h3{font-size:48px;font-weight:700;margin:0;}
+  .c-case .lead{font-size:18px;color:var(--t-dark);margin:0;}
+  .c-case .ph{height:480px;}
+  .c-case .ctarow{display:flex;justify-content:space-between;align-items:center;}
+  .c-finalcta{padding:100px 80px;}
+  .c-finalcta .big{font-size:56px;font-weight:700;line-height:1.02;letter-spacing:-.03em;margin:12px 0 24px;}
+  .c-finalcta .btns{display:flex;gap:12px;}
+
+  /* mobile C */
+  .cm-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--sidebar);}
+  .cm-top .logo{display:flex;align-items:center;gap:8px;}
+  .cm-top .logo .logo-mark{width:20px;height:20px;}
+  .cm-bio{padding:32px 20px;background:var(--sidebar);}
+  .cm-bio .ph{width:56px;height:56px;border-radius:999px;margin-bottom:14px;}
+  .cm-bio h3{font-size:20px;margin:0 0 10px;}
+  .cm-bio p{font-size:13px;color:var(--t-dark);margin:0 0 12px;}
+  .cm-hero{padding:40px 20px 32px;}
+  .cm-hero .big{font-size:36px;font-weight:700;line-height:1.02;letter-spacing:-.03em;margin:14px 0;}
+  .cm-case{padding:32px 20px;display:flex;flex-direction:column;gap:14px;}
+  .cm-case .crow{display:flex;justify-content:space-between;font-size:10px;color:var(--t-mid);}
+  .cm-case .ph{height:220px;}
+  .cm-case h3{font-size:22px;font-weight:700;margin:0;}
+  .cm-case .lead{font-size:13px;color:var(--t-dark);margin:0;}
+  .cm-cta{padding:48px 20px;display:flex;flex-direction:column;gap:12px;}
+  .cm-cta .big{font-size:32px;font-weight:700;line-height:1.02;letter-spacing:-.03em;margin:8px 0;}
+  .cm-cta .btn,.cm-cta .btn.ghost{justify-content:center;}
+  .cm-foot{padding:24px 20px;font-size:10px;color:var(--t-mid);}
+
+  .stack > * + *{margin-top:0;}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Portfolio Wireframes — 3 Patterns</h1>
+  <p>Monochrome wireframes · PC (1440, 50%表示) + Mobile (375) · Figma版と同構成</p>
+</div>
+
+<div class="columns">
+
+  <!-- =================== PATTERN A =================== -->
+  <section class="col">
+    <div class="col-head">
+      <h2>Pattern A</h2>
+      <p class="sub">Grid Minimal</p>
+      <p class="desc">Top nav · Clean work grid · Minimal typography</p>
+    </div>
+
+    <div class="device-label">PC — 1440</div>
+    <div class="frame pc">
+      <div class="pc-inner">
+        <div class="a-header">
+          <strong style="font-size:18px;">◼ NAME</strong>
+          <nav class="a-nav dark"><span>Work</span><span>About</span><span>Journal</span><span>Contact</span></nav>
+        </div>
+        <div class="divider"></div>
+        <div class="a-hero">
+          <div class="eyebrow">UI / UX&nbsp;&nbsp;DESIGNER&nbsp;&nbsp;—&nbsp;&nbsp;TOKYO</div>
+          <h1 class="name">Designing calm,<br>useful digital products.</h1>
+        </div>
+        <div class="divider"></div>
+        <div class="a-sec"><strong style="font-size:16px;">Selected Work — 2024 / 2025</strong><span class="muted" style="font-size:14px;">01 — 06</span></div>
+        <div class="a-grid">
+          <div class="a-card"><span class="ph"></span><h4>Aurora Banking</h4><div class="meta">Fintech · iOS</div></div>
+          <div class="a-card"><span class="ph"></span><h4>Kasumi Maps</h4><div class="meta">Wayfinding · Web</div></div>
+          <div class="a-card"><span class="ph"></span><h4>Studio Press</h4><div class="meta">Editorial · CMS</div></div>
+          <div class="a-card"><span class="ph"></span><h4>Field Notes</h4><div class="meta">Brand · Identity</div></div>
+          <div class="a-card"><span class="ph"></span><h4>Mono Player</h4><div class="meta">Music · App</div></div>
+          <div class="a-card"><span class="ph"></span><h4>Verdant</h4><div class="meta">Climate · Dashboard</div></div>
+        </div>
+        <div class="divider"></div>
+        <div class="a-footer"><span>◼ NAME&nbsp;&nbsp;—&nbsp;&nbsp;hello@name.com</span><span>© 2025</span></div>
+      </div>
+    </div>
+
+    <div class="device-label">Mobile — 375</div>
+    <div class="frame mobile">
+      <div class="am-header">
+        <strong style="font-size:15px;">◼ NAME</strong>
+        <span class="burger"><span></span><span></span><span></span></span>
+      </div>
+      <div class="divider"></div>
+      <div class="am-hero">
+        <div class="eyebrow">UI / UX&nbsp;&nbsp;DESIGNER</div>
+        <h1 class="name">Designing calm,<br>useful digital<br>products.</h1>
+      </div>
+      <div class="divider"></div>
+      <div class="am-sec"><strong style="font-size:13px;">Selected Work</strong><span class="muted" style="font-size:11px;">01 — 06</span></div>
+      <div class="am-list">
+        <div class="am-card"><span class="ph"></span><h4>Aurora Banking</h4><div class="meta">Fintech · iOS</div></div>
+        <div class="am-card"><span class="ph"></span><h4>Kasumi Maps</h4><div class="meta">Wayfinding · Web</div></div>
+        <div class="am-card"><span class="ph"></span><h4>Studio Press</h4><div class="meta">Editorial · CMS</div></div>
+        <div class="am-card"><span class="ph"></span><h4>Field Notes</h4><div class="meta">Brand · Identity</div></div>
+        <div class="am-card"><span class="ph"></span><h4>Mono Player</h4><div class="meta">Music · App</div></div>
+        <div class="am-card"><span class="ph"></span><h4>Verdant</h4><div class="meta">Climate · Dashboard</div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="am-footer"><div class="dark" style="font-size:12px;">◼ NAME</div><div class="muted" style="font-size:11px;">hello@name.com  ·  © 2025</div></div>
+    </div>
+  </section>
+
+  <!-- =================== PATTERN B =================== -->
+  <section class="col">
+    <div class="col-head">
+      <h2>Pattern B</h2>
+      <p class="sub">Editorial Hero</p>
+      <p class="desc">Big hero statement · Featured project · Work list</p>
+    </div>
+
+    <div class="device-label">PC — 1440</div>
+    <div class="frame pc">
+      <div class="pc-inner">
+        <div class="b-nav">
+          <strong>NAME / PORTFOLIO</strong>
+          <div class="links dark"><span>Index</span><span>Studio</span><span>Notes</span><strong>→ Contact</strong></div>
+        </div>
+        <div class="divider dark"></div>
+        <div class="b-hero">
+          <div class="left">
+            <div class="meta">ISSUE 04</div><div class="meta">2025</div><div class="meta">—</div>
+            <p>Independent product designer based in Tokyo, working remotely worldwide.</p>
+          </div>
+          <h1 class="stmt">An editorial approach to digital product design.</h1>
+        </div>
+        <div class="divider dark"></div>
+        <div class="b-featlabel"><strong>FEATURED&nbsp;·&nbsp;01</strong><span class="muted">CASE STUDY</span></div>
+        <div class="b-feat">
+          <span class="ph"></span>
+          <div class="meta">
+            <h3>Aurora Banking</h3>
+            <p>End-to-end redesign of a regional banking app, focused on calm visual language and accessible flows.</p>
+            <div class="tags"><span class="tag">iOS</span><span class="tag">Banking</span><span class="tag">2024</span></div>
+            <span class="btn">View case study&nbsp;→</span>
+          </div>
+        </div>
+        <div class="divider dark"></div>
+        <div class="b-listlabel"><strong>INDEX&nbsp;&nbsp;—&nbsp;&nbsp;Selected work</strong><span class="muted">2018 — 2025</span></div>
+        <div class="b-list">
+          <div class="item"><span class="num">02</span><span class="nm">Kasumi Maps</span><span class="sub">Wayfinding</span><span class="cat">Web · iOS</span><span class="yr">2024</span></div>
+          <div class="item"><span class="num">03</span><span class="nm">Studio Press</span><span class="sub">Editorial CMS</span><span class="cat">Web</span><span class="yr">2023</span></div>
+          <div class="item"><span class="num">04</span><span class="nm">Field Notes</span><span class="sub">Brand identity</span><span class="cat">Print · Web</span><span class="yr">2023</span></div>
+          <div class="item"><span class="num">05</span><span class="nm">Mono Player</span><span class="sub">Music app</span><span class="cat">iOS</span><span class="yr">2022</span></div>
+          <div class="item"><span class="num">06</span><span class="nm">Verdant</span><span class="sub">Climate dashboard</span><span class="cat">Web</span><span class="yr">2022</span></div>
+          <div class="item"><span class="num">07</span><span class="nm">Quiet Mail</span><span class="sub">Email client</span><span class="cat">macOS</span><span class="yr">2021</span></div>
+        </div>
+        <div class="b-cta">
+          <div class="eyebrow">OPEN FOR PROJECTS&nbsp;&nbsp;—&nbsp;&nbsp;Q3 / Q4 2025</div>
+          <h2 class="big">Let's make<br>something good.</h2>
+          <strong style="font-size:20px;">hello@name.com&nbsp;→</strong>
+        </div>
+        <div class="divider dark"></div>
+        <div class="b-footer"><span>NAME / PORTFOLIO · Tokyo</span><span>Instagram · Twitter · Read.cv</span><span>© 2025</span></div>
+      </div>
+    </div>
+
+    <div class="device-label">Mobile — 375</div>
+    <div class="frame mobile">
+      <div class="bm-nav"><strong>NAME / PORTFOLIO</strong><strong>MENU</strong></div>
+      <div class="divider dark"></div>
+      <div class="bm-hero">
+        <div class="eyebrow" style="font-size:10px;">ISSUE 04 · 2025</div>
+        <h1 class="stmt">An editorial approach to digital product design.</h1>
+        <p>Independent product designer based in Tokyo, working remotely worldwide.</p>
+      </div>
+      <div class="divider dark"></div>
+      <div class="bm-featlabel"><strong>FEATURED · 01</strong><span class="muted">CASE STUDY</span></div>
+      <div class="bm-feat">
+        <span class="ph"></span>
+        <h3>Aurora Banking</h3>
+        <p>End-to-end redesign of a regional banking app, focused on calm visual language and accessible flows.</p>
+        <div class="tags"><span class="tag">iOS</span><span class="tag">Banking</span><span class="tag">2024</span></div>
+        <span class="btn" style="display:flex;justify-content:center;">View case study&nbsp;→</span>
+      </div>
+      <div class="divider dark"></div>
+      <div class="bm-featlabel"><strong>INDEX</strong><span class="muted">2018 — 2025</span></div>
+      <div class="bm-list">
+        <div class="item"><span class="num">02</span><div class="body"><div class="nm">Kasumi Maps</div><div class="sub">Wayfinding · Web · iOS</div></div><span class="muted" style="font-size:11px;">2024</span></div>
+        <div class="item"><span class="num">03</span><div class="body"><div class="nm">Studio Press</div><div class="sub">Editorial CMS · Web</div></div><span class="muted" style="font-size:11px;">2023</span></div>
+        <div class="item"><span class="num">04</span><div class="body"><div class="nm">Field Notes</div><div class="sub">Brand identity · Print</div></div><span class="muted" style="font-size:11px;">2023</span></div>
+        <div class="item"><span class="num">05</span><div class="body"><div class="nm">Mono Player</div><div class="sub">Music app · iOS</div></div><span class="muted" style="font-size:11px;">2022</span></div>
+        <div class="item"><span class="num">06</span><div class="body"><div class="nm">Verdant</div><div class="sub">Climate dashboard · Web</div></div><span class="muted" style="font-size:11px;">2022</span></div>
+        <div class="item"><span class="num">07</span><div class="body"><div class="nm">Quiet Mail</div><div class="sub">Email client · macOS</div></div><span class="muted" style="font-size:11px;">2021</span></div>
+      </div>
+      <div class="divider dark"></div>
+      <div class="bm-cta">
+        <div class="eyebrow" style="font-size:10px;">OPEN FOR PROJECTS · Q3 2025</div>
+        <h2 class="big">Let's make<br>something<br>good.</h2>
+        <strong style="font-size:14px;">hello@name.com&nbsp;→</strong>
+      </div>
+      <div class="divider dark"></div>
+      <div class="bm-footer">NAME / PORTFOLIO · Tokyo<br>Instagram · Twitter · Read.cv · © 2025</div>
+    </div>
+  </section>
+
+  <!-- =================== PATTERN C =================== -->
+  <section class="col">
+    <div class="col-head">
+      <h2>Pattern C</h2>
+      <p class="sub">Sidebar Asymmetric</p>
+      <p class="desc">Left fixed sidebar · Right scrolling case studies</p>
+    </div>
+
+    <div class="device-label">PC — 1440</div>
+    <div class="frame pc">
+      <div class="pc-inner">
+        <div class="c-layout">
+          <aside class="c-sidebar">
+            <div class="row center" style="gap:8px;"><span class="logo-mark"></span><strong style="font-size:16px;">NAME</strong></div>
+            <div class="c-bio">
+              <span class="ph"></span>
+              <h3>Yuto Aoyama</h3>
+              <p>Product designer with 8 years building tools for finance, health and creative workflows.</p>
+              <div class="c-status"><span class="dot"></span>Available — Q3 / Q4 2025</div>
+            </div>
+            <div class="divider"></div>
+            <nav class="c-nav">
+              <div class="label">NAVIGATION</div>
+              <div class="nitem active"><span class="n">01</span><span class="dark" style="flex:1;">Work</span><span style="font-size:10px;">●</span></div>
+              <div class="nitem"><span class="n">02</span><span class="dark">About</span></div>
+              <div class="nitem"><span class="n">03</span><span class="dark">Process</span></div>
+              <div class="nitem"><span class="n">04</span><span class="dark">Writing</span></div>
+              <div class="nitem"><span class="n">05</span><span class="dark">Contact</span></div>
+            </nav>
+            <div class="divider"></div>
+            <div class="c-contact">
+              <div class="label">ELSEWHERE</div>
+              <div class="citem">Read.cv  →</div>
+              <div class="citem">Instagram  →</div>
+              <div class="citem">Twitter / X  →</div>
+              <div class="citem">LinkedIn  →</div>
+            </div>
+            <div class="divider"></div>
+            <div class="c-foot">Tokyo · JST (+09:00)<br>© 2025 Yuto Aoyama</div>
+          </aside>
+
+          <main class="c-main">
+            <div class="c-hero">
+              <div class="eyebrow">SELECTED CASE STUDIES — 2025</div>
+              <h1 class="big">Designing systems that get out of the way.</h1>
+              <div class="c-meta">
+                <div class="mcol"><div class="label">SERVICES</div><p>Product strategy<br>Interface design<br>Design systems<br>Prototyping</p></div>
+                <div class="mcol"><div class="label">INDUSTRIES</div><p>Fintech · Health<br>Creative tools<br>Climate · SaaS</p></div>
+                <div class="mcol"><div class="label">RECOGNITION</div><p>Awwwards SOTD ×3<br>FWA Honor<br>Brand New Notable</p></div>
+              </div>
+            </div>
+            <div class="divider dark"></div>
+            <div class="c-case">
+              <div class="crow"><span>CASE 01</span><span>iOS · Fintech&nbsp;·&nbsp;2024</span></div>
+              <h3>Aurora Banking</h3>
+              <p class="lead">Calm, accessible mobile banking. Rebuilt the IA, rebuilt trust.</p>
+              <span class="ph"></span>
+              <div class="ctarow"><strong style="font-size:14px;">Read full case study&nbsp;→</strong><span class="muted" style="font-size:11px;">1 / 3</span></div>
+            </div>
+            <div class="divider"></div>
+            <div class="c-case">
+              <div class="crow"><span>CASE 02</span><span>Web · iOS&nbsp;·&nbsp;2024</span></div>
+              <h3>Kasumi Maps</h3>
+              <p class="lead">A wayfinding tool for indoor architecture and large campuses.</p>
+              <span class="ph"></span>
+              <div class="ctarow"><strong style="font-size:14px;">Read full case study&nbsp;→</strong><span class="muted" style="font-size:11px;">2 / 3</span></div>
+            </div>
+            <div class="divider"></div>
+            <div class="c-case">
+              <div class="crow"><span>CASE 03</span><span>Web · Editorial&nbsp;·&nbsp;2023</span></div>
+              <h3>Field Notes</h3>
+              <p class="lead">A small CMS for editorial teams. Less software, more pages.</p>
+              <span class="ph"></span>
+              <div class="ctarow"><strong style="font-size:14px;">Read full case study&nbsp;→</strong><span class="muted" style="font-size:11px;">3 / 3</span></div>
+            </div>
+            <div class="divider dark"></div>
+            <div class="c-finalcta">
+              <div class="eyebrow">NEXT</div>
+              <h2 class="big">Have a project<br>in mind?</h2>
+              <div class="btns"><span class="btn">Email me&nbsp;→</span><span class="btn ghost">Book a call&nbsp;→</span></div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <div class="device-label">Mobile — 375</div>
+    <div class="frame mobile">
+      <div class="cm-top">
+        <div class="logo"><span class="logo-mark"></span><strong style="font-size:14px;">NAME</strong></div>
+        <div class="row center" style="gap:6px;"><strong style="font-size:11px;">MENU</strong><span class="burger"><span></span><span></span><span></span></span></div>
+      </div>
+      <div class="divider dark"></div>
+      <div class="cm-bio">
+        <span class="ph"></span>
+        <h3>Yuto Aoyama</h3>
+        <p>Product designer with 8 years building tools for finance, health and creative workflows.</p>
+        <div class="c-status"><span class="dot"></span>Available — Q3 / Q4 2025</div>
+      </div>
+      <div class="divider dark"></div>
+      <div class="cm-hero">
+        <div class="eyebrow" style="font-size:10px;">SELECTED CASE STUDIES — 2025</div>
+        <h1 class="big">Designing systems that get out of the way.</h1>
+      </div>
+      <div class="divider"></div>
+      <div class="cm-case">
+        <div class="crow"><span>CASE 01</span><span>iOS · Fintech · 2024</span></div>
+        <span class="ph"></span>
+        <h3>Aurora Banking</h3>
+        <p class="lead">Calm, accessible mobile banking. Rebuilt the IA, rebuilt trust.</p>
+        <strong style="font-size:12px;">Read full case&nbsp;→</strong>
+      </div>
+      <div class="divider"></div>
+      <div class="cm-case">
+        <div class="crow"><span>CASE 02</span><span>Web · iOS · 2024</span></div>
+        <span class="ph"></span>
+        <h3>Kasumi Maps</h3>
+        <p class="lead">A wayfinding tool for indoor architecture and large campuses.</p>
+        <strong style="font-size:12px;">Read full case&nbsp;→</strong>
+      </div>
+      <div class="divider"></div>
+      <div class="cm-case">
+        <div class="crow"><span>CASE 03</span><span>Web · Editorial · 2023</span></div>
+        <span class="ph"></span>
+        <h3>Field Notes</h3>
+        <p class="lead">A small CMS for editorial teams. Less software, more pages.</p>
+        <strong style="font-size:12px;">Read full case&nbsp;→</strong>
+      </div>
+      <div class="divider dark"></div>
+      <div class="cm-cta">
+        <div class="eyebrow" style="font-size:10px;">NEXT</div>
+        <h2 class="big">Have a project<br>in mind?</h2>
+        <span class="btn">Email me&nbsp;→</span>
+        <span class="btn ghost">Book a call&nbsp;→</span>
+      </div>
+      <div class="divider dark"></div>
+      <div class="cm-foot">Tokyo · JST (+09:00)<br>© 2025 Yuto Aoyama</div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

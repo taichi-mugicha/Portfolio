@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>Work Detail — Mock</title>
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --muted:#6b6b6b;
+    --line:#e5e5e5;
+    --bg:#ffffff;
+    --ph:#ececec;
+    --sheet-radius:22px;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:#dcdcdc;color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Inter","Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+    overflow:hidden;height:100%;width:100%;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== TOP page ===== */
+  .top{position:fixed;inset:0;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .top__inner{max-width:430px;margin:0 auto;padding:14px 20px 80px}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:52px}
+  .logo{font-weight:700;font-size:15px;letter-spacing:.2px}
+  .logo::before{content:"■";margin-right:6px}
+  .menu{width:28px;height:18px;display:flex;flex-direction:column;justify-content:space-between}
+  .menu::before,.menu::after{content:"";display:block;height:1.6px;background:#0a0a0a}
+  .menu::before{box-shadow:0 8px 0 0 #0a0a0a}
+  .eyebrow{font-size:11px;letter-spacing:1.6px;color:var(--muted);margin:28px 0 14px;font-weight:500}
+  .hero-h{font-weight:700;font-size:36px;line-height:1.02;letter-spacing:-.02em;margin:0 0 26px}
+  .hero-h em{font-style:normal;color:var(--muted)}
+  .selected-row{display:flex;justify-content:space-between;align-items:baseline;margin:30px 0 12px;font-size:11px;letter-spacing:1.4px;color:var(--muted);font-weight:500}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:28px}
+  .card{cursor:pointer;user-select:none}
+  .card__thumb{
+    width:100%;aspect-ratio:4/3;background:var(--ph);border-radius:6px;position:relative;overflow:hidden;
+    transition:transform .25s var(--ease);
+  }
+  .card:active .card__thumb{transform:scale(.985)}
+  .card__thumb svg{position:absolute;inset:0;width:100%;height:100%}
+  .card__meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;gap:8px}
+  .card__title{font-weight:600;font-size:16px}
+  .card__tag{font-size:12px;color:var(--muted)}
+  .card__num{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* ===== Backdrop ===== */
+  .backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,.36);
+    opacity:0;pointer-events:none;transition:opacity .32s var(--ease);z-index:50;
+    backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+  }
+  body.sheet-open .backdrop{opacity:1;pointer-events:auto}
+
+  /* ===== Sheet ===== */
+  .sheet{
+    position:fixed;left:0;right:0;bottom:0;
+    height:96vh;
+    background:var(--bg);
+    border-top-left-radius:var(--sheet-radius);
+    border-top-right-radius:var(--sheet-radius);
+    box-shadow:0 -18px 60px rgba(0,0,0,.25);
+    z-index:60;
+    transform:translateY(100%);
+    transition:transform .42s var(--ease);
+    overflow:hidden;
+    display:flex;flex-direction:column;
+    will-change:transform;
+    max-width:560px;margin:0 auto;
+  }
+  body.sheet-open .sheet{transform:translateY(0)}
+  body.sheet-dragging .sheet{transition:none}
+  body.sheet-dragging .backdrop{transition:none}
+
+  .sheet__head{
+    flex:0 0 auto;
+    padding:10px 18px 6px;
+    display:grid;grid-template-columns:32px 1fr 32px;align-items:center;gap:8px;
+    border-bottom:1px solid var(--line);
+    background:var(--bg);
+    position:relative;z-index:2;
+    touch-action:none;
+  }
+  .handle{
+    width:38px;height:4px;border-radius:99px;background:#d6d6d6;margin:0 auto 8px;grid-column:1/-1;
+  }
+  .sheet__title{font-weight:600;font-size:13px;text-align:center;letter-spacing:.2px}
+  .sheet__title small{display:block;font-weight:500;font-size:10px;letter-spacing:1.2px;color:var(--muted);margin-bottom:2px}
+  .icon-btn{
+    width:32px;height:32px;border:none;background:transparent;color:var(--ink);
+    display:inline-flex;align-items:center;justify-content:center;border-radius:50%;
+    cursor:pointer;font-size:18px;line-height:1;
+  }
+  .icon-btn:active{background:#f1f1f1}
+
+  /* progress dots */
+  .dots{display:flex;gap:5px;justify-content:center;padding:8px 0 4px}
+  .dot{width:5px;height:5px;border-radius:50%;background:#d3d3d3;transition:background .2s,width .2s}
+  .dot.is-active{background:#0a0a0a;width:18px;border-radius:99px}
+
+  /* Pager (swipe area) */
+  .pager{
+    flex:1 1 auto;position:relative;overflow:hidden;
+    touch-action:pan-y;
+  }
+  .pager__track{
+    position:absolute;inset:0;display:flex;
+    will-change:transform;
+  }
+  .pager__track.is-animating{transition:transform .38s var(--ease)}
+  .slide{
+    flex:0 0 100%;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    padding:0 22px 80px;
+  }
+  .slide::-webkit-scrollbar{display:none}
+
+  /* slide content */
+  .s-eyebrow{font-size:10.5px;letter-spacing:1.5px;color:var(--muted);font-weight:500;margin:18px 0 10px}
+  .s-title{font-size:38px;line-height:1;letter-spacing:-.025em;font-weight:700;margin:0 0 18px}
+  .s-lede{font-size:15px;line-height:1.55;color:#222;margin:0 0 22px}
+  .s-hero{width:100%;aspect-ratio:4/3;background:var(--ph);border-radius:8px;margin-bottom:24px;overflow:hidden}
+  .s-hero svg{width:100%;height:100%;display:block}
+
+  .meta-grid{
+    display:grid;grid-template-columns:88px 1fr;gap:10px 12px;
+    padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    margin-bottom:24px;
+  }
+  .meta-grid dt{font-size:10px;letter-spacing:1.4px;color:var(--muted);font-weight:500;align-self:center}
+  .meta-grid dd{margin:0;font-size:13.5px}
+
+  .section-label{font-size:10.5px;letter-spacing:1.5px;color:var(--muted);font-weight:500;margin:6px 0 10px}
+  .section-h{font-size:21px;font-weight:600;letter-spacing:-.01em;line-height:1.25;margin:0 0 14px}
+  .section-p{font-size:14.5px;line-height:1.7;color:#1c1c1c;margin:0 0 22px}
+
+  .gallery{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:24px}
+  .gallery div{aspect-ratio:4/3;background:var(--ph);border-radius:8px;overflow:hidden}
+  .gallery div svg{width:100%;height:100%}
+
+  .metrics{display:grid;grid-template-columns:1fr;gap:2px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px 0;margin-bottom:28px}
+  .metrics .row{display:flex;align-items:baseline;justify-content:space-between;padding:14px 2px;border-bottom:1px solid var(--line)}
+  .metrics .row:last-child{border-bottom:none}
+  .metrics .n{font-size:30px;font-weight:700;letter-spacing:-.02em}
+  .metrics .l{font-size:12.5px;color:var(--muted)}
+
+  .next{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-top:1px solid var(--line);margin-top:6px}
+  .next small{display:block;font-size:10.5px;letter-spacing:1.5px;color:var(--muted);font-weight:500;margin-bottom:4px}
+  .next b{font-weight:600;font-size:18px}
+  .next .arrow{font-size:22px;color:var(--muted)}
+
+  .swipe-hint{
+    position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
+    font-size:10.5px;color:var(--muted);letter-spacing:.6px;background:rgba(255,255,255,.85);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    padding:7px 12px;border-radius:99px;border:1px solid var(--line);
+    pointer-events:none;opacity:0;transition:opacity .35s var(--ease);
+    z-index:3;
+  }
+  body.sheet-open .swipe-hint{opacity:1;animation:fadeOut .4s var(--ease) 2.6s forwards}
+  @keyframes fadeOut{to{opacity:0}}
+
+  /* fake artwork SVGs */
+  .art-bg{background:#ececec}
+</style>
+</head>
+<body>
+
+<!-- ============ TOP ============ -->
+<div class="top" id="top">
+  <div class="top__inner">
+    <div class="nav">
+      <div class="logo">NAME</div>
+      <div class="menu" aria-label="menu"></div>
+    </div>
+
+    <p class="eyebrow">UI / UX&nbsp;&nbsp;DESIGNER&nbsp;&nbsp;—&nbsp;&nbsp;TOKYO</p>
+    <h1 class="hero-h">Designing calm,<br/>useful digital<br/>products.</h1>
+
+    <div class="selected-row">
+      <span>Selected Work — 2024 / 2025</span>
+      <span>01 — 06</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<!-- ============ Backdrop ============ -->
+<div class="backdrop" id="backdrop"></div>
+
+<!-- ============ Sheet ============ -->
+<div class="sheet" id="sheet" aria-hidden="true" role="dialog">
+  <div class="sheet__head" id="sheetHead">
+    <div class="handle"></div>
+    <button class="icon-btn" id="prevBtn" aria-label="prev">‹</button>
+    <div class="sheet__title">
+      <small id="caseLabel">CASE 01 / 06</small>
+      <span id="caseTitle">—</span>
+    </div>
+    <button class="icon-btn" id="closeBtn" aria-label="close">✕</button>
+  </div>
+  <div class="dots" id="dots"></div>
+
+  <div class="pager" id="pager">
+    <div class="pager__track" id="track"></div>
+    <div class="swipe-hint">← swipe →</div>
+  </div>
+</div>
+
+<script>
+/* ============== DATA ============== */
+const WORKS = [
+  {
+    title:"Aurora Banking",
+    tag:"Fintech · iOS",
+    eyebrow:"CASE 01  —  FINTECH · IOS",
+    lede:"A calm, end-to-end redesign of a regional banking app — focused on clarity, trust, and the small daily moments that matter.",
+    meta:{Client:"Aurora Financial",Role:"Lead Product Designer",Year:"2024 — 2025",Deliverables:"iOS App · Design System"},
+    overview:"Aurora's legacy app had grown over a decade of feature additions. We were asked to bring it back to a calm baseline — one that respected the user's attention and made the everyday actions effortless.",
+    process:"From a full audit of 240+ legacy screens, we re-architected around three patterns: a single daily-overview, a unified transactions surface, and a frequency-ordered nav.",
+    metrics:[["+38%","Daily active sessions"],["−42%","Time-to-balance"],["4.8","App Store rating"]],
+    hue:215, accent:"#0a0a0a",
+  },
+  {
+    title:"Kasumi Maps",
+    tag:"Wayfinding · Web",
+    eyebrow:"CASE 02  —  WAYFINDING · WEB",
+    lede:"An indoor wayfinding tool that turns large hospital and campus floor-plans into a calm, learnable map.",
+    meta:{Client:"Kasumi Group",Role:"Product Designer",Year:"2024",Deliverables:"Web App · Pattern Library"},
+    overview:"Floor plans had been treated as PDFs for decades. We rebuilt the system around a layered, zoomable canvas with a typography-first label hierarchy.",
+    process:"Co-designed with facility staff. Layered tile rendering, semantic label clustering, and an audio-described 'guided tour' for low-vision users.",
+    metrics:[["−61%","Wrong-floor incidents"],["12s","Median wayfinding time"],["WCAG","AA contrast verified"]],
+    hue:160, accent:"#0a0a0a",
+  },
+  {
+    title:"Studio Press",
+    tag:"Editorial · CMS",
+    eyebrow:"CASE 03  —  EDITORIAL · CMS",
+    lede:"A CMS for small editorial teams — built around long-form writing, not block editors.",
+    meta:{Client:"Studio Press",Role:"Lead Designer",Year:"2023 — 2024",Deliverables:"Web App · Plugin SDK"},
+    overview:"Editors had spent years fighting their tools. We rebuilt the writing surface as a single calm canvas and pushed the chrome to the margins.",
+    process:"Type system tuned to the 65–75 character measure across breakpoints; reading-rhythm vertical grid; markdown-fluent shortcuts.",
+    metrics:[["+2.1×","Articles published / wk"],["−54%","Onboarding time"],["0","Block-editor regressions"]],
+    hue:30, accent:"#0a0a0a",
+  },
+  {
+    title:"Field Notes",
+    tag:"Brand · Identity",
+    eyebrow:"CASE 04  —  BRAND · IDENTITY",
+    lede:"An identity system for a small research practice — built to age slowly and travel widely.",
+    meta:{Client:"Field Notes Lab",Role:"Brand & Design",Year:"2023",Deliverables:"Identity · Print · Web"},
+    overview:"A wordmark, a custom monospace, and a quiet color system that survives photocopy, low-end print and dark mode.",
+    process:"Five-week sprint. One weekend with the team in their office shadowing real correspondence — every artifact had to fit the real desk.",
+    metrics:[["1 wordmark","Across 27 artefacts"],["6","Tone-of-voice patterns"],["12yr","Projected system life"]],
+    hue:340, accent:"#0a0a0a",
+  },
+  {
+    title:"Mono Player",
+    tag:"Music · App",
+    eyebrow:"CASE 05  —  MUSIC · APP",
+    lede:"A minimal music player for people who still build albums by hand.",
+    meta:{Client:"Personal",Role:"Designer / Engineer",Year:"2024",Deliverables:"iOS App"},
+    overview:"No social feed, no recommendations. Just a library, a now-playing surface, and a single sleep timer that actually fades correctly.",
+    process:"Built around 'one screen per intent'. Custom haptics for scrub start/end. Volume curves measured against a reference headphone set.",
+    metrics:[["1.3MB","Total app size"],["0","Trackers"],["120fps","On every supported device"]],
+    hue:0, accent:"#0a0a0a",
+  },
+  {
+    title:"Verdant",
+    tag:"Climate · Dashboard",
+    eyebrow:"CASE 06  —  CLIMATE · DASHBOARD",
+    lede:"A reporting dashboard for small businesses entering their first carbon disclosure cycle.",
+    meta:{Client:"Verdant",Role:"Product Designer",Year:"2025",Deliverables:"Web App · Reporting Kit"},
+    overview:"Replaces a 40-page spreadsheet with a step-by-step disclosure flow. Saves drafts, explains every figure, generates the regulator-ready PDF.",
+    process:"Co-designed with three pilot SMBs. Every chart has a 'plain words' overlay; every input has a 'where this came from' note.",
+    metrics:[["−72%","First-report effort"],["3","SMBs filed Year-1"],["100%","Audit pass rate"]],
+    hue:120, accent:"#0a0a0a",
+  },
+];
+
+/* ============== TOP THUMBS ============== */
+const grid=document.getElementById('grid');
+function thumbSvg(hue,seed){
+  // simple deterministic stripes/dots pattern
+  const c1=`hsl(${hue} 8% 88%)`;
+  const c2=`hsl(${hue} 12% 78%)`;
+  const c3=`hsl(${hue} 22% 62%)`;
+  return `
+  <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <rect width="400" height="300" fill="${c1}"/>
+    <rect x="0" y="${60+seed*8}" width="400" height="${100-seed*6}" fill="${c2}"/>
+    <circle cx="${80+seed*40}" cy="${180-seed*10}" r="${44+seed*4}" fill="${c3}" opacity=".82"/>
+    <rect x="${220-seed*10}" y="${40+seed*6}" width="${120+seed*6}" height="${120+seed*4}" fill="${c3}" opacity=".55"/>
+  </svg>`;
+}
+WORKS.forEach((w,i)=>{
+  const el=document.createElement('div');
+  el.className='card';
+  el.dataset.i=i;
+  el.innerHTML = `
+    <div class="card__thumb">${thumbSvg(w.hue,i)}</div>
+    <div class="card__meta">
+      <div>
+        <div class="card__title">${w.title}</div>
+        <div class="card__tag">${w.tag}</div>
+      </div>
+      <div class="card__num">0${i+1} — 06</div>
+    </div>`;
+  el.addEventListener('click',()=>openSheet(i));
+  grid.appendChild(el);
+});
+
+/* ============== SHEET ============== */
+const sheet=document.getElementById('sheet');
+const backdrop=document.getElementById('backdrop');
+const closeBtn=document.getElementById('closeBtn');
+const prevBtn=document.getElementById('prevBtn');
+const sheetHead=document.getElementById('sheetHead');
+const pager=document.getElementById('pager');
+const track=document.getElementById('track');
+const caseLabel=document.getElementById('caseLabel');
+const caseTitle=document.getElementById('caseTitle');
+const dotsEl=document.getElementById('dots');
+
+let currentIndex=0;
+let pagerWidth=0;
+function measure(){pagerWidth=pager.clientWidth}
+window.addEventListener('resize',measure);
+
+function slideHtml(w,i){
+  const galHtml=[1,2].map(()=>`<div>${thumbSvg(w.hue,i)}</div>`).join('');
+  const metaHtml=Object.entries(w.meta).map(([k,v])=>`<dt>${k.toUpperCase()}</dt><dd>${v}</dd>`).join('');
+  const metricsHtml=w.metrics.map(m=>`<div class="row"><span class="n">${m[0]}</span><span class="l">${m[1]}</span></div>`).join('');
+  const next=WORKS[(i+1)%WORKS.length];
+  return `
+    <p class="s-eyebrow">${w.eyebrow}</p>
+    <h2 class="s-title">${w.title}</h2>
+    <p class="s-lede">${w.lede}</p>
+    <div class="s-hero">${thumbSvg(w.hue,i)}</div>
+    <dl class="meta-grid">${metaHtml}</dl>
+
+    <p class="section-label">OVERVIEW</p>
+    <h3 class="section-h">A redesign around the small daily moments.</h3>
+    <p class="section-p">${w.overview}</p>
+
+    <p class="section-label">PROCESS</p>
+    <h3 class="section-h">From audit to system</h3>
+    <div class="gallery">${galHtml}</div>
+    <p class="section-p">${w.process}</p>
+
+    <p class="section-label">OUTCOME</p>
+    <div class="metrics">${metricsHtml}</div>
+
+    <div class="next">
+      <div>
+        <small>NEXT  →</small>
+        <b>${next.title}</b>
+      </div>
+      <div class="arrow">→</div>
+    </div>
+  `;
+}
+
+function buildSlides(){
+  track.innerHTML = WORKS.map((w,i)=>`<section class="slide" data-i="${i}">${slideHtml(w,i)}</section>`).join('');
+}
+buildSlides();
+
+function buildDots(){
+  dotsEl.innerHTML = WORKS.map((_,i)=>`<span class="dot${i===currentIndex?' is-active':''}"></span>`).join('');
+}
+
+function setIndex(i,{animate=true}={}){
+  currentIndex=Math.max(0,Math.min(WORKS.length-1,i));
+  measure();
+  track.classList.toggle('is-animating',animate);
+  track.style.transform=`translate3d(${-currentIndex*pagerWidth}px,0,0)`;
+  caseLabel.textContent=`CASE 0${currentIndex+1} / 0${WORKS.length}`;
+  caseTitle.textContent=WORKS[currentIndex].title;
+  buildDots();
+  // reset scroll on the focused slide
+  const slide=track.children[currentIndex];
+  if(slide) slide.scrollTop=0;
+}
+
+function openSheet(i){
+  measure();
+  setIndex(i,{animate:false});
+  document.body.classList.add('sheet-open');
+  sheet.setAttribute('aria-hidden','false');
+}
+function closeSheet(){
+  document.body.classList.remove('sheet-open');
+  sheet.setAttribute('aria-hidden','true');
+}
+
+closeBtn.addEventListener('click',closeSheet);
+prevBtn.addEventListener('click',()=>setIndex((currentIndex-1+WORKS.length)%WORKS.length));
+backdrop.addEventListener('click',closeSheet);
+
+/* ============== Horizontal swipe (pager) ============== */
+let hx=0,hy=0,hdx=0,hdy=0,hStartT=0,hDir=null,hDragging=false;
+pager.addEventListener('touchstart',e=>{
+  if(e.touches.length!==1)return;
+  hx=e.touches[0].clientX;hy=e.touches[0].clientY;hdx=0;hdy=0;hDir=null;hDragging=true;
+  hStartT=performance.now();
+  track.classList.remove('is-animating');
+},{passive:true});
+pager.addEventListener('touchmove',e=>{
+  if(!hDragging)return;
+  hdx=e.touches[0].clientX-hx;
+  hdy=e.touches[0].clientY-hy;
+  if(!hDir){
+    if(Math.abs(hdx)>6||Math.abs(hdy)>6){
+      hDir=Math.abs(hdx)>Math.abs(hdy)?'x':'y';
+    }
+  }
+  if(hDir==='x'){
+    e.preventDefault();
+    let x=-currentIndex*pagerWidth+hdx;
+    // resistance at edges
+    if((currentIndex===0&&hdx>0)||(currentIndex===WORKS.length-1&&hdx<0)){
+      x=-currentIndex*pagerWidth+hdx*0.35;
+    }
+    track.style.transform=`translate3d(${x}px,0,0)`;
+  }
+},{passive:false});
+pager.addEventListener('touchend',()=>{
+  if(!hDragging)return;hDragging=false;
+  if(hDir!=='x'){return;}
+  const dt=performance.now()-hStartT;
+  const v=hdx/dt; // px/ms
+  const threshold=pagerWidth*0.18;
+  let next=currentIndex;
+  if(hdx<-threshold || v<-0.4) next=currentIndex+1;
+  else if(hdx>threshold || v>0.4) next=currentIndex-1;
+  setIndex(next);
+});
+
+/* ============== Vertical drag (close sheet) — only on header/handle ============== */
+let vy=0,vdy=0,vDragging=false,vStartT=0;
+function onDragStart(y){
+  vy=y;vdy=0;vDragging=true;vStartT=performance.now();
+  document.body.classList.add('sheet-dragging');
+}
+function onDragMove(y){
+  if(!vDragging)return;
+  vdy=Math.max(0,y-vy);
+  sheet.style.transform=`translateY(${vdy}px)`;
+  backdrop.style.opacity=Math.max(0,1-vdy/400);
+}
+function onDragEnd(){
+  if(!vDragging)return;vDragging=false;
+  document.body.classList.remove('sheet-dragging');
+  sheet.style.transform='';
+  backdrop.style.opacity='';
+  const dt=performance.now()-vStartT;
+  const v=vdy/dt;
+  if(vdy>140 || v>0.6) closeSheet();
+}
+sheetHead.addEventListener('touchstart',e=>{onDragStart(e.touches[0].clientY)},{passive:true});
+sheetHead.addEventListener('touchmove',e=>{onDragMove(e.touches[0].clientY);e.preventDefault()},{passive:false});
+sheetHead.addEventListener('touchend',onDragEnd);
+sheetHead.addEventListener('mousedown',e=>{onDragStart(e.clientY);
+  const mm=ev=>onDragMove(ev.clientY);
+  const mu=()=>{onDragEnd();window.removeEventListener('mousemove',mm);window.removeEventListener('mouseup',mu)};
+  window.addEventListener('mousemove',mm);window.addEventListener('mouseup',mu);
+});
+
+/* desktop keyboard helpers */
+window.addEventListener('keydown',e=>{
+  if(!document.body.classList.contains('sheet-open'))return;
+  if(e.key==='ArrowRight') setIndex(currentIndex+1<WORKS.length?currentIndex+1:currentIndex);
+  if(e.key==='ArrowLeft')  setIndex(currentIndex-1>=0?currentIndex-1:currentIndex);
+  if(e.key==='Escape') closeSheet();
+});
+
+/* desktop: also allow mouse-drag swipe on pager */
+let mDown=false,mx=0,mdx=0,mStartT=0;
+pager.addEventListener('mousedown',e=>{
+  mDown=true;mx=e.clientX;mdx=0;mStartT=performance.now();
+  track.classList.remove('is-animating');
+  e.preventDefault();
+});
+window.addEventListener('mousemove',e=>{
+  if(!mDown)return;
+  mdx=e.clientX-mx;
+  let x=-currentIndex*pagerWidth+mdx;
+  if((currentIndex===0&&mdx>0)||(currentIndex===WORKS.length-1&&mdx<0)) x=-currentIndex*pagerWidth+mdx*0.35;
+  track.style.transform=`translate3d(${x}px,0,0)`;
+});
+window.addEventListener('mouseup',()=>{
+  if(!mDown)return;mDown=false;
+  const dt=performance.now()-mStartT;
+  const v=mdx/dt;
+  const threshold=pagerWidth*0.18;
+  let next=currentIndex;
+  if(mdx<-threshold || v<-0.4) next=currentIndex+1;
+  else if(mdx>threshold || v>0.4) next=currentIndex-1;
+  setIndex(next);
+});
+
+measure();
+</script>
+</body>
+</html>

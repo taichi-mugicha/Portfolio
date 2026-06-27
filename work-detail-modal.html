@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<title>Work Detail — Bottom Sheet Mock (A / B / C)</title>
+<style>
+  /* ===================================================================
+     THEME TOKENS — switched by body[data-pattern="a|b|c"]
+     Values read from Figma (Claude-Labo, mobile work-detail frames).
+     =================================================================== */
+  :root{
+    --sheet-radius:22px;
+    --ease:cubic-bezier(.22,1,.36,1);
+    --slide-pad:22px;
+  }
+  body[data-pattern="a"]{
+    --bg:#ffffff; --ink:#0a0a0a; --muted:#737373;
+    --line:#e0e0e0; --line-soft:#f2f2f2; --ph:#ededed; --card:#f5f5f5;
+    --card-radius:4px; --img-radius:0px; --backdrop:rgba(0,0,0,.36);
+  }
+  body[data-pattern="b"]{
+    --bg:#faf8f2; --ink:#121212; --muted:#666157;
+    --line:#d1ccc2; --line-soft:#e4dfd4; --ph:#ebe7dd; --card:#f3efe6;
+    --card-radius:0px; --img-radius:0px; --backdrop:rgba(40,34,22,.40);
+  }
+  body[data-pattern="c"]{
+    --bg:#ffffff; --ink:#141414; --muted:#6b6b6b;
+    --line:#e6e6e6; --line-soft:#efefef; --ph:#ebebeb; --card:#fafafa;
+    --card-radius:4px; --img-radius:0px; --backdrop:rgba(0,0,0,.34);
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:#cfcfcf;color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Inter","Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+    overflow:hidden;height:100%;width:100%;-webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== TOP page ===== */
+  .top{position:fixed;inset:0;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;transition:background .3s var(--ease)}
+  .top__inner{max-width:430px;margin:0 auto;padding:14px 20px 120px}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:52px}
+  .logo{font-weight:700;font-size:15px;letter-spacing:.2px;color:var(--ink)}
+  .logo::before{content:"◼";margin-right:6px}
+  .nav .right{font-size:13px;color:var(--ink)}
+  .eyebrow{font-size:11px;letter-spacing:1.6px;color:var(--muted);margin:28px 0 14px;font-weight:500}
+  .hero-h{font-weight:700;font-size:38px;line-height:1.02;letter-spacing:-.02em;margin:0 0 26px;color:var(--ink)}
+  body[data-pattern="b"] .hero-h{font-size:46px;letter-spacing:-.03em}
+  .selected-row{display:flex;justify-content:space-between;align-items:baseline;margin:34px 0 14px;font-size:11px;letter-spacing:1.4px;color:var(--muted);font-weight:500}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:28px}
+  .card{cursor:pointer;user-select:none}
+  .card__thumb{
+    width:100%;aspect-ratio:4/3;background:var(--ph);border-radius:var(--card-radius);position:relative;overflow:hidden;
+    transition:transform .25s var(--ease);
+  }
+  .card:active .card__thumb{transform:scale(.985)}
+  .card__thumb svg{position:absolute;inset:0;width:100%;height:100%}
+  .card__meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;gap:8px}
+  .card__title{font-weight:600;font-size:16px;color:var(--ink)}
+  .card__tag{font-size:12px;color:var(--muted)}
+  .card__num{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* ===== Pattern switcher (floating) ===== */
+  .switcher{
+    position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+    z-index:200;display:flex;gap:2px;padding:4px;
+    background:rgba(20,20,20,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-radius:999px;box-shadow:0 8px 30px rgba(0,0,0,.28);
+  }
+  .switcher button{
+    border:none;background:transparent;color:#cfcfcf;font:inherit;font-size:12px;font-weight:600;
+    padding:8px 14px;border-radius:999px;cursor:pointer;letter-spacing:.2px;transition:.2s var(--ease);
+  }
+  .switcher button.is-on{background:#fff;color:#111}
+
+  /* ===== Backdrop ===== */
+  .backdrop{
+    position:fixed;inset:0;background:var(--backdrop);
+    opacity:0;pointer-events:none;transition:opacity .32s var(--ease);z-index:50;
+    backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+  }
+  body.sheet-open .backdrop{opacity:1;pointer-events:auto}
+
+  /* ===== Sheet ===== */
+  .sheet{
+    position:fixed;left:0;right:0;bottom:0;height:96vh;background:var(--bg);
+    border-top-left-radius:var(--sheet-radius);border-top-right-radius:var(--sheet-radius);
+    box-shadow:0 -18px 60px rgba(0,0,0,.25);z-index:60;
+    transform:translateY(100%);transition:transform .42s var(--ease);
+    overflow:hidden;display:flex;flex-direction:column;will-change:transform;
+    max-width:560px;margin:0 auto;
+  }
+  body.sheet-open .sheet{transform:translateY(0)}
+  body.sheet-dragging .sheet{transition:none}
+  body.sheet-dragging .backdrop{transition:none}
+
+  .sheet__head{
+    flex:0 0 auto;padding:10px 18px 6px;
+    display:grid;grid-template-columns:32px 1fr 32px;align-items:center;gap:8px;
+    border-bottom:1px solid var(--line);background:var(--bg);position:relative;z-index:2;touch-action:none;
+  }
+  .handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 8px;grid-column:1/-1}
+  .sheet__title{font-weight:600;font-size:13px;text-align:center;letter-spacing:.2px;color:var(--ink)}
+  .sheet__title small{display:block;font-weight:500;font-size:10px;letter-spacing:1.2px;color:var(--muted);margin-bottom:2px}
+  .icon-btn{width:32px;height:32px;border:none;background:transparent;color:var(--ink);
+    display:inline-flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;font-size:18px;line-height:1}
+  .icon-btn:active{background:var(--line-soft)}
+
+  .dots{display:flex;gap:5px;justify-content:center;padding:8px 0 4px;background:var(--bg)}
+  .dot{width:5px;height:5px;border-radius:50%;background:var(--line);transition:background .2s,width .2s}
+  .dot.is-active{background:var(--ink);width:18px;border-radius:99px}
+
+  .pager{flex:1 1 auto;position:relative;overflow:hidden;touch-action:pan-y;background:var(--bg)}
+  .pager__track{position:absolute;inset:0;display:flex;will-change:transform}
+  .pager__track.is-animating{transition:transform .38s var(--ease)}
+  .slide{flex:0 0 100%;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 var(--slide-pad) 90px}
+  .slide::-webkit-scrollbar{display:none}
+
+  .swipe-hint{
+    position:absolute;left:50%;bottom:70px;transform:translateX(-50%);
+    font-size:10.5px;color:var(--muted);letter-spacing:.6px;background:color-mix(in srgb,var(--bg) 85%,transparent);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    padding:7px 12px;border-radius:99px;border:1px solid var(--line);
+    pointer-events:none;opacity:0;transition:opacity .35s var(--ease);z-index:3;
+  }
+  body.sheet-open .swipe-hint{opacity:1;animation:fadeOut .4s var(--ease) 2.8s forwards}
+  @keyframes fadeOut{to{opacity:0}}
+
+  /* ===================================================================
+     SHARED slide atoms
+     =================================================================== */
+  .s-hero{width:100%;aspect-ratio:4/5;background:var(--ph);border-radius:var(--img-radius);overflow:hidden;margin:0 0 22px}
+  .s-hero svg{width:100%;height:100%;display:block}
+  .s-fig-img{width:100%;aspect-ratio:4/3;background:var(--ph);border-radius:var(--img-radius);overflow:hidden}
+  .s-fig-img svg{width:100%;height:100%;display:block}
+  .s-fig-cap{font-size:10px;letter-spacing:.8px;color:var(--muted);font-weight:500;margin:10px 0 26px}
+  .s-foot{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:22px;margin-top:30px;font-size:11px;color:var(--muted)}
+
+  /* ============ PATTERN A — Grid Minimal ============ */
+  .pa .s-eyebrow{font-size:11px;letter-spacing:1.2px;color:var(--muted);font-weight:500;margin:18px 0 12px}
+  .pa .s-title{font-size:44px;line-height:1;letter-spacing:-.88px;font-weight:700;margin:0 0 18px;color:var(--ink)}
+  .pa .s-lede{font-size:15px;line-height:1.5;color:#404040;margin:0 0 24px}
+  body[data-pattern="b"] .pa .s-lede{color:var(--muted)}
+  .pa-meta{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 0 26px}
+  .pa-meta .row{display:grid;grid-template-columns:120px 1fr;align-items:center;padding:15px 0;border-bottom:1px solid var(--line-soft)}
+  .pa-meta .row:last-child{border-bottom:none}
+  .pa-meta .k{font-size:10px;letter-spacing:1.5px;color:var(--muted);font-weight:500}
+  .pa-meta .v{font-size:14px;color:var(--ink)}
+  .pa .s-label{font-size:10px;letter-spacing:1.5px;color:var(--muted);font-weight:500;margin:34px 0 12px}
+  .pa .s-h{font-size:22px;font-weight:600;line-height:1.3;letter-spacing:-.01em;margin:0 0 16px;color:var(--ink)}
+  .pa .s-h.sm{font-size:20px}
+  .pa .s-p{font-size:14px;line-height:1.65;color:var(--ink);margin:0 0 18px}
+  .pa-gallery{display:grid;gap:14px;margin:0 0 8px}
+  .pa-gallery figure{margin:0}
+  .pa-gallery figcaption{font-size:11px;color:var(--muted);margin-top:10px}
+  .pa-metrics{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:6px 0 28px}
+  .pa-metric{display:flex;align-items:baseline;gap:16px;padding:16px 0;border-bottom:1px solid var(--line-soft)}
+  .pa-metric:last-child{border-bottom:none}
+  .pa-metric .n{font-size:40px;font-weight:700;letter-spacing:-.8px;min-width:140px;color:var(--ink)}
+  .pa-metric .l{font-size:13px;color:var(--muted)}
+  .pa-next{display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid var(--line);padding:22px 0 4px;margin-top:8px}
+  .pa-next small{display:block;font-size:10px;letter-spacing:1.5px;color:var(--muted);font-weight:500;margin-bottom:8px}
+  .pa-next b{font-weight:700;font-size:28px;color:var(--ink)}
+  .pa-next .tag{font-size:12px;color:var(--muted);margin-top:4px}
+  .pa-next .arrow{font-size:22px;color:var(--muted)}
+
+  /* ============ PATTERN B — Editorial ============ */
+  .pb .s-masthead{margin:18px 0 0}
+  .pb .s-masthead div{font-size:10px;letter-spacing:.8px;color:var(--muted);font-weight:500;line-height:1.7}
+  .pb .s-title{font-size:60px;line-height:.95;letter-spacing:-1.8px;font-weight:700;margin:18px 0 22px;color:var(--ink)}
+  .pb .s-lede{font-size:17px;line-height:1.45;color:var(--ink);margin:0 0 26px}
+  .pb .s-rule{height:1px;background:var(--line);margin:8px 0 22px}
+  .pb .s-rule.ink{background:var(--ink)}
+  .pb .s-sec-label{font-size:10px;letter-spacing:1.4px;color:var(--muted);font-weight:500;margin:26px 0 12px}
+  .pb .s-h{font-size:32px;font-weight:700;line-height:1.05;letter-spacing:-.64px;margin:0 0 18px;color:var(--ink)}
+  .pb .s-h.mid{font-size:28px;letter-spacing:-.56px;line-height:1.1}
+  .pb .s-p{font-size:14px;line-height:1.7;color:var(--ink);margin:0 0 22px}
+  .pb-quote{margin:6px 0 22px}
+  .pb-quote .q{font-size:24px;font-weight:700;line-height:1.3;letter-spacing:-.36px;color:var(--ink);margin:0 0 14px}
+  .pb-quote .by{font-size:10px;letter-spacing:1.2px;color:var(--muted);font-weight:500}
+  .pb-metric{display:flex;align-items:baseline;gap:16px;padding:16px 0;border-top:1px solid var(--line)}
+  .pb-metric .n{font-size:36px;font-weight:700;letter-spacing:-.72px;min-width:150px;color:var(--ink)}
+  .pb-metric .l{font-size:13px;color:var(--ink)}
+  .pb-next{margin:26px 0 0}
+  .pb-next .lab{font-size:10px;letter-spacing:1.4px;color:var(--muted);font-weight:500;margin-bottom:14px}
+  .pb-next b{font-size:30px;font-weight:700;color:var(--ink);display:block}
+  .pb-next .tag{font-size:12px;color:var(--muted);margin-top:6px}
+  .pb-cta{font-size:44px;font-weight:700;line-height:1;letter-spacing:-1.32px;color:var(--ink);margin:30px 0 16px}
+  .pb-cta-mail{font-size:15px;color:var(--ink)}
+
+  /* ============ PATTERN C — Technical ============ */
+  .pc .s-eyebrow{font-size:10px;letter-spacing:1.4px;color:var(--muted);font-weight:500;margin:18px 0 12px}
+  .pc .s-title{font-size:40px;line-height:1.05;letter-spacing:-.8px;font-weight:700;margin:0 0 24px;color:var(--ink)}
+  .pc-meta{display:grid;grid-template-columns:1fr 1fr;gap:18px 12px;padding:0 0 22px;border-bottom:1px solid var(--line);margin:0 0 24px}
+  .pc-meta .k{font-size:10px;letter-spacing:1.2px;color:var(--muted);font-weight:500;margin-bottom:7px}
+  .pc-meta .v{font-size:13px;font-weight:500;color:var(--ink)}
+  .pc .s-numlabel{font-size:10px;letter-spacing:1.4px;color:var(--muted);font-weight:500;margin:30px 0 12px}
+  .pc .s-h{font-size:22px;font-weight:600;line-height:1.3;letter-spacing:-.22px;margin:0 0 16px;color:var(--ink)}
+  .pc .s-p{font-size:14px;line-height:1.75;color:var(--ink);margin:0 0 22px}
+  .pc-points{margin:0 0 8px}
+  .pc-point{padding:18px 0;border-bottom:1px solid var(--line)}
+  .pc-point .i{font-size:11px;color:var(--muted)}
+  .pc-point .t{font-size:16px;font-weight:600;margin:6px 0 6px;color:var(--ink)}
+  .pc-point .d{font-size:13px;color:var(--ink);line-height:1.7}
+  .pc-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 22px}
+  .pc-stat{background:var(--card);border-radius:4px;padding:18px 16px;min-height:112px;display:flex;flex-direction:column;justify-content:space-between}
+  .pc-stat .n{font-size:28px;font-weight:700;letter-spacing:-.56px;color:var(--ink)}
+  .pc-stat .l{font-size:11px;color:var(--muted);line-height:1.45}
+  .pc-credits{font-size:12px;line-height:1.7;color:var(--muted);margin:6px 0 0}
+  .pc-nextcard{background:var(--card);border-radius:4px;padding:24px 22px;margin:14px 0 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .pc-nextcard b{font-size:26px;font-weight:700;letter-spacing:-.39px;color:var(--ink);display:block}
+  .pc-nextcard .d{font-size:12px;color:var(--muted);line-height:1.6;margin-top:8px;max-width:260px}
+  .pc-nextcard .arrow{font-size:20px;color:var(--ink)}
+
+  /* ===================================================================
+     TOP PAGE — per pattern (A reuses .nav/.hero-h/.grid/.card above)
+     =================================================================== */
+  /* ---- TOP B : Editorial ---- */
+  .tb-nav{display:flex;justify-content:space-between;align-items:center;height:52px;font-size:12px;color:var(--ink)}
+  .tb-nav strong{font-weight:600;letter-spacing:.4px}
+  .tb-masthead{padding:18px 0 8px}
+  .tb-issue{font-size:10px;letter-spacing:.8px;color:var(--muted);font-weight:500;margin-bottom:16px}
+  .tb-stmt{font-size:46px;line-height:.96;letter-spacing:-.03em;font-weight:700;margin:0 0 18px;color:var(--ink)}
+  .tb-bio{font-size:14px;line-height:1.5;color:var(--ink);margin:0;max-width:320px}
+  .tb-rule{height:1px;background:var(--line);margin:24px 0}
+  .tb-featlabel{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1.2px;color:var(--muted);font-weight:600;margin:0 0 16px}
+  .tb-feat{cursor:pointer;user-select:none}
+  .tb-feat-img{aspect-ratio:4/3;background:var(--ph);overflow:hidden;margin-bottom:16px}
+  .tb-feat-img svg{width:100%;height:100%;display:block}
+  .tb-feat:active .tb-feat-img{opacity:.9}
+  .tb-feat h3{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:0 0 10px;color:var(--ink)}
+  .tb-feat p{font-size:14px;line-height:1.5;color:var(--ink);margin:0 0 14px}
+  .tb-feat .tags{display:flex;gap:6px;margin-bottom:16px}
+  .tb-feat .tag{border:1px solid var(--ink);border-radius:999px;padding:3px 10px;font-size:10px;color:var(--ink)}
+  .tb-btn{display:inline-block;background:var(--ink);color:var(--bg);padding:11px 18px;font-size:12px}
+  .tb-listlabel{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1.2px;color:var(--muted);font-weight:600;margin:0}
+  .tb-list{border-top:1px solid var(--ink);margin-top:14px}
+  .tb-row{display:flex;align-items:center;gap:12px;padding:18px 0;border-bottom:1px solid var(--line);cursor:pointer;user-select:none}
+  .tb-row:active{opacity:.6}
+  .tb-row .num{font-size:16px;font-weight:700;width:26px;color:var(--ink)}
+  .tb-row .body{flex:1}
+  .tb-row .nm{font-size:16px;font-weight:600;color:var(--ink)}
+  .tb-row .sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .tb-row .yr{font-size:11px;color:var(--muted)}
+  .tb-cta{padding:50px 0 0}
+  .tb-cta h2{font-size:42px;line-height:1;letter-spacing:-.03em;font-weight:700;margin:10px 0;color:var(--ink)}
+  .tb-cta strong{font-size:15px;color:var(--ink)}
+  .tb-foot{display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:26px;padding-top:20px;font-size:10px;color:var(--muted)}
+
+  /* ---- TOP C : Sidebar folded ---- */
+  .tc-top{display:flex;justify-content:space-between;align-items:center;height:52px}
+  .tc-top .logo{font-weight:700;font-size:15px;color:var(--ink)}
+  .tc-top .logo::before{content:"◼";margin-right:6px}
+  .tc-top .right{font-size:13px;color:var(--ink)}
+  .tc-bio{background:var(--card);border-radius:var(--card-radius);padding:24px 20px;margin:8px 0 24px}
+  .tc-avatar{width:56px;height:56px;border-radius:999px;background:var(--ph);margin-bottom:14px}
+  .tc-bio h3{font-size:20px;margin:0 0 10px;color:var(--ink)}
+  .tc-bio p{font-size:13px;color:var(--ink);margin:0 0 12px;line-height:1.5}
+  .tc-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink)}
+  .tc-status .dot{width:8px;height:8px;border-radius:999px;background:var(--ink)}
+  .tc-hero h1{font-size:34px;line-height:1.05;letter-spacing:-.03em;font-weight:700;margin:14px 0 0;color:var(--ink)}
+  .tc-meta{display:flex;flex-wrap:wrap;gap:18px 28px;margin:22px 0 6px}
+  .tc-meta .k{font-size:10px;letter-spacing:.6px;color:var(--muted);font-weight:600;margin-bottom:5px}
+  .tc-meta p{font-size:12px;color:var(--ink);margin:0;line-height:1.55}
+  .tc-cases{margin-top:8px}
+  .tc-case{padding:28px 0;border-top:1px solid var(--line);cursor:pointer;user-select:none}
+  .tc-case:active{opacity:.7}
+  .tc-case .crow{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.6px;color:var(--muted);margin-bottom:14px;text-transform:uppercase}
+  .tc-case-img{aspect-ratio:16/10;background:var(--ph);border-radius:var(--card-radius);overflow:hidden;margin-bottom:14px}
+  .tc-case-img svg{width:100%;height:100%;display:block}
+  .tc-case h3{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:0 0 8px;color:var(--ink)}
+  .tc-case p{font-size:13px;color:var(--ink);margin:0 0 10px;line-height:1.6}
+  .tc-case .read{font-size:12px;font-weight:600;color:var(--ink)}
+  .tc-finalcta{padding:40px 0 0;border-top:1px solid var(--line);margin-top:8px}
+  .tc-finalcta h2{font-size:34px;line-height:1.02;letter-spacing:-.03em;font-weight:700;margin:10px 0 18px;color:var(--ink)}
+  .tc-finalcta .btns{display:flex;gap:10px}
+  .tc-btn{background:var(--ink);color:var(--bg);padding:11px 18px;font-size:13px}
+  .tc-btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+  .tc-foot{display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:26px;padding-top:20px;font-size:10px;color:var(--muted)}
+</style>
+</head>
+<body data-pattern="a">
+
+<!-- ============ TOP ============ -->
+<div class="top" id="top">
+  <div class="top__inner" id="topInner"></div>
+</div>
+
+<!-- ============ Switcher ============ -->
+<div class="switcher" id="switcher">
+  <button data-p="a" class="is-on">A · Grid</button>
+  <button data-p="b">B · Editorial</button>
+  <button data-p="c">C · Sidebar</button>
+</div>
+
+<!-- ============ Backdrop ============ -->
+<div class="backdrop" id="backdrop"></div>
+
+<!-- ============ Sheet ============ -->
+<div class="sheet" id="sheet" aria-hidden="true" role="dialog">
+  <div class="sheet__head" id="sheetHead">
+    <div class="handle"></div>
+    <button class="icon-btn" id="prevBtn" aria-label="prev">‹</button>
+    <div class="sheet__title">
+      <small id="caseLabel">CASE 01 / 06</small>
+      <span id="caseTitle">—</span>
+    </div>
+    <button class="icon-btn" id="closeBtn" aria-label="close">✕</button>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="pager" id="pager">
+    <div class="pager__track" id="track"></div>
+    <div class="swipe-hint">← swipe →</div>
+  </div>
+</div>
+
+<script>
+/* ===================== DATA (6 works — 実データ) ===================== */
+const WORKS = [
+  {
+    title:"NEW COCORO HOME", tag:"IoT・アプリ",
+    eyebrow:"CASE 01  —  IoT・アプリ",
+    lede:"IoT家電アプリ「ココロホーム」の主要機能を統合した、新しいトップ画面のUIデザイン。",
+    meta:{Client:"シャープ",Role:"UIデザイン",Year:"2022 — 2023",Deliverables:"iOS・Androidアプリ"},
+    headline:"カオスを、ひとつのトップ画面に。",
+    overview:"ココロホームの主要機能「タイムライン・機器リスト・サービスリスト」を統合した新しいトップ画面を提案。IoT家電をより素早く、積極的に使えるかたちを目指しました。",
+    overview2:"家電のカードUIをリデザインし、ぱっと見で操作したい家電を選べるように。お知らせだけをフィルタした通知バーで、必要な情報が埋もれないようにしました。",
+    process:"「IoT家電の多様な機能とサービスが入り乱れたカオス状態」が課題でした。機能ごとに情報量がバラバラで、必要な情報が埋もれていた状態を、TOP画面への再レイアウトで解きほぐしました。",
+    quote:"必要な情報が、埋もれない。",
+    points:[
+      ["カードUIの情報量を統一","家電ごとにバラバラだった情報量をそろえた"],
+      ["お知らせをTOPに集約","家電系の通知だけをフィルタして提示"],
+      ["未登録状態も設計","つないだ後のワクワク感をイラストで演出"]
+    ],
+    metrics:[["3→1","主要機能をTOP画面に統合"],["統一","カードUIの情報量"],["即","必要なお知らせを最上部に"]],
+    hue:215,
+  },
+  {
+    title:"COCORO AIR リデザイン", tag:"IoT・リデザイン",
+    eyebrow:"CASE 02  —  IoT・リデザイン",
+    lede:"IoT空調家電アプリ「ココロエアー」を、操作の可否が一目で伝わるUIへリデザイン。",
+    meta:{Client:"シャープ",Role:"UIデザイン / リデザイン",Year:"2020 — 2021",Deliverables:"iOS・Androidアプリ"},
+    headline:"操作できる場所が、一目でわかる。",
+    overview:"エアコンや空気清浄機の遠隔操作、付属品の消耗度が確認できる「ココロエアー」を、ユーザビリティとサービス体験の両面からリデザインしました。",
+    overview2:"誤操作が多い情報表示部をボタン化し、機能が伝わるアイコンへ変更。部屋の状態（上部）はカラー、機器操作（下部）はグレーで、情報の種類を視覚的に区別しました。",
+    process:"設定温度やモードの「表示箇所」と「操作箇所」が離れ、どこを操作できるか分かりづらい状態でした。お手入れや電気代確認などの機能も、階層の深くに隠れていました。",
+    quote:"表示と操作は、同じ場所に。",
+    points:[
+      ["表示部をボタン化","機能が伝わるアイコンへ変更"],
+      ["色で情報を分離","部屋の状態と機器操作を明確に区別"],
+      ["ボトムナビを新設","隠れていたお手入れ機能を前面化"]
+    ],
+    metrics:[["11/11","UTで全員が新デザインを支持"],["2層","状態と操作を色で分離"],["前面化","深い階層の機能を表に"]],
+    hue:160,
+  },
+  {
+    title:"家電登録フロー改善", tag:"UX・フロー改善",
+    eyebrow:"CASE 03  —  UX・フロー改善",
+    lede:"ココロホームの機器登録UIを、一目で操作が分かるフローへ改善。",
+    meta:{Client:"シャープ",Role:"UIデザイン",Year:"2022 — 2023",Deliverables:"iOS・Androidアプリ"},
+    headline:"迷わず進める、登録フローへ。",
+    overview:"家電を登録する際の「機器登録UI」を改善。利用頻度が少ないUIだからこそ、一目で操作が分かるデザインを目指しました。",
+    overview2:"テキストボタンからカードUIに変更し、画像で視覚的に説明。ボタンを「塗り」「枠線」で順位付けし、説明文やボタンテキストは最低限まで削減しました。",
+    process:"従来はテキスト説明の画面が多く、情報に視覚的な強弱がないため直感的に操作が分かりませんでした。家電のジャンルやモデルで分岐する100超の画面遷移をFigmaに描き起こして整理しました。",
+    quote:"使う頻度が低いほど、わかりやすく。",
+    points:[
+      ["カードUI＋画像で説明","テキスト中心の画面を置き換え"],
+      ["ボタンを順位付け","塗り／枠線で視覚的なメリハリ"],
+      ["心理的負担を軽減","ステップ表示と事前準備画面を追加"]
+    ],
+    metrics:[["100+","可視化した画面遷移"],["カードUI","テキスト説明から置換"],["最小限","説明文・ボタン文言を削減"]],
+    hue:30,
+  },
+  {
+    title:"省エネレポート", tag:"データ可視化",
+    eyebrow:"CASE 04  —  データ可視化",
+    lede:"冷蔵庫の省エネ運転効果を「杉の木インジケーター」で楽しく可視化したUI。",
+    meta:{Client:"シャープ",Role:"UIデザイン",Year:"2023",Deliverables:"iOS・Androidアプリ"},
+    headline:"省エネを、楽しく実感できる体験に。",
+    overview:"冷蔵庫の省エネ運転で削減できたCO2量をレポート。年間14kg（杉の木1本の年間CO2吸収量）を100%とした「杉の木インジケーター」で、イメージしづらい削減量を直感的に表現しました。",
+    overview2:"年間14kg以上の削減で小鳥がお祝いする隠し要素を用意し、少しずつ色づく杉の木をチェックする楽しさと達成感を設計しました。",
+    process:"初期仕様は週間／年間のCO2削減量とイラストを積み上げただけで、ユーザーが何をすべきか分からない画面でした。年間／週間に振り切った案を提案しながら、未定義だったコンセプトを企画と明文化しました。",
+    quote:"数字より、実感を。",
+    points:[
+      ["杉の木メーター","CO2削減量を直感的に表現"],
+      ["お祝いの隠し要素","目標達成で小鳥が登場"],
+      ["コンセプトを明文化","プロトタイピングと並行して企画と整理"]
+    ],
+    metrics:[["14kg","杉の木1本の年間CO2吸収量＝指標"],["直感","数値を杉の木で可視化"],["達成感","隠し要素で楽しさを設計"]],
+    hue:120,
+  },
+  {
+    title:"COCORO STORE アイコン", tag:"アイコン・グラフィック",
+    eyebrow:"CASE 05  —  アイコン・グラフィック",
+    lede:"シャープ公式ECアプリ「ココロストア」の、既存サービスに埋没しないアプリアイコン。",
+    meta:{Client:"シャープ",Role:"グラフィックデザイン",Year:"2023",Deliverables:"アプリアイコン"},
+    headline:"埋もれない、ECらしいアイコン。",
+    overview:"シャープの公式ECサイト「ココロストア」のアプリアイコンをデザイン。40〜60代がメインユーザーで、健やかな生活に寄与したい担当者の想いをかたちにしました。",
+    overview2:"ココロピンクとビタミンカラーのグラデーションでエネルギッシュさを、ショッパーモチーフで「気軽にお買い物できる」イメージを表現しました。",
+    process:"ココロサービスのランチャーアイコンはフォーマット化され個性に乏しいのが課題でした。立ち位置の異なるココロストアが既存に埋没しないよう、ストアやホーム画面での見え方を常にプレビューしながら検討しました。",
+    quote:"フォーマットの中で、個性を立てる。",
+    points:[
+      ["エネルギッシュな配色","ビタミンカラーで目を引く"],
+      ["ショッパーモチーフ","気軽に買い物できる印象に"],
+      ["実機で見え方を検証","ストア／ホームでのプレビュー"]
+    ],
+    metrics:[["差別化","既存アイコン群で埋没しない"],["実機検証","配置時の見え方を確認"],["EC","親しみと活気を表現"]],
+    hue:340,
+  },
+  {
+    title:"データ分析ツール導入提案", tag:"データ分析",
+    eyebrow:"CASE 06  —  データ分析",
+    lede:"スマホWebアプリ「ココロエアー」へのデータ分析ツール導入を提案し、導入を実現。",
+    meta:{Client:"シャープ",Role:"データ分析",Year:"2022",Deliverables:"導入提案・Webアプリ"},
+    headline:"定性に、定量の視点を。",
+    overview:"「ココロエアー」に Google Analytics と User Insight を導入する提案。定性調査が中心だった開発に、データ分析による定量調査のアプローチを持ち込みました。",
+    overview2:"事業部の課題に寄り添い、導入後の効果を具体的に思い描いてもらえる提案資料に。疑問点を一つずつ解消し、導入実現につなげました。",
+    process:"事業部にはデータ分析の経験がありませんでした。「初歩的な知識」「ツールでできること」「ココロエアーでできる分析」を、事業部のリテラシーに寄り添って丁寧に説明しました。",
+    quote:"勘ではなく、データで決める。",
+    points:[
+      ["基礎知識から導入","分析初心者の事業部に寄り添う"],
+      ["必要性を一緒に発見","やりたいことから逆算して提案"],
+      ["実績で後押し","他アプリの利用実績を提示"]
+    ],
+    metrics:[["導入実現","GA ＋ User Insight"],["0→1","事業部の分析基盤を立ち上げ"],["+定量","定性中心の改善に視点を追加"]],
+    hue:0,
+  },
+];
+
+/* ===================== artwork placeholder ===================== */
+function thumbSvg(hue,seed){
+  const c1=`hsl(${hue} 7% 90%)`, c2=`hsl(${hue} 10% 80%)`, c3=`hsl(${hue} 16% 66%)`;
+  return `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <rect width="400" height="300" fill="${c1}"/>
+    <rect x="0" y="${60+seed*8}" width="400" height="${100-seed*6}" fill="${c2}"/>
+    <circle cx="${80+seed*40}" cy="${180-seed*10}" r="${44+seed*4}" fill="${c3}" opacity=".82"/>
+    <rect x="${220-seed*10}" y="${40+seed*6}" width="${120+seed*6}" height="${120+seed*4}" fill="${c3}" opacity=".55"/>
+  </svg>`;
+}
+
+/* ===================== TOP PAGE TEMPLATES (per pattern) ===================== */
+function topA(){
+  return `
+    <div class="nav"><div class="logo">TAICHI ITO</div><div class="right">Menu</div></div>
+    <p class="eyebrow">UI / UX&nbsp;&nbsp;デザイナー&nbsp;&nbsp;—&nbsp;&nbsp;IoT・アプリ</p>
+    <h1 class="hero-h">暮らしに寄り添う、<br/>IoT家電のUIを。</h1>
+    <div class="selected-row"><span>Selected Work — 2020 / 2023</span><span>01 — 06</span></div>
+    <div class="grid">${WORKS.map((w,i)=>`
+      <div class="card" data-open="${i}">
+        <div class="card__thumb">${thumbSvg(w.hue,i)}</div>
+        <div class="card__meta">
+          <div><div class="card__title">${w.title}</div><div class="card__tag">${w.tag}</div></div>
+          <div class="card__num">0${i+1} — 06</div>
+        </div>
+      </div>`).join('')}</div>
+  `;
+}
+function topB(){
+  const feat=WORKS[0];
+  const rows=WORKS.slice(1).map((w,k)=>{const i=k+1;return `
+    <div class="tb-row" data-open="${i}">
+      <span class="num">0${i+1}</span>
+      <div class="body"><div class="nm">${w.title}</div><div class="sub">${w.tag}</div></div>
+      <span class="yr">${w.meta.Year}</span>
+    </div>`;}).join('');
+  const featTags=feat.tag.split('・').concat(feat.meta.Year).map(t=>`<span class="tag">${t}</span>`).join('');
+  return `
+    <div class="tb-nav"><strong>TAICHI ITO / PORTFOLIO</strong><span>Index</span></div>
+    <div class="tb-masthead">
+      <div class="tb-issue">UI / UX デザイナー · 2020 — 2023</div>
+      <h1 class="tb-stmt">使う人に寄り添う、プロダクトデザイン。</h1>
+      <p class="tb-bio">シャープでIoT家電アプリ「ココロ」シリーズのUIデザイン・ディレクションを担当。</p>
+    </div>
+    <div class="tb-rule"></div>
+    <div class="tb-featlabel"><strong>FEATURED · 01</strong><span>CASE STUDY</span></div>
+    <div class="tb-feat" data-open="0">
+      <div class="tb-feat-img">${thumbSvg(feat.hue,0)}</div>
+      <h3>${feat.title}</h3>
+      <p>${feat.lede}</p>
+      <div class="tags">${featTags}</div>
+      <span class="tb-btn">View case study →</span>
+    </div>
+    <div class="tb-rule"></div>
+    <div class="tb-listlabel"><strong>INDEX — Selected work</strong><span>2020 — 2023</span></div>
+    <div class="tb-list">${rows}</div>
+    <div class="tb-cta">
+      <div class="eyebrow" style="margin:0 0 10px">お問い合わせ受付中 · 2025</div>
+      <h2>いっしょに、<br/>良いものを。</h2>
+      <strong>伊藤太一 / Taichi Ito →</strong>
+    </div>
+    <div class="tb-foot"><span>TAICHI ITO / PORTFOLIO</span><span>© 2025</span></div>
+  `;
+}
+function topC(){
+  const cases=WORKS.map((w,i)=>`
+    <article class="tc-case" data-open="${i}">
+      <div class="crow"><span>CASE 0${i+1}</span><span>${w.tag} · ${w.meta.Year}</span></div>
+      <div class="tc-case-img">${thumbSvg(w.hue,i)}</div>
+      <h3>${w.title}</h3>
+      <p>${w.lede}</p>
+      <span class="read">Read full case →</span>
+    </article>`).join('');
+  return `
+    <div class="tc-top"><div class="logo">TAICHI ITO</div><div class="right">Menu</div></div>
+    <div class="tc-bio">
+      <div class="tc-avatar"></div>
+      <h3>伊藤 太一</h3>
+      <p>UI/UXデザイナー。シャープでIoT家電アプリ「ココロ」シリーズのUIデザイン・ディレクションに従事。</p>
+      <div class="tc-status"><span class="dot"></span>お問い合わせ受付中 — 2025</div>
+    </div>
+    <div class="tc-hero">
+      <div class="eyebrow" style="margin:0">SELECTED CASE STUDIES — 2020 / 2023</div>
+      <h1>ふれる人の迷いを、減らすデザイン。</h1>
+      <div class="tc-meta">
+        <div><div class="k">領域</div><p>UIデザイン<br/>UXデザイン・ディレクション</p></div>
+        <div><div class="k">分野</div><p>IoT家電・アプリ<br/>グラフィック・データ分析</p></div>
+        <div><div class="k">ツール</div><p>Figma · Photoshop<br/>Illustrator</p></div>
+      </div>
+    </div>
+    <div class="tc-cases">${cases}</div>
+    <div class="tc-finalcta">
+      <div class="eyebrow" style="margin:0">NEXT</div>
+      <h2>お気軽にご相談ください。</h2>
+      <div class="btns"><span class="tc-btn">メールする →</span><span class="tc-btn ghost">経歴を見る →</span></div>
+    </div>
+    <div class="tc-foot"><span>Taichi Ito · Japan</span><span>© 2025 伊藤太一</span></div>
+  `;
+}
+const TOP_TEMPLATES={a:topA,b:topB,c:topC};
+const topInner=document.getElementById('topInner');
+const topEl=document.getElementById('top');
+function renderTop(){
+  topInner.innerHTML=TOP_TEMPLATES[pattern]();
+  topEl.scrollTop=0;
+}
+topInner.addEventListener('click',e=>{
+  const el=e.target.closest('[data-open]');
+  if(el) openSheet(+el.dataset.open);
+});
+
+/* ===================== SLIDE TEMPLATES ===================== */
+const up = s => s.toUpperCase();
+
+function slideA(w,i){
+  const next=WORKS[(i+1)%WORKS.length];
+  const metaRows=Object.entries(w.meta).map(([k,v])=>`<div class="row"><div class="k">${up(k)}</div><div class="v">${v}</div></div>`).join('');
+  const metrics=w.metrics.map(m=>`<div class="pa-metric"><span class="n">${m[0]}</span><span class="l">${m[1]}</span></div>`).join('');
+  return `
+    <p class="s-eyebrow">${w.eyebrow}</p>
+    <h2 class="s-title">${w.title}</h2>
+    <p class="s-lede">${w.lede}</p>
+    <div class="s-hero">${thumbSvg(w.hue,i)}</div>
+    <div class="pa-meta">${metaRows}</div>
+
+    <p class="s-label">概要</p>
+    <h3 class="s-h">${w.headline}</h3>
+    <p class="s-p">${w.overview}</p>
+    <p class="s-p">${w.overview2}</p>
+
+    <p class="s-label">プロセス</p>
+    <h3 class="s-h sm">課題から、かたちへ。</h3>
+    <div class="pa-gallery">
+      <figure><div class="s-fig-img">${thumbSvg(w.hue,i+1)}</div><figcaption>01 — 改善前</figcaption></figure>
+      <figure><div class="s-fig-img">${thumbSvg(w.hue,i+2)}</div><figcaption>02 — 改善後</figcaption></figure>
+    </div>
+    <p class="s-p">${w.process}</p>
+
+    <p class="s-label">成果</p>
+    <div class="pa-metrics">${metrics}</div>
+
+    <div class="pa-next">
+      <div><small>NEXT  →</small><b>${next.title}</b><div class="tag">${next.tag}</div></div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="s-foot"><span>伊藤太一 — Taichi Ito</span><span>© 2025</span></div>
+  `;
+}
+
+function slideB(w,i){
+  const next=WORKS[(i+1)%WORKS.length];
+  const metrics=w.metrics.map(m=>`<div class="pb-metric"><span class="n">${m[0]}</span><span class="l">${m[1]}</span></div>`).join('');
+  return `
+    <div class="s-masthead">
+      <div>CASE STUDY № 0${i+1}</div>
+      <div>${w.meta.Year}</div>
+      <div>${w.tag}</div>
+    </div>
+    <h2 class="s-title">${w.title}</h2>
+    <p class="s-lede">${w.lede}</p>
+    <div class="s-hero">${thumbSvg(w.hue,i)}</div>
+    <p class="s-fig-cap">FIG. 01  —  完成画面</p>
+
+    <div class="s-rule"></div>
+    <p class="s-sec-label">§ 01  —  概要</p>
+    <h3 class="s-h">${w.headline}</h3>
+    <p class="s-p">${w.overview} ${w.overview2}</p>
+
+    <div class="pb-quote">
+      <p class="q">“${w.quote}”</p>
+      <p class="by">—  考えのもと</p>
+    </div>
+
+    <div class="s-rule"></div>
+    <p class="s-sec-label">§ 02  —  デザイン</p>
+    <h3 class="s-h mid">かたちにする。</h3>
+    <div class="s-fig-img">${thumbSvg(w.hue,i+1)}</div>
+    <p class="s-fig-cap">FIG. 02  —  検討</p>
+    <div class="s-fig-img">${thumbSvg(w.hue,i+2)}</div>
+    <p class="s-fig-cap">FIG. 03  —  最終UI</p>
+    <p class="s-p">${w.process}</p>
+
+    <div class="s-rule"></div>
+    <p class="s-sec-label">§ 03  —  成果</p>
+    <h3 class="s-h mid">成果。</h3>
+    ${metrics}
+
+    <p class="s-sec-label" style="margin-top:26px">INDEX  —  NEXT  →</p>
+    <div class="s-rule ink"></div>
+    <div class="pb-next"><b>0${(i+1)%WORKS.length+1}  ${next.title}</b><div class="tag">${next.tag}</div></div>
+
+    <h3 class="pb-cta">いっしょに、<br/>良いものを。</h3>
+    <p class="pb-cta-mail">伊藤太一 / Taichi Ito  →</p>
+    <div class="s-foot"><span>TAICHI ITO / PORTFOLIO</span><span>© 2025</span></div>
+  `;
+}
+
+function slideC(w,i){
+  const next=WORKS[(i+1)%WORKS.length];
+  const pts=w.points.map((p,n)=>`<div class="pc-point"><div class="i">0${n+1}</div><div class="t">${p[0]}</div><div class="d">${p[1]}</div></div>`).join('');
+  const stats=w.metrics.map(m=>`<div class="pc-stat"><div class="n">${m[0]}</div><div class="l">${m[1]}</div></div>`).join('');
+  return `
+    <p class="s-eyebrow">${w.eyebrow}</p>
+    <h2 class="s-title">${w.title}</h2>
+    <div class="pc-meta">
+      <div><div class="k">ROLE</div><div class="v">${w.meta.Role}</div></div>
+      <div><div class="k">CLIENT</div><div class="v">${w.meta.Client}</div></div>
+      <div><div class="k">YEAR</div><div class="v">${w.meta.Year}</div></div>
+      <div><div class="k">DELIVERABLES</div><div class="v">${w.meta.Deliverables}</div></div>
+    </div>
+    <div class="s-hero">${thumbSvg(w.hue,i)}</div>
+
+    <p class="s-numlabel">01  —  概要</p>
+    <h3 class="s-h">${w.headline}</h3>
+    <p class="s-p">${w.overview}</p>
+
+    <p class="s-numlabel">02  —  アプローチ</p>
+    <h3 class="s-h">どう解いたか。</h3>
+    <p class="s-p">${w.process}</p>
+    <div class="pc-points">${pts}</div>
+
+    <p class="s-numlabel">03  —  デザイン</p>
+    <h3 class="s-h">画面と、その細部。</h3>
+    <div class="s-fig-img">${thumbSvg(w.hue,i+1)}</div>
+    <p class="s-fig-cap">FIG. 02  —  主要画面</p>
+
+    <p class="s-numlabel">04  —  成果</p>
+    <h3 class="s-h">摩擦を減らし、信頼を。</h3>
+    <div class="pc-stats">${stats}</div>
+    <p class="pc-credits">Credits — 伊藤太一（${w.meta.Role}）／ ${w.meta.Client}</p>
+
+    <p class="s-numlabel">NEXT  →</p>
+    <div class="pc-nextcard">
+      <div><b>${next.title}</b><div class="d">${next.lede}</div></div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="s-foot"><span>伊藤太一 — Taichi Ito</span><span>© 2025</span></div>
+  `;
+}
+
+const TEMPLATES={a:slideA,b:slideB,c:slideC};
+const SLIDECLASS={a:'pa',b:'pb',c:'pc'};
+let pattern='a';
+
+/* ===================== SHEET / PAGER ===================== */
+const sheet=document.getElementById('sheet');
+const backdrop=document.getElementById('backdrop');
+const closeBtn=document.getElementById('closeBtn');
+const prevBtn=document.getElementById('prevBtn');
+const sheetHead=document.getElementById('sheetHead');
+const pager=document.getElementById('pager');
+const track=document.getElementById('track');
+const caseLabel=document.getElementById('caseLabel');
+const caseTitle=document.getElementById('caseTitle');
+const dotsEl=document.getElementById('dots');
+
+let currentIndex=0, pagerWidth=0;
+function measure(){pagerWidth=pager.clientWidth}
+window.addEventListener('resize',()=>{measure();setIndex(currentIndex,{animate:false})});
+
+function buildSlides(){
+  const tpl=TEMPLATES[pattern], cls=SLIDECLASS[pattern];
+  track.innerHTML=WORKS.map((w,i)=>`<section class="slide ${cls}" data-i="${i}">${tpl(w,i)}</section>`).join('');
+}
+function buildDots(){
+  dotsEl.innerHTML=WORKS.map((_,i)=>`<span class="dot${i===currentIndex?' is-active':''}"></span>`).join('');
+}
+function setIndex(i,{animate=true}={}){
+  currentIndex=Math.max(0,Math.min(WORKS.length-1,i));
+  measure();
+  track.classList.toggle('is-animating',animate);
+  track.style.transform=`translate3d(${-currentIndex*pagerWidth}px,0,0)`;
+  caseLabel.textContent=`CASE 0${currentIndex+1} / 0${WORKS.length}`;
+  caseTitle.textContent=WORKS[currentIndex].title;
+  buildDots();
+  const slide=track.children[currentIndex];
+  if(slide) slide.scrollTop=0;
+}
+function openSheet(i){
+  measure(); buildSlides(); setIndex(i,{animate:false});
+  document.body.classList.add('sheet-open');
+  sheet.setAttribute('aria-hidden','false');
+}
+function closeSheet(){
+  document.body.classList.remove('sheet-open');
+  sheet.setAttribute('aria-hidden','true');
+}
+closeBtn.addEventListener('click',closeSheet);
+prevBtn.addEventListener('click',()=>setIndex((currentIndex-1+WORKS.length)%WORKS.length));
+backdrop.addEventListener('click',closeSheet);
+
+/* ===================== Pattern switcher ===================== */
+const switcher=document.getElementById('switcher');
+switcher.addEventListener('click',e=>{
+  const btn=e.target.closest('button'); if(!btn)return;
+  pattern=btn.dataset.p;
+  document.body.dataset.pattern=pattern;
+  [...switcher.children].forEach(b=>b.classList.toggle('is-on',b===btn));
+  renderTop();                              // swap TOP layout to match pattern
+  buildSlides(); setIndex(currentIndex,{animate:false});  // keep sheet in sync
+});
+
+/* ===================== Horizontal swipe ===================== */
+let hx=0,hy=0,hdx=0,hdy=0,hStartT=0,hDir=null,hDragging=false;
+pager.addEventListener('touchstart',e=>{
+  if(e.touches.length!==1)return;
+  hx=e.touches[0].clientX;hy=e.touches[0].clientY;hdx=0;hdy=0;hDir=null;hDragging=true;
+  hStartT=performance.now();track.classList.remove('is-animating');
+},{passive:true});
+pager.addEventListener('touchmove',e=>{
+  if(!hDragging)return;
+  hdx=e.touches[0].clientX-hx;hdy=e.touches[0].clientY-hy;
+  if(!hDir){ if(Math.abs(hdx)>6||Math.abs(hdy)>6){hDir=Math.abs(hdx)>Math.abs(hdy)?'x':'y';} }
+  if(hDir==='x'){
+    e.preventDefault();
+    let x=-currentIndex*pagerWidth+hdx;
+    if((currentIndex===0&&hdx>0)||(currentIndex===WORKS.length-1&&hdx<0)) x=-currentIndex*pagerWidth+hdx*0.35;
+    track.style.transform=`translate3d(${x}px,0,0)`;
+  }
+},{passive:false});
+pager.addEventListener('touchend',()=>{
+  if(!hDragging)return;hDragging=false;
+  if(hDir!=='x')return;
+  const dt=performance.now()-hStartT, v=hdx/dt, threshold=pagerWidth*0.18;
+  let next=currentIndex;
+  if(hdx<-threshold||v<-0.4) next=currentIndex+1;
+  else if(hdx>threshold||v>0.4) next=currentIndex-1;
+  setIndex(next);
+});
+
+/* ===================== Vertical drag to close ===================== */
+let vy=0,vdy=0,vDragging=false,vStartT=0;
+function onDragStart(y){vy=y;vdy=0;vDragging=true;vStartT=performance.now();document.body.classList.add('sheet-dragging')}
+function onDragMove(y){if(!vDragging)return;vdy=Math.max(0,y-vy);sheet.style.transform=`translateY(${vdy}px)`;backdrop.style.opacity=Math.max(0,1-vdy/400)}
+function onDragEnd(){
+  if(!vDragging)return;vDragging=false;document.body.classList.remove('sheet-dragging');
+  sheet.style.transform='';backdrop.style.opacity='';
+  const dt=performance.now()-vStartT, v=vdy/dt;
+  if(vdy>140||v>0.6) closeSheet();
+}
+sheetHead.addEventListener('touchstart',e=>onDragStart(e.touches[0].clientY),{passive:true});
+sheetHead.addEventListener('touchmove',e=>{onDragMove(e.touches[0].clientY);e.preventDefault()},{passive:false});
+sheetHead.addEventListener('touchend',onDragEnd);
+sheetHead.addEventListener('mousedown',e=>{onDragStart(e.clientY);
+  const mm=ev=>onDragMove(ev.clientY);
+  const mu=()=>{onDragEnd();window.removeEventListener('mousemove',mm);window.removeEventListener('mouseup',mu)};
+  window.addEventListener('mousemove',mm);window.addEventListener('mouseup',mu);
+});
+
+/* ===================== Keyboard ===================== */
+window.addEventListener('keydown',e=>{
+  if(!document.body.classList.contains('sheet-open'))return;
+  if(e.key==='ArrowRight') setIndex(currentIndex+1<WORKS.length?currentIndex+1:currentIndex);
+  if(e.key==='ArrowLeft')  setIndex(currentIndex-1>=0?currentIndex-1:currentIndex);
+  if(e.key==='Escape') closeSheet();
+});
+
+/* ===================== Desktop mouse-drag swipe ===================== */
+let mDown=false,mx=0,mdx=0,mStartT=0;
+pager.addEventListener('mousedown',e=>{mDown=true;mx=e.clientX;mdx=0;mStartT=performance.now();track.classList.remove('is-animating');e.preventDefault()});
+window.addEventListener('mousemove',e=>{
+  if(!mDown)return;mdx=e.clientX-mx;
+  let x=-currentIndex*pagerWidth+mdx;
+  if((currentIndex===0&&mdx>0)||(currentIndex===WORKS.length-1&&mdx<0)) x=-currentIndex*pagerWidth+mdx*0.35;
+  track.style.transform=`translate3d(${x}px,0,0)`;
+});
+window.addEventListener('mouseup',()=>{
+  if(!mDown)return;mDown=false;
+  const dt=performance.now()-mStartT, v=mdx/dt, threshold=pagerWidth*0.18;
+  let next=currentIndex;
+  if(mdx<-threshold||v<-0.4) next=currentIndex+1;
+  else if(mdx>threshold||v>0.4) next=currentIndex-1;
+  setIndex(next);
+});
+
+renderTop();
+buildSlides();
+measure();
+</script>
+</body>
+</html>

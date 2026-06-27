@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作品詳細 — 伊藤太一 Portfolio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="gnav">
+  <a class="brand" href="index.html">伊藤 太一<span>これまでと、これから</span></a>
+  <nav>
+    <a href="index.html">比較</a>
+    <a href="grid.html">作品</a>
+    <a href="profile.html">プロフィール</a>
+  </nav>
+</header>
+
+<main class="detail" id="root"><!-- rendered --></main>
+
+<script src="data.js"></script>
+<script>
+function getId(){
+  const v=parseInt(new URLSearchParams(location.search).get('w'),10);
+  return (Number.isInteger(v)&&WORKS[v])?v:0;
+}
+
+/* 制作時期を示す時間線（背景コンテキスト） */
+function contextTimeline(year){
+  const W=900, midY=26;
+  const xs=YEARS.map((y,i)=>50+i*((W-100)/(YEARS.length-1)));
+  let d=`M0,${midY} L${xs[0]},${midY}`;
+  for(let i=0;i<xs.length-1;i++){
+    const x1=xs[i],x2=xs[i+1];
+    if(YEARS[i]===2022||YEARS[i+1]===2022){
+      const s=(x2-x1)/4;
+      d+=` C${x1+s},${midY-12} ${x1+s},${midY+12} ${x1+s*2},${midY} C${x1+s*3},${midY-12} ${x1+s*3},${midY+12} ${x2},${midY}`;
+    }else d+=` L${x2},${midY}`;
+  }
+  d+=` L${W},${midY}`;
+  let nodes='';
+  YEARS.forEach((y,i)=>{
+    const here=y===year;
+    nodes+=`<circle class="node ${here?'now glow':''}" cx="${xs[i]}" cy="${midY}" r="${here?6:4}"/>`;
+    nodes+=`<text class="tick" x="${xs[i]}" y="${midY+22}" text-anchor="middle" ${here?'fill="#b08a4a"':''}>${y}</text>`;
+  });
+  return `<svg class="timeline" viewBox="0 0 ${W} 60" preserveAspectRatio="none">${`<path d="${d}"/>`}${nodes}</svg>`;
+}
+
+function render(){
+  const i=getId();
+  const w=WORKS[i];
+  const prev=(i-1+WORKS.length)%WORKS.length;
+  const next=(i+1)%WORKS.length;
+  document.title=`${w.title} — 伊藤太一 Portfolio`;
+  const eraClass=w.era==='future'?'is-future':(w.era==='recent'?'is-recent':'is-past');
+  const swatch = (w.swatches&&w.swatches.length)
+    ? `<div class="swatches">${w.swatches.map(c=>`<span style="background:${c}"></span>`).join('')}</div>`
+    : `<div class="swatches empty">— モノクロ基調（特定の色は用いていません）</div>`;
+
+  document.getElementById('root').innerHTML=`
+    <div class="crumb"><a href="grid.html">作品</a><span>/</span><a href="grid.html?year=${w.year}">${w.year}</a><span>/</span><span>${w.title}</span></div>
+
+    <div class="wyear">${w.year}${w.status?` · ${w.status}`:''}</div>
+    <h1 class="serif">${w.title}</h1>
+    ${w.status?`<div class="status-tag">${w.status} — 未来側の一作</div>`:''}
+    <p class="summary">${w.summary}</p>
+
+    <div class="frame hero-frame ${eraClass}"><div class="art">${artSvg(w.hue,w.id,w.era)}</div></div>
+    <div class="subframes">
+      <div class="frame ${eraClass}"><div class="art">${artSvg(w.hue,w.id+1,w.era)}</div></div>
+      <div class="frame ${eraClass}"><div class="art">${artSvg(w.hue,w.id+2,w.era)}</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <div class="plabel serif">想い</div>
+        <div class="pbody"><p class="ptext">${w.thought}</p></div>
+      </div>
+      <div class="sep"></div>
+      <div class="row">
+        <div class="plabel serif">色</div>
+        <div class="pbody"><p class="ptext">${w.color}</p>${swatch}</div>
+      </div>
+      <div class="sep"></div>
+      <div class="row">
+        <div class="plabel serif">技術 / ツール</div>
+        <div class="pbody"><div class="tools">${w.tools.map(t=>`<span>${t}</span>`).join('')}</div></div>
+      </div>
+    </div>
+
+    <div class="tl-context">
+      <div class="cap">制作時期 — 軌跡のなかの位置</div>
+      ${contextTimeline(w.year)}
+    </div>
+
+    <div class="prevnext">
+      <a href="work.html?w=${prev}"><small>← Prev</small><b>${WORKS[prev].title}</b></a>
+      <a class="nx" href="work.html?w=${next}"><small>Next →</small><b>${WORKS[next].title}</b></a>
+    </div>
+  `;
+}
+render();
+window.addEventListener('popstate',render);
+</script>
+</body>
+</html>

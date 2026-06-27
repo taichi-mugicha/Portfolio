@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作品 — 伊藤太一 Portfolio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="gnav">
+  <a class="brand" href="index.html">伊藤 太一<span>これまでと、これから</span></a>
+  <nav>
+    <a href="index.html">比較</a>
+    <a href="grid.html" class="is-active">作品</a>
+    <a href="profile.html">プロフィール</a>
+  </nav>
+</header>
+
+<div class="page-head">
+  <p class="kicker">All Works · 2020 — 2024</p>
+  <h1 class="serif">すべての作業記録を、ひとつの場所に。</h1>
+  <p>時系列・カテゴリ・タイプ・領域の複数の軸で、作品を辿れます。酸いも甘いも含めた、成長の足跡。</p>
+</div>
+
+<div class="filters" id="filters"><!-- rendered --></div>
+<div class="fcount" id="fcount"></div>
+
+<section class="grid" id="grid"><!-- rendered --></section>
+
+<footer class="foot">
+  <span class="serif">伊藤 太一 — UI / UX Designer</span>
+  <span>© 2025</span>
+</footer>
+
+<script src="data.js"></script>
+<script>
+/* ---------- フィルタ状態 ---------- */
+const state = { 時系列:new Set(), カテゴリ:new Set(), タイプ:new Set(), 領域:new Set() };
+
+/* URL ?year= で年を事前選択 */
+const presetYear = new URLSearchParams(location.search).get('year');
+if(presetYear && YEARS.includes(+presetYear)) state.時系列.add(+presetYear);
+
+/* ---------- フィルタUI ---------- */
+function buildFilters(){
+  const wrap=document.getElementById('filters');
+  let html='';
+  // 時系列
+  html+=`<div class="faxis"><span class="alabel">時系列</span>`
+      + YEARS.map(y=>`<button class="chip year" data-axis="時系列" data-val="${y}">${y}</button>`).join('')
+      + `</div>`;
+  // 他の軸
+  for(const [axis,vals] of Object.entries(AXES)){
+    html+=`<div class="faxis"><span class="alabel">${axis}</span>`
+        + vals.map(v=>`<button class="chip" data-axis="${axis}" data-val="${v}">${v}</button>`).join('')
+        + `</div>`;
+  }
+  wrap.innerHTML=html;
+  wrap.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('click',()=>{
+      const axis=c.dataset.axis;
+      let val=c.dataset.val; if(axis==='時系列') val=+val;
+      const set=state[axis];
+      set.has(val)?set.delete(val):set.add(val);
+      c.classList.toggle('on');
+      apply();
+    });
+  });
+}
+
+/* ---------- グリッド ---------- */
+function buildGrid(){
+  const grid=document.getElementById('grid');
+  // 新しい年→古い年の順
+  const sorted=[...WORKS].sort((a,b)=>b.year-a.year || b.id-a.id);
+  grid.innerHTML=sorted.map(w=>{
+    const eraClass = w.era==='future'?'is-future':(w.era==='recent'?'is-recent':'is-past');
+    return `
+    <a class="gcard" href="work.html?w=${w.id}" data-id="${w.id}">
+      <div class="frame ${eraClass}"><div class="art">${artSvg(w.hue,w.id,w.era)}</div></div>
+      <div class="yr">${w.year}</div>
+      <h3>${w.title}${w.status?` <span style="color:var(--accent);font-size:12px">（${w.status}）</span>`:''}</h3>
+      <div class="meta">${w.cat} · ${w.type} · ${w.domain}</div>
+    </a>`;
+  }).join('');
+}
+
+/* ---------- フィルタ適用 ---------- */
+function matches(w){
+  if(state.時系列.size && !state.時系列.has(w.year)) return false;
+  if(state.カテゴリ.size && !state.カテゴリ.has(w.cat)) return false;
+  if(state.タイプ.size && !state.タイプ.has(w.type)) return false;
+  if(state.領域.size && !state.領域.has(w.domain)) return false;
+  return true;
+}
+function apply(){
+  let n=0;
+  document.querySelectorAll('.gcard').forEach(card=>{
+    const w=WORKS[+card.dataset.id];
+    const ok=matches(w);
+    card.classList.toggle('hide',!ok);
+    if(ok)n++;
+  });
+  const active=Object.values(state).some(s=>s.size);
+  document.getElementById('fcount').textContent = active ? `${n} 件を表示中（フィルタ適用）` : `全 ${WORKS.length} 件`;
+}
+
+buildFilters();
+buildGrid();
+// preset year chip on
+if(presetYear){
+  const c=document.querySelector(`.chip.year[data-val="${presetYear}"]`);
+  if(c) c.classList.add('on');
+}
+apply();
+</script>
+</body>
+</html>

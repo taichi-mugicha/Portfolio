@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
-<title>Work Detail — Mock</title>
+<title>作品詳細 — 伊藤太一 Portfolio</title>
 <style>
   :root{
     --ink:#0a0a0a;
@@ -173,15 +173,15 @@
 <div class="top" id="top">
   <div class="top__inner">
     <div class="nav">
-      <div class="logo">NAME</div>
+      <div class="logo">TAICHI ITO</div>
       <div class="menu" aria-label="menu"></div>
     </div>
 
-    <p class="eyebrow">UI / UX&nbsp;&nbsp;DESIGNER&nbsp;&nbsp;—&nbsp;&nbsp;TOKYO</p>
-    <h1 class="hero-h">Designing calm,<br/>useful digital<br/>products.</h1>
+    <p class="eyebrow">UI / UX&nbsp;&nbsp;デザイナー&nbsp;&nbsp;—&nbsp;&nbsp;IoT・アプリ</p>
+    <h1 class="hero-h">暮らしに寄り添う、<br/>IoT家電の<br/>UIを。</h1>
 
     <div class="selected-row">
-      <span>Selected Work — 2024 / 2025</span>
+      <span>Selected Work — 2020 / 2023</span>
       <span>01 — 06</span>
     </div>
 
@@ -215,70 +215,76 @@
 /* ============== DATA ============== */
 const WORKS = [
   {
-    title:"Aurora Banking",
-    tag:"Fintech · iOS",
-    eyebrow:"CASE 01  —  FINTECH · IOS",
-    lede:"A calm, end-to-end redesign of a regional banking app — focused on clarity, trust, and the small daily moments that matter.",
-    meta:{Client:"Aurora Financial",Role:"Lead Product Designer",Year:"2024 — 2025",Deliverables:"iOS App · Design System"},
-    overview:"Aurora's legacy app had grown over a decade of feature additions. We were asked to bring it back to a calm baseline — one that respected the user's attention and made the everyday actions effortless.",
-    process:"From a full audit of 240+ legacy screens, we re-architected around three patterns: a single daily-overview, a unified transactions surface, and a frequency-ordered nav.",
-    metrics:[["+38%","Daily active sessions"],["−42%","Time-to-balance"],["4.8","App Store rating"]],
+    title:"NEW COCORO HOME",
+    tag:"IoT・アプリ",
+    eyebrow:"CASE 01  —  IoT・アプリ",
+    lede:"IoT家電アプリ「ココロホーム」の主要機能を統合した、新しいトップ画面のUIデザイン。",
+    meta:{Client:"シャープ",Role:"UIデザイン",Year:"2022 — 2023",Deliverables:"iOS・Androidアプリ"},
+    headline:"カオスを、ひとつのトップ画面に。",
+    overview:"主要機能「タイムライン・機器リスト・サービスリスト」を統合した新しいトップ画面を提案。家電カードUIをリデザインし、ぱっと見で操作したい家電を選べるようにしました。",
+    process:"「IoT家電の多様な機能とサービスが入り乱れたカオス状態」が課題でした。機能ごとに情報量がバラバラで埋もれていた情報を、TOP画面への再レイアウトで解きほぐしました。",
+    metrics:[["3→1","主要機能をTOPに統合"],["統一","カードUIの情報量"],["即","お知らせを最上部に"]],
     hue:215, accent:"#0a0a0a",
   },
   {
-    title:"Kasumi Maps",
-    tag:"Wayfinding · Web",
-    eyebrow:"CASE 02  —  WAYFINDING · WEB",
-    lede:"An indoor wayfinding tool that turns large hospital and campus floor-plans into a calm, learnable map.",
-    meta:{Client:"Kasumi Group",Role:"Product Designer",Year:"2024",Deliverables:"Web App · Pattern Library"},
-    overview:"Floor plans had been treated as PDFs for decades. We rebuilt the system around a layered, zoomable canvas with a typography-first label hierarchy.",
-    process:"Co-designed with facility staff. Layered tile rendering, semantic label clustering, and an audio-described 'guided tour' for low-vision users.",
-    metrics:[["−61%","Wrong-floor incidents"],["12s","Median wayfinding time"],["WCAG","AA contrast verified"]],
-    hue:160, accent:"#0a0a0a",
+    title:"COCORO AIR リデザイン",
+    tag:"IoT・リデザイン",
+    eyebrow:"CASE 02  —  IoT・リデザイン",
+    lede:"IoT空調家電アプリ「ココロエアー」を、操作の可否が一目で伝わるUIへリデザイン。",
+    meta:{Client:"シャープ",Role:"UIデザイン / リデザイン",Year:"2020 — 2021",Deliverables:"iOS・Androidアプリ"},
+    headline:"操作できる場所が、一目でわかる。",
+    overview:"エアコンや空気清浄機の遠隔操作、消耗度が確認できる「ココロエアー」をリデザイン。誤操作の多い表示部をボタン化し、機能が伝わるアイコンへ変更しました。",
+    process:"設定温度やモードの「表示箇所」と「操作箇所」が離れ、どこを操作できるか分かりづらい状態でした。部屋の状態はカラー、機器操作はグレーで、情報の種類を色で区別しました。",
+    metrics:[["11/11","UTで全員が新デザインを支持"],["2層","状態と操作を色で分離"],["前面化","深い階層の機能を表に"]],
+    hue:200, accent:"#0a0a0a",
   },
   {
-    title:"Studio Press",
-    tag:"Editorial · CMS",
-    eyebrow:"CASE 03  —  EDITORIAL · CMS",
-    lede:"A CMS for small editorial teams — built around long-form writing, not block editors.",
-    meta:{Client:"Studio Press",Role:"Lead Designer",Year:"2023 — 2024",Deliverables:"Web App · Plugin SDK"},
-    overview:"Editors had spent years fighting their tools. We rebuilt the writing surface as a single calm canvas and pushed the chrome to the margins.",
-    process:"Type system tuned to the 65–75 character measure across breakpoints; reading-rhythm vertical grid; markdown-fluent shortcuts.",
-    metrics:[["+2.1×","Articles published / wk"],["−54%","Onboarding time"],["0","Block-editor regressions"]],
+    title:"家電登録フロー改善",
+    tag:"UX・フロー改善",
+    eyebrow:"CASE 03  —  UX・フロー改善",
+    lede:"ココロホームの機器登録UIを、一目で操作が分かるフローへ改善。",
+    meta:{Client:"シャープ",Role:"UIデザイン",Year:"2022 — 2023",Deliverables:"iOS・Androidアプリ"},
+    headline:"迷わず進める、登録フローへ。",
+    overview:"利用頻度が少ないUIだからこそ、一目で操作が分かるデザインを目指しました。テキストボタンからカードUIに変更し、画像で視覚的に説明しています。",
+    process:"従来はテキスト説明の画面が多く、視覚的な強弱がないため直感的に操作が分かりませんでした。家電のジャンルやモデルで分岐する100超の遷移をFigmaで可視化して整理しました。",
+    metrics:[["100+","可視化した画面遷移"],["カードUI","テキスト説明から置換"],["最小限","説明文・ボタン文言を削減"]],
     hue:30, accent:"#0a0a0a",
   },
   {
-    title:"Field Notes",
-    tag:"Brand · Identity",
-    eyebrow:"CASE 04  —  BRAND · IDENTITY",
-    lede:"An identity system for a small research practice — built to age slowly and travel widely.",
-    meta:{Client:"Field Notes Lab",Role:"Brand & Design",Year:"2023",Deliverables:"Identity · Print · Web"},
-    overview:"A wordmark, a custom monospace, and a quiet color system that survives photocopy, low-end print and dark mode.",
-    process:"Five-week sprint. One weekend with the team in their office shadowing real correspondence — every artifact had to fit the real desk.",
-    metrics:[["1 wordmark","Across 27 artefacts"],["6","Tone-of-voice patterns"],["12yr","Projected system life"]],
-    hue:340, accent:"#0a0a0a",
-  },
-  {
-    title:"Mono Player",
-    tag:"Music · App",
-    eyebrow:"CASE 05  —  MUSIC · APP",
-    lede:"A minimal music player for people who still build albums by hand.",
-    meta:{Client:"Personal",Role:"Designer / Engineer",Year:"2024",Deliverables:"iOS App"},
-    overview:"No social feed, no recommendations. Just a library, a now-playing surface, and a single sleep timer that actually fades correctly.",
-    process:"Built around 'one screen per intent'. Custom haptics for scrub start/end. Volume curves measured against a reference headphone set.",
-    metrics:[["1.3MB","Total app size"],["0","Trackers"],["120fps","On every supported device"]],
-    hue:0, accent:"#0a0a0a",
-  },
-  {
-    title:"Verdant",
-    tag:"Climate · Dashboard",
-    eyebrow:"CASE 06  —  CLIMATE · DASHBOARD",
-    lede:"A reporting dashboard for small businesses entering their first carbon disclosure cycle.",
-    meta:{Client:"Verdant",Role:"Product Designer",Year:"2025",Deliverables:"Web App · Reporting Kit"},
-    overview:"Replaces a 40-page spreadsheet with a step-by-step disclosure flow. Saves drafts, explains every figure, generates the regulator-ready PDF.",
-    process:"Co-designed with three pilot SMBs. Every chart has a 'plain words' overlay; every input has a 'where this came from' note.",
-    metrics:[["−72%","First-report effort"],["3","SMBs filed Year-1"],["100%","Audit pass rate"]],
+    title:"省エネレポート",
+    tag:"データ可視化",
+    eyebrow:"CASE 04  —  データ可視化",
+    lede:"冷蔵庫の省エネ運転効果を「杉の木インジケーター」で楽しく可視化したUI。",
+    meta:{Client:"シャープ",Role:"UIデザイン",Year:"2023",Deliverables:"iOS・Androidアプリ"},
+    headline:"省エネを、楽しく実感できる体験に。",
+    overview:"省エネ運転で削減できたCO2量をレポート。年間14kg（杉の木1本の年間CO2吸収量）を100%とした杉の木インジケーターで、イメージしづらい削減量を直感的に表現しました。",
+    process:"初期仕様は週間／年間のCO2削減量を積み上げただけで、何をすべきか分からない画面でした。年間14kg以上の削減で小鳥がお祝いする隠し要素で、達成感を演出しました。",
+    metrics:[["14kg","杉の木1本=指標"],["直感","数値を杉の木で可視化"],["達成感","隠し要素で楽しさを設計"]],
     hue:120, accent:"#0a0a0a",
+  },
+  {
+    title:"COCORO STORE アイコン",
+    tag:"アイコン・グラフィック",
+    eyebrow:"CASE 05  —  アイコン・グラフィック",
+    lede:"シャープ公式ECアプリ「ココロストア」の、既存サービスに埋没しないアプリアイコン。",
+    meta:{Client:"シャープ",Role:"グラフィックデザイン",Year:"2023",Deliverables:"アプリアイコン"},
+    headline:"埋もれない、ECらしいアイコン。",
+    overview:"40〜60代がメインユーザーのECアプリアイコンをデザイン。ココロピンク × ビタミンカラーのグラデーションでエネルギッシュさを、ショッパーモチーフで気軽さを表現しました。",
+    process:"ココロサービスのアイコンはフォーマット化され個性に乏しいのが課題でした。立ち位置の異なるストアが埋没しないよう、ストアやホーム画面での見え方を常にプレビューしながら検討しました。",
+    metrics:[["差別化","既存アイコン群で埋没しない"],["実機検証","配置時の見え方を確認"],["EC","親しみと活気を表現"]],
+    hue:330, accent:"#0a0a0a",
+  },
+  {
+    title:"データ分析ツール導入提案",
+    tag:"データ分析",
+    eyebrow:"CASE 06  —  データ分析",
+    lede:"スマホWebアプリ「ココロエアー」へのデータ分析ツール導入を提案し、導入を実現。",
+    meta:{Client:"シャープ",Role:"データ分析",Year:"2022",Deliverables:"導入提案・Webアプリ"},
+    headline:"定性に、定量の視点を。",
+    overview:"Google Analytics と User Insight を導入する提案。定性調査が中心だった開発に、データ分析による定量調査のアプローチを持ち込みました。",
+    process:"事業部にはデータ分析の経験がありませんでした。「初歩的な知識」「ツールでできること」「ココロエアーでできる分析」を、リテラシーに寄り添って丁寧に説明しました。",
+    metrics:[["導入実現","GA ＋ User Insight"],["0→1","事業部の分析基盤を立ち上げ"],["+定量","定性中心の改善に視点を追加"]],
+    hue:150, accent:"#0a0a0a",
   },
 ];
 
@@ -343,16 +349,16 @@ function slideHtml(w,i){
     <div class="s-hero">${thumbSvg(w.hue,i)}</div>
     <dl class="meta-grid">${metaHtml}</dl>
 
-    <p class="section-label">OVERVIEW</p>
-    <h3 class="section-h">A redesign around the small daily moments.</h3>
+    <p class="section-label">概要</p>
+    <h3 class="section-h">${w.headline}</h3>
     <p class="section-p">${w.overview}</p>
 
-    <p class="section-label">PROCESS</p>
-    <h3 class="section-h">From audit to system</h3>
+    <p class="section-label">プロセス</p>
+    <h3 class="section-h">課題から、かたちへ。</h3>
     <div class="gallery">${galHtml}</div>
     <p class="section-p">${w.process}</p>
 
-    <p class="section-label">OUTCOME</p>
+    <p class="section-label">成果</p>
     <div class="metrics">${metricsHtml}</div>
 
     <div class="next">

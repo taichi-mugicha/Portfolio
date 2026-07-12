@@ -7,11 +7,12 @@
 <style>
   :root{
     --ink:#0a0a0a;
-    --muted:#6b6b6b;
+    --muted:#737373;
+    --meta:#404040;
     --line:#e5e5e5;
     --bg:#ffffff;
     --ph:#ececec;
-    --sheet-radius:22px;
+    --sheet-radius:24px;
     --ease:cubic-bezier(.22,1,.36,1);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -42,7 +43,7 @@
     transition:transform .25s var(--ease);
   }
   .card:active .card__thumb{transform:scale(.985)}
-  .card__thumb svg{position:absolute;inset:0;width:100%;height:100%}
+  .card__thumb svg,.card__thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .card__meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;gap:8px}
   .card__title{font-weight:600;font-size:16px}
   .card__tag{font-size:12px;color:var(--muted)}
@@ -56,7 +57,7 @@
   }
   body.sheet-open .backdrop{opacity:1;pointer-events:auto}
 
-  /* ===== Sheet ===== */
+  /* ===== Sheet (modal bottom sheet — Figma node 391:1676) ===== */
   .sheet{
     position:fixed;left:0;right:0;bottom:0;
     height:96vh;
@@ -78,28 +79,32 @@
 
   .sheet__head{
     flex:0 0 auto;
-    padding:10px 18px 6px;
-    display:grid;grid-template-columns:32px 1fr 32px;align-items:center;gap:8px;
+    padding:8px 0 0;
+    display:flex;flex-direction:column;align-items:center;
     border-bottom:1px solid var(--line);
     background:var(--bg);
     position:relative;z-index:2;
     touch-action:none;
   }
   .handle{
-    width:38px;height:4px;border-radius:99px;background:#d6d6d6;margin:0 auto 8px;grid-column:1/-1;
+    width:38px;height:4px;border-radius:99px;background:#d6d6d6;margin:0 0 8px;
   }
-  .sheet__title{font-weight:600;font-size:13px;text-align:center;letter-spacing:.2px}
-  .sheet__title small{display:block;font-weight:500;font-size:10px;letter-spacing:1.2px;color:var(--muted);margin-bottom:2px}
+  .sheet__nav{
+    width:100%;display:grid;grid-template-columns:32px 1fr 32px;align-items:center;gap:8px;
+    padding:0 20px 16px;
+  }
+  .sheet__title{font-weight:600;font-size:13px;text-align:center;letter-spacing:.12px;color:var(--ink)}
+  .sheet__title small{display:block;font-weight:500;font-size:10px;letter-spacing:1.3px;color:var(--muted);margin-bottom:2px}
   .icon-btn{
     width:32px;height:32px;border:none;background:transparent;color:var(--ink);
-    display:inline-flex;align-items:center;justify-content:center;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;border-radius:16px;
     cursor:pointer;font-size:18px;line-height:1;
   }
   .icon-btn:active{background:#f1f1f1}
 
   /* progress dots */
   .dots{display:flex;gap:5px;justify-content:center;padding:8px 0 4px}
-  .dot{width:5px;height:5px;border-radius:50%;background:#d3d3d3;transition:background .2s,width .2s}
+  .dot{width:5px;height:5px;border-radius:2.5px;background:#d3d3d3;transition:background .2s,width .2s}
   .dot.is-active{background:#0a0a0a;width:18px;border-radius:99px}
 
   /* Pager (swipe area) */
@@ -114,43 +119,46 @@
   .pager__track.is-animating{transition:transform .38s var(--ease)}
   .slide{
     flex:0 0 100%;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;
-    padding:0 22px 80px;
+    padding:24px 20px 60px;
   }
   .slide::-webkit-scrollbar{display:none}
 
-  /* slide content */
-  .s-eyebrow{font-size:10.5px;letter-spacing:1.5px;color:var(--muted);font-weight:500;margin:18px 0 10px}
-  .s-title{font-size:38px;line-height:1;letter-spacing:-.025em;font-weight:700;margin:0 0 18px}
-  .s-lede{font-size:15px;line-height:1.55;color:#222;margin:0 0 22px}
-  .s-hero{width:100%;aspect-ratio:4/3;background:var(--ph);border-radius:8px;margin-bottom:24px;overflow:hidden}
-  .s-hero svg{width:100%;height:100%;display:block}
+  /* ---- Hero + title + meta ---- */
+  .s-hero{width:100%;aspect-ratio:335/384;background:var(--ph);border-radius:10px;overflow:hidden;margin-bottom:24px}
+  .s-hero svg,.s-hero img{width:100%;height:100%;display:block;object-fit:cover}
+  .s-title{font-size:32px;line-height:1;letter-spacing:-.02em;font-weight:700;margin:0 0 8px;word-break:break-word}
+  .s-meta{font-size:11px;line-height:1.5;color:var(--meta)}
+  .s-meta .period{margin:0 0 4px}
+  .s-meta .tags-row{display:flex;flex-wrap:wrap;gap:12px}
+  .s-headgroup{margin-bottom:40px}
 
-  .meta-grid{
-    display:grid;grid-template-columns:88px 1fr;gap:10px 12px;
-    padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-    margin-bottom:24px;
-  }
-  .meta-grid dt{font-size:10px;letter-spacing:1.4px;color:var(--muted);font-weight:500;align-self:center}
-  .meta-grid dd{margin:0;font-size:13.5px}
+  /* ---- section blocks ---- */
+  .s-section{margin-bottom:40px}
+  .s-section:last-child{margin-bottom:0}
+  .section-label{font-size:10px;letter-spacing:1.5px;color:var(--muted);font-weight:500;margin:0 0 16px}
 
-  .section-label{font-size:10.5px;letter-spacing:1.5px;color:var(--muted);font-weight:500;margin:6px 0 10px}
-  .section-h{font-size:21px;font-weight:600;letter-spacing:-.01em;line-height:1.25;margin:0 0 14px}
-  .section-p{font-size:14.5px;line-height:1.7;color:#1c1c1c;margin:0 0 22px}
+  .s-overview{font-size:15px;line-height:1.5;color:var(--meta);margin:0}
 
-  .gallery{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:24px}
-  .gallery div{aspect-ratio:4/3;background:var(--ph);border-radius:8px;overflow:hidden}
-  .gallery div svg{width:100%;height:100%}
+  .design-block,.process-block{margin-bottom:24px}
+  .design-block:last-child,.process-block:last-child{margin-bottom:0}
+  .design-h{font-size:22px;font-weight:600;letter-spacing:-.005em;line-height:1.3;color:var(--ink);margin:0 0 8px}
+  .process-h{font-size:20px;font-weight:600;line-height:1.25;color:var(--ink);margin:0 0 8px}
+  .block-p{font-size:14px;line-height:1.65;color:var(--ink);margin:0}
+  .sec-img{width:100%;aspect-ratio:772/480;background:var(--ph);border-radius:10px;overflow:hidden;margin-top:8px}
+  .sec-img svg,.sec-img img{width:100%;height:100%;display:block;object-fit:cover}
 
-  .metrics{display:grid;grid-template-columns:1fr;gap:2px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px 0;margin-bottom:28px}
-  .metrics .row{display:flex;align-items:baseline;justify-content:space-between;padding:14px 2px;border-bottom:1px solid var(--line)}
-  .metrics .row:last-child{border-bottom:none}
-  .metrics .n{font-size:30px;font-weight:700;letter-spacing:-.02em}
-  .metrics .l{font-size:12.5px;color:var(--muted)}
+  .outcome-list{display:flex;flex-direction:column;gap:16px}
+  .outcome-row{background:#fafafa;border-radius:6px;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px}
+  .outcome-row .n{font-size:32px;font-weight:700;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .outcome-row .l{font-size:13px;color:var(--muted);text-align:right}
 
-  .next{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-top:1px solid var(--line);margin-top:6px}
-  .next small{display:block;font-size:10.5px;letter-spacing:1.5px;color:var(--muted);font-weight:500;margin-bottom:4px}
-  .next b{font-weight:600;font-size:18px}
-  .next .arrow{font-size:22px;color:var(--muted)}
+  .s-divider{height:1px;background:#e0e0e0;margin:0 0 40px}
+
+  .related-list{display:flex;flex-direction:column;gap:16px}
+  .related-item{cursor:pointer;user-select:none}
+  .related-thumb{width:100%;height:96px;background:var(--ph);border-radius:4px;overflow:hidden;margin-bottom:8px}
+  .related-thumb svg,.related-thumb img{width:100%;height:100%;display:block;object-fit:cover}
+  .related-title{font-size:20px;line-height:1;letter-spacing:-.008em;color:var(--ink)}
 
   .swipe-hint{
     position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
@@ -162,9 +170,6 @@
   }
   body.sheet-open .swipe-hint{opacity:1;animation:fadeOut .4s var(--ease) 2.6s forwards}
   @keyframes fadeOut{to{opacity:0}}
-
-  /* fake artwork SVGs */
-  .art-bg{background:#ececec}
 </style>
 </head>
 <body>
@@ -182,7 +187,7 @@
 
     <div class="selected-row">
       <span>Selected Work — 2020 / 2023</span>
-      <span>01 — 07</span>
+      <span id="totalCount">01 — 07</span>
     </div>
 
     <div class="grid" id="grid"></div>
@@ -196,12 +201,14 @@
 <div class="sheet" id="sheet" aria-hidden="true" role="dialog">
   <div class="sheet__head" id="sheetHead">
     <div class="handle"></div>
-    <button class="icon-btn" id="prevBtn" aria-label="prev">‹</button>
-    <div class="sheet__title">
-      <small id="caseLabel">CASE 01 / 06</small>
-      <span id="caseTitle">—</span>
+    <div class="sheet__nav">
+      <button class="icon-btn" id="prevBtn" aria-label="prev">‹</button>
+      <div class="sheet__title">
+        <small id="caseLabel">CASE 01 / 07</small>
+        <span id="caseTitle">—</span>
+      </div>
+      <button class="icon-btn" id="nextBtn" aria-label="next">›</button>
     </div>
-    <button class="icon-btn" id="closeBtn" aria-label="close">✕</button>
   </div>
   <div class="dots" id="dots"></div>
 
@@ -216,94 +223,135 @@
 const WORKS = [
   {
     title:"NEW COCORO HOME",
-    tag:"IoT・アプリ",
-    eyebrow:"CASE 01  —  IoT・アプリ",
-    lede:"IoT家電アプリ「ココロホーム」の主要機能を統合した、新しいトップ画面のUIデザイン。",
-    meta:{Client:"シャープ",Role:"UIデザイン",Year:"2022 — 2023",Deliverables:"iOS・Androidアプリ"},
-    headline:"カオスを、ひとつのトップ画面に。",
-    overview:"主要機能「タイムライン・機器リスト・サービスリスト」を統合した新しいトップ画面を提案。家電カードUIをリデザインし、ぱっと見で操作したい家電を選べるようにしました。",
-    process:"「IoT家電の多様な機能とサービスが入り乱れたカオス状態」が課題でした。機能ごとに情報量がバラバラで埋もれていた情報を、TOP画面への再レイアウトで解きほぐしました。",
-    metrics:[["3→1","主要機能をTOPに統合"],["統一","カードUIの情報量"],["即","お知らせを最上部に"]],
-    hue:215, accent:"#0a0a0a",
+    slug:"new-cocoro-home",
+    tags:["UIデザイン","IoT家電アプリ","情報設計"],
+    period:"2022.10 ~ 2023.03",
+    overview:"IoT家電アプリ「ココロホーム」の主要機能を統合した新しい「トップ画面」のUIをデザイン。多様な機能とサービスが入り乱れたカオス状態を、タイムライン・機器リスト・サービスリストの統合で解消しました。",
+    design:[
+      {heading:"家電カードUIを再設計し、選びやすく。",body:"入り乱れた機能をTOP画面に再レイアウトし、家電のカードUIをリデザイン。ユーザーがぱっと見で操作したい家電を選べ、より素早く積極的に利用できるカタチを提案しました。",img:"02.png"},
+      {heading:"必要な情報が、埋もれない通知設計へ。",body:"タイムライン画面から家電のお知らせだけをフィルタリングした通知バーをレイアウト。家電ごとにバラバラだった情報量を統一し、必要な情報が埋もれないようにしました。",img:"03.png"},
+      {heading:"家電未登録の状態にも、ワクワク感を。",body:"家電が未登録の状態も無機質にせず、つないだ後の期待感が伝わるイラストを配置。使い始める前からポジティブな体験を演出しました。"},
+    ],
+    process:[],
+    outcome:[],
+    hue:215,
   },
   {
     title:"COCORO AIR リデザイン",
-    tag:"IoT・リデザイン",
-    eyebrow:"CASE 02  —  IoT・リデザイン",
-    lede:"IoT空調家電アプリ「ココロエアー」を、操作の可否が一目で伝わるUIへリデザイン。",
-    meta:{Client:"シャープ",Role:"UIデザイン / リデザイン",Year:"2020 — 2021",Deliverables:"iOS・Androidアプリ"},
-    headline:"操作できる場所が、一目でわかる。",
+    slug:"cocoro-air-redesign",
+    tags:["UIデザイン","リデザイン","IoT家電アプリ"],
+    period:"2020.12 ~ 2021.05",
     overview:"エアコンや空気清浄機の遠隔操作、消耗度が確認できる「ココロエアー」をリデザイン。誤操作の多い表示部をボタン化し、機能が伝わるアイコンへ変更しました。",
-    process:"設定温度やモードの「表示箇所」と「操作箇所」が離れ、どこを操作できるか分かりづらい状態でした。部屋の状態はカラー、機器操作はグレーで、情報の種類を色で区別しました。",
-    metrics:[["11/11","UTで全員が新デザインを支持"],["2層","状態と操作を色で分離"],["前面化","深い階層の機能を表に"]],
-    hue:200, accent:"#0a0a0a",
+    design:[
+      {heading:"操作できる場所が、一目でわかる。",body:"部屋の状態はカラー、機器操作はグレーで、情報の種類を色で区別。設定温度やモードの「表示箇所」と「操作箇所」が離れ、どこを操作できるか分かりづらかった状態を改善しました。",img:"03.png"},
+      {heading:"機能にアクセスしやすいUIへ。",body:"ボトムナビを各機能へのナビゲーションに使い、機器操作以外の価値も前面化。お手入れ・消耗品状況へのリンクをボトムナビゲーションに配置し、様々な機能へのタッチポイントを提供しました。",img:"04.png"},
+    ],
+    process:[
+      {heading:"UTで検証し、全員が新デザインを支持。",body:"改善案をユーザーテストにかけたところ、11人中11人が新デザインを支持。深い階層にあった機能も前面化し、迷わず操作できる状態を確認しました。"},
+    ],
+    outcome:[
+      {value:"11/11",label:"UTで全員が新デザインを支持"},
+      {value:"2層",label:"状態と操作を色で分離"},
+      {value:"前面化",label:"深い階層の機能を表に"},
+    ],
+    hue:200,
   },
   {
     title:"家電登録フロー改善",
-    tag:"UX・フロー改善",
-    eyebrow:"CASE 03  —  UX・フロー改善",
-    lede:"ココロホームの機器登録UIを、一目で操作が分かるフローへ改善。",
-    meta:{Client:"シャープ",Role:"UIデザイン",Year:"2022 — 2023",Deliverables:"iOS・Androidアプリ"},
-    headline:"迷わず進める、登録フローへ。",
-    overview:"利用頻度が少ないUIだからこそ、一目で操作が分かるデザインを目指しました。テキストボタンからカードUIに変更し、画像で視覚的に説明しています。",
-    process:"従来はテキスト説明の画面が多く、視覚的な強弱がないため直感的に操作が分かりませんでした。家電のジャンルやモデルで分岐する100超の遷移をFigmaで可視化して整理しました。",
-    metrics:[["100+","可視化した画面遷移"],["カードUI","テキスト説明から置換"],["最小限","説明文・ボタン文言を削減"]],
-    hue:30, accent:"#0a0a0a",
+    slug:"device-registration-flow",
+    tags:["UIデザイン","UXフロー改善","IoT家電アプリ"],
+    period:"2022.10 ~ 2023.03",
+    overview:"ココロホームの機器登録UIを、一目で操作が分かるフローへ改善。利用頻度が少ないUIだからこそ、直感的に分かるデザインを目指しました。",
+    design:[
+      {heading:"迷わず進める、登録フローへ。",body:"テキストボタンからカードUIに変更し、画像で視覚的に説明。従来はテキスト説明が中心で視覚的な強弱がなく、直感的に操作が分かりませんでした。",img:"02.png"},
+    ],
+    process:[
+      {heading:"100超の遷移を可視化して整理。",body:"家電のジャンルやモデルで分岐する100超の画面遷移をFigmaで可視化。説明文やボタン文言も見直し、最小限の言葉で伝わる設計に整理しました。",img:"03.png"},
+    ],
+    outcome:[
+      {value:"100+",label:"可視化した画面遷移"},
+      {value:"カードUI",label:"テキスト説明から置換"},
+      {value:"最小限",label:"説明文・ボタン文言を削減"},
+    ],
+    hue:30,
   },
   {
     title:"省エネレポート",
-    tag:"データ可視化",
-    eyebrow:"CASE 04  —  データ可視化",
-    lede:"冷蔵庫の省エネ運転効果を「杉の木インジケーター」で楽しく可視化したUI。",
-    meta:{Client:"シャープ",Role:"UIデザイン",Year:"2023",Deliverables:"iOS・Androidアプリ"},
-    headline:"省エネを、楽しく実感できる体験に。",
-    overview:"省エネ運転で削減できたCO2量をレポート。年間14kg（杉の木1本の年間CO2吸収量）を100%とした杉の木インジケーターで、イメージしづらい削減量を直感的に表現しました。",
-    process:"初期仕様は週間／年間のCO2削減量を積み上げただけで、何をすべきか分からない画面でした。年間14kg以上の削減で小鳥がお祝いする隠し要素で、達成感を演出しました。",
-    metrics:[["14kg","杉の木1本=指標"],["直感","数値を杉の木で可視化"],["達成感","隠し要素で楽しさを設計"]],
-    hue:120, accent:"#0a0a0a",
+    slug:"energy-saving-report",
+    tags:["UIデザイン","IoT家電アプリ","データ可視化"],
+    period:"2023.07 ~ 08",
+    overview:"冷蔵庫の省エネ運転による削減CO2量を可視化する「省エネレポート」のUIをデザイン。年間削減量14kg（杉の木1本の年間CO2吸収量）を100%とした杉の木インジケーターで、分かりづらい削減量を直感的に伝えます。",
+    design:[
+      {heading:"杉の木インジケーターで、削減量を直感的に。",body:"杉の木1本の年間CO2吸収量を指標としたメーターでCO2削減量を表現。一目で成果が分かり、興味を持てる画面を目指し、イメージしづらい削減量を分かりやすく伝えています。",img:"02.png"},
+      {heading:"小さなご褒美で、続けたくなる仕掛けに。",body:"年間14kg以上のCO2を削減すると小鳥がお祝いしてくれる隠し要素を用意。少しずつ色づいていく杉の木をチェックする楽しさと、達成感を演出しました。"},
+    ],
+    process:[
+      {heading:"積み上げ型の数値表示から、意図ある体験へ。",body:"初期仕様は週間・年間のCO2削減量とイラストを積み上げただけで、何をすべきか分からない画面でした。企画意図を汲み、プロトタイピングと並行してコンセプトを明確化しました。",img:"03.png"},
+      {heading:"振り切った提案で、コンセプトを言語化。",body:"年間ベース・週間ベースそれぞれに振り切った案を提案したところ「年間を見せたい」と回答を得て、コンセプトを明文化し最終調整しました。"},
+    ],
+    outcome:[],
+    hue:120,
   },
   {
-    title:"COCORO STORE アイコン",
-    tag:"アイコン・グラフィック",
-    eyebrow:"CASE 05  —  アイコン・グラフィック",
-    lede:"シャープ公式ECアプリ「ココロストア」の、既存サービスに埋没しないアプリアイコン。",
-    meta:{Client:"シャープ",Role:"グラフィックデザイン",Year:"2023",Deliverables:"アプリアイコン"},
-    headline:"埋もれない、ECらしいアイコン。",
-    overview:"40〜60代がメインユーザーのECアプリアイコンをデザイン。ココロピンク × ビタミンカラーのグラデーションでエネルギッシュさを、ショッパーモチーフで気軽さを表現しました。",
-    process:"ココロサービスのアイコンはフォーマット化され個性に乏しいのが課題でした。立ち位置の異なるストアが埋没しないよう、ストアやホーム画面での見え方を常にプレビューしながら検討しました。",
-    metrics:[["差別化","既存アイコン群で埋没しない"],["実機検証","配置時の見え方を確認"],["EC","親しみと活気を表現"]],
-    hue:330, accent:"#0a0a0a",
+    title:"COCORO STORE アイコンデザイン",
+    slug:"cocoro-store-icon",
+    tags:["グラフィックデザイン","アプリアイコン","ブランディング"],
+    period:"2023.07",
+    overview:"シャープ公式ECサイト「COCORO STORE」のアプリアイコンをデザイン。フォーマット化されたココロサービスのアイコン群の中で、立ち位置の異なるCOCORO STOREが埋没しないアイコンを目指しました。",
+    design:[
+      {heading:"エネルギッシュで、目を引くアイコンへ。",body:"「健康にまつわる商品を拡充し、ご年配の健やかな生活に寄与したい」という担当者の想いと、40〜60代がメインユーザーであることから、目を引くアイコンを検討しました。",img:"02.png"},
+      {heading:"色とモチーフで、親しみやすさを演出。",body:"最終案は、ココロピンクとビタミンカラーのグラデーションでエネルギッシュな印象を、気軽にお買い物できるイメージを踏襲したショッパーモチーフで表現しました。"},
+    ],
+    process:[
+      {heading:"シルエットモチーフを軸に、方向性を模索。",body:"他のココロアプリアイコンがシルエットモチーフであることから、COCORO STOREもこれをベースに検討。ECにまつわる要素を具象・抽象さまざまな方向からアイデア展開しました。",img:"03.png"},
+      {heading:"実機プレビューで、見え方を綿密に検証。",body:"ストアやホーム画面での見え方を常にプレビューしながら、既存のアイコン群の中で違和感のないデザインになるよう検討を重ねました。",img:"04.png"},
+    ],
+    outcome:[],
+    hue:330,
   },
   {
     title:"データ分析ツール導入提案",
-    tag:"データ分析",
-    eyebrow:"CASE 06  —  データ分析",
-    lede:"スマホWebアプリ「ココロエアー」へのデータ分析ツール導入を提案し、導入を実現。",
-    meta:{Client:"シャープ",Role:"データ分析",Year:"2022",Deliverables:"導入提案・Webアプリ"},
-    headline:"定性に、定量の視点を。",
-    overview:"Google Analytics と User Insight を導入する提案。定性調査が中心だった開発に、データ分析による定量調査のアプローチを持ち込みました。",
-    process:"事業部にはデータ分析の経験がありませんでした。「初歩的な知識」「ツールでできること」「ココロエアーでできる分析」を、リテラシーに寄り添って丁寧に説明しました。",
-    metrics:[["導入実現","GA ＋ User Insight"],["0→1","事業部の分析基盤を立ち上げ"],["+定量","定性中心の改善に視点を追加"]],
-    hue:150, accent:"#0a0a0a",
+    slug:"data-analytics-proposal",
+    tags:["データ分析","導入提案","Webアプリ"],
+    period:"2022.05 ~ 10",
+    overview:"スマホWebアプリ「ココロエアー」へのデータ分析ツール導入を提案し、導入を実現。定性調査が中心だった開発に、データ分析による定量調査のアプローチを持ち込みました。",
+    design:[
+      {heading:"定性に、定量の視点を。",body:"Google Analytics と User Insight を導入する提案をまとめ、事業部にプレゼン。データが語る事実を、デザイン判断の材料に加えられる状態を目指しました。",img:"02.png"},
+      {heading:"リテラシーに寄り添い、丁寧に説明。",body:"事業部にはデータ分析の経験がありませんでした。「初歩的な知識」「ツールでできること」「ココロエアーでできる分析」を、段階を踏んで説明しました。",img:"03.png"},
+    ],
+    process:[],
+    outcome:[
+      {value:"導入実現",label:"GA ＋ User Insight"},
+      {value:"0→1",label:"事業部の分析基盤を立ち上げ"},
+      {value:"+定量",label:"定性中心の改善に視点を追加"},
+    ],
+    hue:150,
   },
   {
     title:"otomonie UIディレクション",
-    tag:"IoT・UIディレクション",
-    eyebrow:"CASE 07  —  IoT・UIディレクション",
-    lede:"マンション専用IoTアプリ「otomonie」の、UIデザイン方向性検討とクライアント合意形成。",
-    meta:{Client:"シャープ（H社向けOEM）",Role:"UIディレクション",Year:"2021",Deliverables:"iOS・Androidアプリ"},
-    headline:"デザインの振れ幅で、納得感をつくる。",
-    overview:"マンション専用IoTアプリ「otomonie」にて、UIデザインの方向性検討からクライアントへのプレゼンテーションまでを担当しました。自宅の家電の遠隔操作や、宅配ボックスの荷物確認、マンションからのお知らせ確認など、暮らしに寄り添う機能を備えたアプリです。",
-    process:"H社へのOEM製品開発として進行したこのプロジェクトでは、クライアントの中でアプリのデザインイメージが明確に固まっていないという課題がありました。そこで方向性の異なるデザインを幅広く提示し、クライアントと共に絞り込んでいくプロセスを重ねることで、納得感のあるデザインへと収束させました。",
-    metrics:[["6案","2回にわたり幅広いデザインを提示"],["合意形成","中立〜振り切った案で意見を引き出す"],["リリース済み","otomonieとして提供中"]],
-    hue:38, accent:"#0a0a0a",
+    slug:"otomonie",
+    tags:["UIディレクション","IoT","提案"],
+    period:"2021.06 ~ 08",
+    overview:"マンション専用IoTアプリ「otomonie」にて、UIデザインの方向性検討からクライアントへのプレゼンテーションまでを担当。自宅の家電の遠隔操作や、宅配ボックスの荷物確認、マンションからのお知らせ確認など、暮らしに寄り添う機能を備えたアプリです。",
+    design:[
+      {heading:"第二の居住空間のような、あたたかいアプリへ。",body:"単身者からファミリーまで幅広いユーザーを想定し、「第二の居住空間」のようなアプリをデザイン。透明感ある実写の室内イメージで、シンプルながら温かみのある印象を目指しました。",img:"02.png"},
+      {heading:"部屋のモノ感を、大きなアイコンで表現。",body:"豊富なイラストと「部屋のモノ感」のある大きなアイコンボタンを採用。プライマリーカラーのオレンジで、暮らしに陽気なイメージをプラスしました。"},
+    ],
+    process:[
+      {heading:"中立案を軸に、振れ幅のある提案を。",body:"クライアントの中でアプリのデザインイメージが明確に固まっていない課題がありました。中立な案を軸に、シックな案とユニークな案へ振り切って提案し、2回にわたり計6案を提示しました。",img:"03.png"},
+      {heading:"居住空間のイメージごと、選べるように。",body:"アプリと共に居住空間のイメージも膨らませ、マンションのビジョンに最も合う案を選べるように工夫。クライアントと一緒に絞り込み、納得感のあるデザインへ収束させました。",img:"04.png"},
+    ],
+    outcome:[
+      {value:"6案",label:"2回にわたり幅広いデザインを提示"},
+      {value:"合意形成",label:"中立〜振り切った案で意見を引き出す"},
+      {value:"リリース済み",label:"otomonieとして提供中"},
+    ],
+    hue:38,
   },
 ];
 
-/* ============== TOP THUMBS ============== */
-const grid=document.getElementById('grid');
+/* ============== THUMB ART ============== */
 function thumbSvg(hue,seed){
-  // simple deterministic stripes/dots pattern
   const c1=`hsl(${hue} 8% 88%)`;
   const c2=`hsl(${hue} 12% 78%)`;
   const c3=`hsl(${hue} 22% 62%)`;
@@ -315,18 +363,22 @@ function thumbSvg(hue,seed){
     <rect x="${220-seed*10}" y="${40+seed*6}" width="${120+seed*6}" height="${120+seed*4}" fill="${c3}" opacity=".55"/>
   </svg>`;
 }
+
+/* ============== TOP THUMBS ============== */
+const grid=document.getElementById('grid');
+document.getElementById('totalCount').textContent = `01 — 0${WORKS.length}`;
 WORKS.forEach((w,i)=>{
   const el=document.createElement('div');
   el.className='card';
   el.dataset.i=i;
   el.innerHTML = `
-    <div class="card__thumb">${thumbSvg(w.hue,i)}</div>
+    <div class="card__thumb"><img src="works/images/${w.slug}/01.png" alt=""></div>
     <div class="card__meta">
       <div>
         <div class="card__title">${w.title}</div>
-        <div class="card__tag">${w.tag}</div>
+        <div class="card__tag">${w.tags.join('・')}</div>
       </div>
-      <div class="card__num">0${i+1} — 07</div>
+      <div class="card__num">0${i+1} — 0${WORKS.length}</div>
     </div>`;
   el.addEventListener('click',()=>openSheet(i));
   grid.appendChild(el);
@@ -335,7 +387,7 @@ WORKS.forEach((w,i)=>{
 /* ============== SHEET ============== */
 const sheet=document.getElementById('sheet');
 const backdrop=document.getElementById('backdrop');
-const closeBtn=document.getElementById('closeBtn');
+const nextBtn=document.getElementById('nextBtn');
 const prevBtn=document.getElementById('prevBtn');
 const sheetHead=document.getElementById('sheetHead');
 const pager=document.getElementById('pager');
@@ -349,42 +401,88 @@ let pagerWidth=0;
 function measure(){pagerWidth=pager.clientWidth}
 window.addEventListener('resize',measure);
 
+function sectionImg(slug,hue,seed,img){
+  return img ? `<img src="works/images/${slug}/${img}" alt="">` : thumbSvg(hue,seed);
+}
+function designHtml(sections,seed,hue,slug){
+  return sections.map((s,j)=>`
+    <div class="design-block">
+      <h3 class="design-h">${s.heading}</h3>
+      <p class="block-p">${s.body}</p>
+      <div class="sec-img">${sectionImg(slug,hue,seed+j+1,s.img)}</div>
+    </div>`).join('');
+}
+function processHtml(sections,seed,hue,slug){
+  return sections.map((s,j)=>`
+    <div class="process-block">
+      <h3 class="process-h">${s.heading}</h3>
+      <div class="sec-img">${sectionImg(slug,hue,seed+j+4,s.img)}</div>
+      <p class="block-p">${s.body}</p>
+    </div>`).join('');
+}
+function outcomeHtml(items){
+  return `<div class="outcome-list">${items.map(o=>`
+    <div class="outcome-row"><span class="n">${o.value}</span><span class="l">${o.label}</span></div>`).join('')}</div>`;
+}
+function relatedHtml(i){
+  const a=WORKS[(i+1)%WORKS.length];
+  const b=WORKS[(i+2)%WORKS.length];
+  const idxA=(i+1)%WORKS.length, idxB=(i+2)%WORKS.length;
+  return [[a,idxA],[b,idxB]].map(([w,idx])=>`
+    <div class="related-item" data-jump="${idx}">
+      <div class="related-thumb"><img src="works/images/${w.slug}/01.png" alt=""></div>
+      <div class="related-title">${w.title}</div>
+    </div>`).join('');
+}
+
 function slideHtml(w,i){
-  const galHtml=[1,2].map(()=>`<div>${thumbSvg(w.hue,i)}</div>`).join('');
-  const metaHtml=Object.entries(w.meta).map(([k,v])=>`<dt>${k.toUpperCase()}</dt><dd>${v}</dd>`).join('');
-  const metricsHtml=w.metrics.map(m=>`<div class="row"><span class="n">${m[0]}</span><span class="l">${m[1]}</span></div>`).join('');
-  const next=WORKS[(i+1)%WORKS.length];
+  const tagsHtml=w.tags.map(t=>`<span>${t}</span>`).join('');
   return `
-    <p class="s-eyebrow">${w.eyebrow}</p>
-    <h2 class="s-title">${w.title}</h2>
-    <p class="s-lede">${w.lede}</p>
-    <div class="s-hero">${thumbSvg(w.hue,i)}</div>
-    <dl class="meta-grid">${metaHtml}</dl>
-
-    <p class="section-label">概要</p>
-    <h3 class="section-h">${w.headline}</h3>
-    <p class="section-p">${w.overview}</p>
-
-    <p class="section-label">プロセス</p>
-    <h3 class="section-h">課題から、かたちへ。</h3>
-    <div class="gallery">${galHtml}</div>
-    <p class="section-p">${w.process}</p>
-
-    <p class="section-label">成果</p>
-    <div class="metrics">${metricsHtml}</div>
-
-    <div class="next">
-      <div>
-        <small>NEXT  →</small>
-        <b>${next.title}</b>
+    <div class="s-headgroup">
+      <div class="s-hero"><img src="works/images/${w.slug}/01.png" alt=""></div>
+      <h2 class="s-title">${w.title}</h2>
+      <div class="s-meta">
+        <p class="period">${w.period}</p>
+        <div class="tags-row">${tagsHtml}</div>
       </div>
-      <div class="arrow">→</div>
+    </div>
+
+    <div class="s-section">
+      <p class="section-label">OVERVIEW</p>
+      <p class="s-overview">${w.overview}</p>
+    </div>
+
+    ${w.design.length?`
+    <div class="s-section">
+      <p class="section-label">DESIGN</p>
+      ${designHtml(w.design,i,w.hue,w.slug)}
+    </div>`:''}
+
+    ${w.process.length?`
+    <div class="s-section">
+      <p class="section-label">PROCESS</p>
+      ${processHtml(w.process,i,w.hue,w.slug)}
+    </div>`:''}
+
+    ${w.outcome.length?`
+    <div class="s-section">
+      <p class="section-label">OUTCOME</p>
+      ${outcomeHtml(w.outcome)}
+    </div>`:''}
+
+    <div class="s-divider"></div>
+    <div class="s-section">
+      <p class="section-label">関連作品</p>
+      <div class="related-list">${relatedHtml(i)}</div>
     </div>
   `;
 }
 
 function buildSlides(){
   track.innerHTML = WORKS.map((w,i)=>`<section class="slide" data-i="${i}">${slideHtml(w,i)}</section>`).join('');
+  track.querySelectorAll('.related-item').forEach(el=>{
+    el.addEventListener('click',()=>setIndex(parseInt(el.dataset.jump,10)));
+  });
 }
 buildSlides();
 
@@ -416,8 +514,8 @@ function closeSheet(){
   sheet.setAttribute('aria-hidden','true');
 }
 
-closeBtn.addEventListener('click',closeSheet);
 prevBtn.addEventListener('click',()=>setIndex((currentIndex-1+WORKS.length)%WORKS.length));
+nextBtn.addEventListener('click',()=>setIndex((currentIndex+1)%WORKS.length));
 backdrop.addEventListener('click',closeSheet);
 
 /* ============== Horizontal swipe (pager) ============== */

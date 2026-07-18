@@ -4,9 +4,86 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portfolio Wireframes — Index</title>
+
+<!-- ============================================================
+     GREETING SPLASH
+     調整可能な値は :root の変数に集約。詳細は splash-handoff.md 参照。
+     ============================================================ -->
+<style>
+  :root {
+    --splash-bg: #fff;            /* サイトの初期背景(--bg)と揃えている */
+    --splash-ink: #1f2430;        /* 見出し文字色 */
+    --wave-duration: 2.1s;        /* 手を振る速さ */
+    --wave-delay: .55s;           /* 見出しが出てから振り始めるまでの"間" */
+    --rise-duration: .6s;         /* 見出しがふわっと現れる速さ */
+    --fade-duration: .5s;         /* スプラッシュが消えるフェード速さ */
+    --ease-out: cubic-bezier(.22,.61,.36,1);
+  }
+
+  html.is-loading, html.is-loading body { overflow: hidden; }
+
+  .splash {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    background: var(--splash-bg);
+    z-index: 9999;
+    transition: opacity var(--fade-duration) var(--ease-out),
+                visibility var(--fade-duration) var(--ease-out);
+  }
+  .splash.is-dismissed { opacity: 0; visibility: hidden; }
+
+  .splash__greeting {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+    font-size: clamp(30px, 8vw, 52px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--splash-ink);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: splash-rise var(--rise-duration) var(--ease-out) forwards;
+  }
+
+  .splash__hand {
+    display: inline-block;
+    transform-origin: 75% 80%;
+    animation: splash-wave var(--wave-duration) var(--ease-out) var(--wave-delay) 1 both;
+  }
+
+  @keyframes splash-rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes splash-wave {
+    0%   { transform: rotate(0deg); }
+    12%  { transform: rotate(14deg); }
+    32%  { transform: rotate(-9deg); }
+    52%  { transform: rotate(12deg); }
+    72%  { transform: rotate(-15deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .splash__greeting { animation: none; opacity: 1; transform: none; }
+    .splash__hand { animation: none; }
+  }
+</style>
+<noscript><style>.splash{ display:none !important; }</style></noscript>
+
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<div class="splash" id="splash" role="status" aria-live="polite">
+  <div class="splash__greeting">
+    <span>こんにちは</span>
+    <span class="splash__hand" aria-hidden="true">👋</span>
+  </div>
+</div>
 
 <header class="site-nav">
   <a class="brand" href="index.html">◼ Wireframes</a>
@@ -51,6 +128,47 @@
     <span><a href="wireframes.html">全体を1画面で比較する →</a></span>
   </div>
 </main>
+
+<script>
+  (function () {
+    var html = document.documentElement;
+    var splash = document.getElementById('splash');
+    if (!splash) return;
+
+    html.classList.add('is-loading');
+
+    var dismissed = false;
+    function dismiss() {
+      if (dismissed) return;
+      dismissed = true;
+      splash.classList.add('is-dismissed');
+      html.classList.remove('is-loading');
+      splash.addEventListener('transitionend', function () {
+        if (splash.parentNode) splash.parentNode.removeChild(splash);
+      }, { once: true });
+    }
+
+    // 初回訪問のみ最低 1.2s 見せる(挨拶が一瞬すぎて見えない問題への対応)。
+    // 再訪時は sessionStorage を見て即座に消す
+    var MIN = sessionStorage.getItem('seen-hi') ? 0 : 1200;
+    var startedAt = Date.now();
+    function dismissRespectingMin() {
+      var wait = Math.max(0, MIN - (Date.now() - startedAt));
+      setTimeout(function () {
+        dismiss();
+        sessionStorage.setItem('seen-hi', '1');
+      }, wait);
+    }
+
+    if (document.readyState === 'complete') {
+      dismissRespectingMin();
+    } else {
+      window.addEventListener('load', dismissRespectingMin);
+    }
+
+    setTimeout(dismiss, 5000);
+  })();
+</script>
 
 </body>
 </html>

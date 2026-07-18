@@ -209,6 +209,12 @@
 
   .s-overview{font-size:15px;line-height:1.5;color:var(--meta);margin:0}
 
+  /* POINT OF VIEW — Figma node 391:2064 */
+  .pov-block{background:#f3f3f3;border-radius:8px;padding:20px 16px 16px;display:flex;flex-direction:column;gap:8px}
+  .pov-block + .pov-block{margin-top:16px}
+  .pov-h{font-size:20px;font-weight:700;line-height:1.3;color:#000;margin:0;word-break:break-word}
+  .pov-p{font-size:14px;line-height:1.65;color:#000;margin:0}
+
   .design-block,.process-block{margin-bottom:24px}
   .design-block:last-child,.process-block:last-child{margin-bottom:0}
   .design-h{font-size:22px;font-weight:600;letter-spacing:-.005em;line-height:1.3;color:var(--ink);margin:0 0 8px}
@@ -225,11 +231,11 @@
 
   .s-divider{height:1px;background:#e0e0e0;margin:0 0 40px}
 
-  .related-list{display:flex;flex-direction:column;gap:16px}
-  .related-item{cursor:pointer;user-select:none}
-  .related-thumb{width:100%;height:96px;background:var(--ph);border-radius:4px;overflow:hidden;margin-bottom:8px}
+  .related-list{display:flex;gap:16px;align-items:flex-start}
+  .related-item{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:6px;cursor:pointer;user-select:none}
+  .related-thumb{width:100%;height:96px;background:var(--ph);border-radius:8px;overflow:hidden}
   .related-thumb svg,.related-thumb img{width:100%;height:100%;display:block;object-fit:cover}
-  .related-title{font-size:20px;line-height:1;letter-spacing:-.008em;color:var(--ink)}
+  .related-title{font-size:14px;line-height:1;letter-spacing:-.02em;color:#000;padding:0 4px;word-break:break-word}
 
   .swipe-hint{
     position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
@@ -298,6 +304,9 @@
 
 <script>
 /* ============== DATA ============== */
+/* 関連作品タップ時に開く遷移先（Figma） */
+const RELATED_URL = "https://www.figma.com/design/yEwsj3HeWuCuUNImuNn4NZ/Claude-Labo?node-id=391-2201&t=DWbERQAb0yM1LCn0-1";
+
 const WORKS = [
   {
     title:"COCORO HOME AI",
@@ -305,17 +314,16 @@ const WORKS = [
     ext:"jpg",
     tags:["UIデザイン","IoT家電アプリ","生成AI"],
     period:"2026.01 ~ 06",
-    overview:"IoT家電アプリ「COCORO HOME」に、家電に関する悩みを生成AIで解決するアシスタント機能のUIをデザインしました。対応機種の取扱説明書やFAQを学習し、シャープの一次情報にもとづいて的確に回答。登録済みの家電型番を参照し、該当する取説ページも画像で提示することで、「調べて終わり」にしない体験を目指しました。",
+    overview:"IoT家電アプリ「COCORO HOME」における、生成AIで家電の悩みを解決するアシスタント機能のUIデザインを担当しました。対応機種の取扱説明書やFAQを学習し、シャープの一次情報にもとづいて的確に回答。登録済みの家電型番を参照し、該当する取説ページを画像で提示したり、回答内容に即した設定UIを提示し、その場で機器を操作することで「調べて終わり」にしない体験が実現できました。",
+    pov:[
+      {heading:"「困ってから」ではなく、「もっと良く」を引き出すAIへ",body:"家電の相談は、エラーやトラブルが起きて「困ってから」に偏りがちです。COCORO HOME AIでは、洗濯物を上手に洗いたい・ふわふわに仕上げたいといった「もっと良く」使いたいという前向きな相談も引き出したいと考えました。そのため、ユーザーのやりたいこと優先で控えめに答えるのではなく、「こんなこともできますよ」と積極的に「やれること」を提案するふるまいを軸に据え、家電を楽しく快適に使い続けてもらうことを目指しました。"},
+    ],
     design:[
-      {heading:"質問サジェストで、AIとの会話を後押し。",body:"家電の相談は故障やエラーなど「困ってから」に偏りがち。トップに質問事例を並べ「こんなことも聞ける」と気づける入り口にしました。事例は開くたびに変わり、一次情報にもとづく回答には「シャープ公式回答」バッジを添えて信頼感を持たせています。",img:"02.jpg"},
-      {heading:"背景アニメーションで、AIの知性と寄り添いを表現。",body:"彩度の高いピンクとオレンジの円形グラデーションを、豊かな暮らしのイメージとして全画面に敷きました。思考中は横移動、書き出しは拡大縮小、話者交代は右への移動と、AIの状態を有機的な動きで伝え、画面全体で呼応する感覚を目指しました。",img:"03.jpg"},
-      {heading:"回答から、そのまま家電を操作できる。",body:"食材の保存方法などの回答には、対応する冷凍モードの設定ボタンを表示。確認モーダルと送信完了フィードバックまで設計し、「調べる」で終わらず「操作する」までを会話の中で完結させました。",img:"04.jpg"},
-      {heading:"アコーディオンで、初見の情報量をコントロール。",body:"モードの詳細説明はアコーディオンに畳み、気になる人だけが開いて読める形に。会話画面の文章量をコンパクトに保ち、あとから会話を遡るときも追いやすくしました。",img:"05.jpg"},
+      {heading:"質問サジェストで、AIとの会話を後押し",body:"家電の相談は「困ってから」に偏りがちですが、生成AIなら使い方や活用法まで幅広く答えられます。そこでCOCORO HOME AIでは、トップに質問事例を並べ、「こんな質問にも答えられる」と気づけるタッチポイントを設けました。事例は開くたびに変わるようにし、家電をより能動的に使いこなすきっかけになるようにしました。さらに、一次情報にもとづく回答には「シャープ公式回答」バッジを添え、気づきだけでなく安心して踏み出せる後押しになるよう工夫しました。",img:"02.jpg"},
+      {heading:"背景アニメーションで、AIの知性と寄り添いを表現",body:"彩度の高いピンクとオレンジの円形グラデーションを、豊かな暮らしのイメージとして背景に敷き、知性的で最先端な機能であることも印象づけました。思考中は横移動、書き出しは拡大縮小、話者交代は右への移動と、AIの状態を有機的な動きで伝えることで、待たされている感覚ではなく寄り添われている安心感を持ちながら、AIとの対話を心地よく続けられる体験を目指しました。",img:"03.jpg"},
+      {heading:"会話の流れを止めず、家電の操作までスムーズに完結",body:"食材の保存方法などの回答には、対応する冷凍モードの設定ボタンを表示。確認モーダルと送信完了フィードバックまで設計し、「調べる」で終わらず「操作する」までを会話の中で完結させました。モードの詳細説明はアコーディオンに畳み、気になる人だけが開いて読める形にすることで、会話画面の文章量もコンパクトに保ちました。",img:"04.jpg"},
     ],
-    process:[
-      {heading:"「困ってから」だけでなく「もっと良く」も引き出す。",body:"エラーやトラブルの「事後」だけでなく、上手に洗いたい・ふわふわに仕上げたいといった「事前」の前向きな相談も想定。幅広く家事について問い合わせられる関係性を、サジェストの切り口から設計しました。"},
-      {heading:"「控えめ」ではなく「提案する」AIとして。",body:"他社の対話AIがユーザーのやりたいこと優先の控えめな立ち位置なのに対し、COCORO HOME AIは「やれること」を積極的に訴求。家電を楽しく快適に使い続けてもらうことをゴールに、提案型のふるまいを軸に据えました。",},
-    ],
+    process:[],
     outcome:[],
     hue:350,
   },
@@ -325,10 +333,13 @@ const WORKS = [
     tags:["UIデザイン","IoT家電アプリ","情報設計"],
     period:"2025.10 ~ 2026.03",
     overview:"IoT家電アプリ「COCORO HOME」の主要機能を統合した新しい「トップ画面」のUIをデザインしました。リリースから歳月を重ねることで累積した多様な機能とサービスを整理し、再び使いやすいUIにリデザインしました。",
+    pov:[
+      {heading:"増え続ける家電を、迷わず選べる土台へ",body:"本プロジェクトは、機器リストの改善からスタートしました。将来的なMatter対応で接続台数の増加が見込まれる一方、家電ごとに不揃いな情報量やココロピンクの過度な利用で画面は見づらくなっていました。そこで個々の機能を足すのではなく、情報量と配色のルールを揃えて一望性を取り戻し、台数が増えても破綻しない「増えても選びやすい」トップ画面を核に据えることを出発点としました。"},
+    ],
     design:[
       {heading:"家電カードUIを再設計し、選びやすく。",body:"入り乱れた機能をTOP画面に再レイアウトし、家電のカードUIをリデザイン。ユーザーがぱっと見で操作したい家電を選べ、より素早く積極的に利用できるカタチを提案しました。",img:"02.png"},
       {heading:"必要な情報が、埋もれない通知設計へ。",body:"タイムライン画面から家電のお知らせだけをフィルタリングした通知バーをレイアウト。家電ごとにバラバラだった情報量を統一し、必要な情報が埋もれないようにしました。",img:"03.png"},
-      {heading:"家電未登録の状態にも、ワクワク感を。",body:"家電が未登録の状態も無機質にせず、つないだ後の期待感が伝わるイラストを配置。使い始める前からポジティブな体験を演出しました。"},
+      {heading:"家電アイコン可愛くしたよ",body:"家電が未登録の状態も無機質にせず、つないだ後の期待感が伝わるイラストを配置。使い始める前からポジティブな体験を演出しました。"},
     ],
     process:[],
     outcome:[],
@@ -502,6 +513,13 @@ window.addEventListener('resize',measure);
 function sectionImg(slug,hue,seed,img){
   return img ? `<img src="works/images/${slug}/${img}" alt="">` : thumbSvg(hue,seed);
 }
+function povHtml(sections){
+  return sections.map(s=>`
+    <div class="design-block">
+      <h3 class="design-h">${s.heading}</h3>
+      <p class="block-p">${s.body}</p>
+    </div>`).join('');
+}
 function designHtml(sections,seed,hue,slug){
   return sections.map((s,j)=>`
     <div class="design-block">
@@ -516,6 +534,13 @@ function processHtml(sections,seed,hue,slug){
       <h3 class="process-h">${s.heading}</h3>
       ${s.img?`<div class="sec-img">${sectionImg(slug,hue,seed+j+4,s.img)}</div>`:''}
       <p class="block-p">${s.body}</p>
+    </div>`).join('');
+}
+function povHtml(items){
+  return items.map(s=>`
+    <div class="pov-block">
+      <h3 class="pov-h">${s.heading}</h3>
+      <p class="pov-p">${s.body}</p>
     </div>`).join('');
 }
 function outcomeHtml(items){
@@ -550,6 +575,12 @@ function slideHtml(w,i){
       <p class="s-overview">${w.overview}</p>
     </div>
 
+    ${w.pov&&w.pov.length?`
+    <div class="s-section">
+      <p class="section-label">POINT OF VIEW</p>
+      ${povHtml(w.pov)}
+    </div>`:''}
+
     ${w.design.length?`
     <div class="s-section">
       <p class="section-label">DESIGN</p>
@@ -579,7 +610,7 @@ function slideHtml(w,i){
 function buildSlides(){
   track.innerHTML = WORKS.map((w,i)=>`<section class="slide" data-i="${i}">${slideHtml(w,i)}</section>`).join('');
   track.querySelectorAll('.related-item').forEach(el=>{
-    el.addEventListener('click',()=>setIndex(parseInt(el.dataset.jump,10)));
+    el.addEventListener('click',()=>window.open(RELATED_URL,'_blank','noopener'));
   });
 }
 buildSlides();

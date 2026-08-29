@@ -11,19 +11,27 @@
 
 ココロホームの機器登録UIを、一目で操作が分かるフローへ改善。利用頻度が少ないUIだからこそ、直感的に分かるデザインを目指しました。
 
+![](./images/device-registration-flow/02.png)
+*アプリの主要画面をまとめた全体像（仮）*
+
 ## DESIGN
 
 ### 迷わず進める、登録フローへ。
 テキストボタンからカードUIに変更し、画像で視覚的に説明。従来はテキスト説明が中心で視覚的な強弱がなく、直感的に操作が分かりませんでした。
 
-![](./images/device-registration-flow/02.png)
+![](./images/device-registration-flow/03.png)
+
+### 全体像
+プレースホルダー — UX全体のボリューム感が伝わる全画面ビジュアルを配置予定。
+
+![](./images/device-registration-flow/04.png)
 
 ## PROCESS
 
 ### 100超の遷移を可視化して整理。
 家電のジャンルやモデルで分岐する100超の画面遷移をFigmaで可視化。説明文やボタン文言も見直し、最小限の言葉で伝わる設計に整理しました。
 
-![](./images/device-registration-flow/03.png)
+![](./images/device-registration-flow/05.png)
 
 ## OUTCOME
 

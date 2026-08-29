@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>index デザイン検討 — 3案</title>
+<style>
+  /* ============ 共通 ============ */
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --ink:#0a0a0a;
+    --muted:#737373;
+    --bg:#ffffff;
+    --ph:#ececec;
+    --mincho:"Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+    --gothic:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
+  }
+  html{-webkit-font-smoothing:antialiased;text-size-adjust:100%}
+  body{background:#dcdcdc;font-family:var(--gothic);color:var(--ink)}
+  img{display:block;width:100%;height:100%;object-fit:cover;background:var(--ph)}
+  .variant{display:none}
+  body[data-v="a"] .v-a{display:block}
+  body[data-v="b"] .v-b{display:block}
+  body[data-v="c"] .v-c{display:block}
+
+  /* ============ スイッチャー ============ */
+  .switcher{
+    position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:100;
+    display:flex;gap:2px;background:rgba(20,20,20,.92);backdrop-filter:blur(8px);
+    border-radius:99px;padding:4px;box-shadow:0 6px 24px rgba(0,0,0,.25);
+  }
+  .switcher button{
+    appearance:none;border:0;background:transparent;color:#999;
+    font-family:var(--gothic);font-size:12px;font-weight:600;letter-spacing:.04em;
+    padding:8px 16px;border-radius:99px;cursor:pointer;transition:all .2s;white-space:nowrap;
+  }
+  .switcher button.on{background:#fff;color:#0a0a0a}
+
+  /* ============================================================
+     案A 「静」 — 縦書き × 明朝
+  ============================================================ */
+  .v-a{--a-bg:#f7f6f3}
+  .v-a .frame{max-width:430px;margin:0 auto;min-height:100dvh;background:var(--a-bg)}
+  .v-a .inner{padding:0 24px 120px}
+
+  .v-a .nav{display:flex;justify-content:space-between;align-items:center;height:56px}
+  .v-a .nav .logo{font-family:var(--mincho);font-size:13px;letter-spacing:.24em;font-weight:600}
+  .v-a .nav .menu{font-size:11px;letter-spacing:.2em;color:var(--muted)}
+
+  .v-a .hero{
+    display:flex;justify-content:space-between;align-items:stretch;
+    padding:40px 0 56px;min-height:340px;
+  }
+  .v-a .hero-v{
+    writing-mode:vertical-rl;
+    font-family:var(--mincho);font-weight:600;
+    font-size:30px;line-height:2.1;letter-spacing:.16em;
+    font-feature-settings:"vpal";
+  }
+  .v-a .hero-side{
+    writing-mode:vertical-rl;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    font-size:11px;letter-spacing:.3em;color:var(--muted);
+    font-family:var(--mincho);
+  }
+  .v-a .rule{height:1px;background:rgba(10,10,10,.16)}
+
+  .v-a .list{padding-top:8px}
+  .v-a .item{padding:36px 0;border-bottom:1px solid rgba(10,10,10,.1)}
+  .v-a .item:last-child{border-bottom:0}
+  .v-a .item .thumb{aspect-ratio:4/3;overflow:hidden;margin-bottom:20px}
+  .v-a .item .num{
+    font-family:var(--mincho);font-size:11px;letter-spacing:.3em;color:var(--muted);
+    margin-bottom:10px;
+  }
+  .v-a .item .title{
+    font-family:var(--mincho);font-size:20px;font-weight:600;
+    letter-spacing:.08em;line-height:1.7;margin-bottom:8px;
+  }
+  .v-a .item .tags{
+    font-size:11px;letter-spacing:.12em;color:var(--muted);line-height:2;
+    font-family:var(--mincho);
+  }
+  .v-a .foot{
+    padding:64px 0 0;text-align:center;
+    font-family:var(--mincho);font-size:10px;letter-spacing:.4em;color:var(--muted);
+  }
+
+  /* ============================================================
+     案B 「目次」 — 明朝の横組みエディトリアル（文字主体の索引）
+  ============================================================ */
+  .v-b .frame{max-width:430px;margin:0 auto;min-height:100dvh;background:#fff}
+  .v-b .inner{padding:0 22px 120px}
+
+  .v-b .nav{display:flex;justify-content:space-between;align-items:baseline;padding:22px 0 0}
+  .v-b .nav .logo{font-size:12px;font-weight:600;letter-spacing:.18em}
+  .v-b .nav .yr{font-size:11px;color:var(--muted);letter-spacing:.1em}
+
+  .v-b .hero{padding:56px 0 48px}
+  .v-b .hero h1{
+    font-family:var(--mincho);font-weight:500;
+    font-size:26px;line-height:2.05;letter-spacing:.1em;
+  }
+  .v-b .hero .lede{
+    margin-top:22px;font-family:var(--mincho);
+    font-size:12.5px;line-height:2.2;letter-spacing:.08em;color:var(--muted);
+  }
+  .v-b .sec-label{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-top:1px solid var(--ink);padding:12px 0 0;margin-bottom:4px;
+  }
+  .v-b .sec-label span{font-size:10px;letter-spacing:.28em;color:var(--muted)}
+
+  .v-b .row{
+    display:flex;gap:16px;align-items:center;
+    padding:22px 0;border-bottom:1px solid rgba(10,10,10,.12);
+  }
+  .v-b .row .no{
+    font-family:var(--mincho);font-size:13px;color:var(--muted);
+    min-width:2.2em;letter-spacing:.05em;
+  }
+  .v-b .row .txt{flex:1;min-width:0}
+  .v-b .row .title{
+    font-family:var(--mincho);font-size:16.5px;font-weight:600;
+    letter-spacing:.06em;line-height:1.75;
+  }
+  .v-b .row .meta{
+    margin-top:5px;font-size:10.5px;letter-spacing:.1em;color:var(--muted);line-height:1.9;
+  }
+  .v-b .row .thumb{
+    width:76px;height:76px;flex:none;overflow:hidden;border-radius:2px;
+  }
+  .v-b .foot{
+    margin-top:56px;padding-top:14px;border-top:1px solid var(--ink);
+    display:flex;justify-content:space-between;
+    font-size:10px;letter-spacing:.2em;color:var(--muted);
+  }
+
+  /* ============================================================
+     案C 「骨格」 — ゴシック × 大きな級数（新聞・スイスタイポ的）
+  ============================================================ */
+  .v-c .frame{max-width:430px;margin:0 auto;min-height:100dvh;background:#fff}
+  .v-c .inner{padding:0 18px 120px}
+
+  .v-c .nav{
+    display:flex;justify-content:space-between;align-items:center;
+    height:52px;border-bottom:2px solid var(--ink);
+  }
+  .v-c .nav .logo{font-size:13px;font-weight:800;letter-spacing:.06em}
+  .v-c .nav .menu{font-size:11px;font-weight:600;letter-spacing:.14em}
+
+  .v-c .hero{padding:36px 0 12px}
+  .v-c .hero .eyebrow{
+    font-size:10.5px;font-weight:600;letter-spacing:.22em;color:var(--muted);margin-bottom:18px;
+  }
+  .v-c .hero h1{
+    font-size:40px;font-weight:800;line-height:1.32;letter-spacing:.01em;
+    font-feature-settings:"palt";
+  }
+  .v-c .hero .stats{
+    display:flex;gap:0;margin:36px 0 0;border-top:2px solid var(--ink);
+  }
+  .v-c .hero .stat{
+    flex:1;padding:12px 0 14px;border-right:1px solid rgba(10,10,10,.15);
+  }
+  .v-c .hero .stat:last-child{border-right:0;text-align:right}
+  .v-c .hero .stat b{display:block;font-size:15px;font-weight:800;letter-spacing:.02em}
+  .v-c .hero .stat span{font-size:9.5px;letter-spacing:.16em;color:var(--muted)}
+
+  .v-c .grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(10,10,10,.15);border:1px solid rgba(10,10,10,.15);border-top:0}
+  .v-c .cell{background:#fff;padding:14px 12px 18px;position:relative}
+  .v-c .cell.wide{grid-column:1/-1}
+  .v-c .cell .no{
+    font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:12px;
+  }
+  .v-c .cell .thumb{aspect-ratio:4/3;overflow:hidden;margin-bottom:12px}
+  .v-c .cell.wide .thumb{aspect-ratio:16/9}
+  .v-c .cell .title{
+    font-size:14.5px;font-weight:700;line-height:1.55;letter-spacing:.01em;
+    font-feature-settings:"palt";margin-bottom:6px;
+  }
+  .v-c .cell.wide .title{font-size:18px}
+  .v-c .cell .tags{font-size:9.5px;letter-spacing:.06em;color:var(--muted);line-height:1.8}
+  .v-c .foot{
+    margin-top:0;border:1px solid rgba(10,10,10,.15);border-top:0;
+    padding:14px 12px;display:flex;justify-content:space-between;
+    font-size:10px;font-weight:600;letter-spacing:.14em;color:var(--muted);background:#fff;
+  }
+</style>
+</head>
+<body data-v="a">
+
+<!-- ============ 案A 「静」 ============ -->
+<div class="variant v-a">
+  <div class="frame"><div class="inner">
+    <nav class="nav"><span class="logo">伊藤太一</span><span class="menu">MENU</span></nav>
+    <div class="rule"></div>
+    <header class="hero">
+      <div class="hero-side"><span>UI / UX デザイナー — IoT・アプリ</span></div>
+      <h1 class="hero-v">暮らしに寄り添う、<br>IoT家電のUIを。</h1>
+    </header>
+    <div class="rule"></div>
+    <main class="list" id="listA"></main>
+    <footer class="foot">TAICHI ITO — PORTFOLIO</footer>
+  </div></div>
+</div>
+
+<!-- ============ 案B 「目次」 ============ -->
+<div class="variant v-b">
+  <div class="frame"><div class="inner">
+    <nav class="nav"><span class="logo">TAICHI ITO</span><span class="yr">2020 — 2026</span></nav>
+    <header class="hero">
+      <h1>暮らしに寄り添う、<br>IoT家電のUIを<br>つくっています。</h1>
+      <p class="lede">UI / UXデザイナー。IoT家電アプリの情報設計と画面デザインを軸に、提案からリリースまでを担当。</p>
+    </header>
+    <div class="sec-label"><span>SELECTED WORK</span><span id="countB"></span></div>
+    <main id="listB"></main>
+    <footer class="foot"><span>TAICHI ITO</span><span>PORTFOLIO</span></footer>
+  </div></div>
+</div>
+
+<!-- ============ 案C 「骨格」 ============ -->
+<div class="variant v-c">
+  <div class="frame"><div class="inner">
+    <nav class="nav"><span class="logo">■ TAICHI ITO</span><span class="menu">MENU</span></nav>
+    <header class="hero">
+      <p class="eyebrow">UI / UX DESIGNER — IOT・アプリ</p>
+      <h1>暮らしに寄り添う、<br>IoT家電のUIを。</h1>
+      <div class="stats">
+        <div class="stat"><b id="countC">08</b><span>WORKS</span></div>
+        <div class="stat"><b>2020—26</b><span>PERIOD</span></div>
+        <div class="stat"><b>IoT / APP</b><span>FIELD</span></div>
+      </div>
+    </header>
+    <main class="grid" id="listC"></main>
+    <footer class="foot"><span>TAICHI ITO</span><span>PORTFOLIO 2026</span></footer>
+  </div></div>
+</div>
+
+<!-- ============ 切り替え ============ -->
+<div class="switcher" role="tablist">
+  <button data-v="a" class="on">A 静</button>
+  <button data-v="b">B 目次</button>
+  <button data-v="c">C 骨格</button>
+</div>
+
+<script>
+const WORKS = [
+  {title:"NEW COCORO HOME", slug:"new-cocoro-home", tags:["UIデザイン","IoT家電アプリ","情報設計"], period:"2025.10 ~ 2026.03"},
+  {title:"COCORO HOME AI", slug:"cocoro-home-ai", ext:"jpg", tags:["UIデザイン","IoT家電アプリ","生成AI"], period:"2025.04 ~ 09"},
+  {title:"省エネレポート", slug:"energy-saving-report", tags:["UIデザイン","IoT家電アプリ","データ可視化"], period:"2023.07 ~ 08"},
+  {title:"COCORO STORE アイコンデザイン", slug:"cocoro-store-icon", tags:["グラフィックデザイン","アプリアイコン","ブランディング"], period:"2023.07"},
+  {title:"家電登録フロー改善", slug:"device-registration-flow", tags:["UIデザイン","UXフロー改善","IoT家電アプリ"], period:"2022.10 ~ 2023.03"},
+  {title:"データ分析ツール導入提案", slug:"data-analytics-proposal", tags:["データ分析","導入提案","Webアプリ"], period:"2022.05 ~ 10"},
+  {title:"otomonie UIディレクション", slug:"otomonie", tags:["UIディレクション","IoT家電アプリ","提案"], period:"2021.06 ~ 08"},
+  {title:"COCORO AIR リデザイン", slug:"cocoro-air-redesign", tags:["UIデザイン","リデザイン","IoT家電アプリ"], period:"2020.12 ~ 2021.05"},
+];
+const img = w => `works/images/${w.slug}/01.${w.ext||'png'}`;
+const pad = n => String(n).padStart(2,'0');
+const N = WORKS.length;
+
+/* 案A：漢数字の通し番号で書籍らしく */
+const kanji = ["一","二","三","四","五","六","七","八","九","十"];
+document.getElementById('listA').innerHTML = WORKS.map((w,i)=>`
+  <article class="item">
+    <div class="thumb"><img src="${img(w)}" alt="${w.title}" loading="lazy"></div>
+    <p class="num">其の${kanji[i]}　${w.period}</p>
+    <h2 class="title">${w.title}</h2>
+    <p class="tags">${w.tags.join("　／　")}</p>
+  </article>`).join('');
+
+/* 案B：目次型の行 */
+document.getElementById('countB').textContent = `${pad(1)} — ${pad(N)}`;
+document.getElementById('listB').innerHTML = WORKS.map((w,i)=>`
+  <article class="row">
+    <span class="no">${pad(i+1)}</span>
+    <div class="txt">
+      <h2 class="title">${w.title}</h2>
+      <p class="meta">${w.tags.join("・")}<br>${w.period}</p>
+    </div>
+    <div class="thumb"><img src="${img(w)}" alt="${w.title}" loading="lazy"></div>
+  </article>`).join('');
+
+/* 案C：グリッド（1件目はワイド） */
+document.getElementById('countC').textContent = pad(N);
+/* 1件目はワイド。残りが奇数なら最後もワイドにして空セルを作らない */
+const lastWide = (N-1) % 2 === 1;
+document.getElementById('listC').innerHTML = WORKS.map((w,i)=>`
+  <article class="cell${i===0 || (lastWide && i===N-1) ? ' wide':''}">
+    <p class="no">${pad(i+1)}</p>
+    <div class="thumb"><img src="${img(w)}" alt="${w.title}" loading="lazy"></div>
+    <h2 class="title">${w.title}</h2>
+    <p class="tags">${w.tags.join(" / ")}</p>
+  </article>`).join('');
+
+/* 切り替え */
+document.querySelectorAll('.switcher button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.body.dataset.v = b.dataset.v;
+    document.querySelectorAll('.switcher button').forEach(x=>x.classList.toggle('on',x===b));
+    window.scrollTo(0,0);
+  });
+});
+</script>
+</body>
+</html>

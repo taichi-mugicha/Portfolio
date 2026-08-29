@@ -11,17 +11,25 @@
 
 スマホWebアプリ「ココロエアー」へのデータ分析ツール導入を提案し、導入を実現。定性調査が中心だった開発に、データ分析による定量調査のアプローチを持ち込みました。
 
+![](./images/data-analytics-proposal/02.png)
+*アプリの主要画面をまとめた全体像（仮）*
+
 ## DESIGN
 
 ### 定性に、定量の視点を。
 Google Analytics と User Insight を導入する提案をまとめ、事業部にプレゼン。データが語る事実を、デザイン判断の材料に加えられる状態を目指しました。
 
-![](./images/data-analytics-proposal/02.png)
+![](./images/data-analytics-proposal/03.png)
 
 ### リテラシーに寄り添い、丁寧に説明。
 事業部にはデータ分析の経験がありませんでした。「初歩的な知識」「ツールでできること」「ココロエアーでできる分析」を、段階を踏んで説明しました。
 
-![](./images/data-analytics-proposal/03.png)
+![](./images/data-analytics-proposal/04.png)
+
+### 全体像
+プレースホルダー — UX全体のボリューム感が伝わる全画面ビジュアルを配置予定。
+
+![](./images/data-analytics-proposal/05.png)
 
 ## PROCESS
 

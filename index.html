@@ -95,6 +95,7 @@
   /* ===== TOP page ===== */
   .top{position:fixed;inset:0;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
   .top__inner{max-width:430px;margin:0 auto;padding:14px 20px 80px}
+  .top__inner{padding:calc(14px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
   .nav{display:flex;align-items:center;justify-content:space-between;height:52px}
   .logo{font-weight:700;font-size:15px;letter-spacing:.2px}
   .logo::before{content:"■";margin-right:6px}
@@ -130,7 +131,10 @@
   /* ===== Sheet (modal bottom sheet — Figma node 391:1676) ===== */
   .sheet{
     position:fixed;left:0;right:0;bottom:0;
+    /* vhはURLバーが隠れた最大高さを指すため、Android ChromeでURLバー表示中に
+       上端がはみ出して隠れる。dvhで実際の表示領域に追従させる（vhは非対応時の保険）。 */
     height:96vh;
+    height:96dvh;
     background:var(--bg);
     border-top-left-radius:var(--sheet-radius);
     border-top-right-radius:var(--sheet-radius);
@@ -162,6 +166,7 @@
   .sheet__nav{
     width:100%;display:grid;grid-template-columns:32px 1fr 32px;align-items:center;gap:8px;
     padding:0 20px 16px;
+    padding:0 calc(20px + env(safe-area-inset-right)) 16px calc(20px + env(safe-area-inset-left));
   }
   .sheet__title{font-weight:600;font-size:13px;text-align:center;letter-spacing:.12px;color:var(--ink)}
   .sheet__title small{display:block;font-weight:500;font-size:10px;letter-spacing:1.3px;color:var(--muted);margin-bottom:2px}
@@ -190,6 +195,7 @@
   .slide{
     flex:0 0 100%;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;
     padding:24px 20px 60px;
+    padding:24px calc(20px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));
   }
   .slide::-webkit-scrollbar{display:none}
 
@@ -215,7 +221,7 @@
   .pov-h{font-size:20px;font-weight:700;line-height:1.3;color:#000;margin:0;word-break:break-word}
   .pov-p{font-size:14px;line-height:1.65;color:#000;margin:0}
 
-  .design-block,.process-block{margin-bottom:24px}
+  .design-block,.process-block{margin-bottom:32px}
   .design-block:last-child,.process-block:last-child{margin-bottom:0}
   .design-h{font-size:22px;font-weight:600;letter-spacing:-.005em;line-height:1.3;color:var(--ink);margin:0 0 8px}
   .process-h{font-size:20px;font-weight:600;line-height:1.25;color:var(--ink);margin:0 0 8px}
@@ -223,6 +229,7 @@
   .sec-img{width:100%;background:var(--ph);border-radius:10px;overflow:hidden;margin-top:8px}
   .sec-img svg{width:100%;height:auto;aspect-ratio:772/480;display:block}
   .sec-img img{width:100%;height:auto;display:block}
+  .sec-caption{font-size:11px;line-height:1.5;color:var(--muted);margin:6px 2px 0}
 
   .outcome-list{display:flex;flex-direction:column;gap:16px}
   .outcome-row{background:#fafafa;border-radius:6px;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px}
@@ -309,23 +316,26 @@ const RELATED_URL = "https://www.figma.com/design/yEwsj3HeWuCuUNImuNn4NZ/Claude-
 
 const WORKS = [
   {
-    title:"COCORO HOME AI",
-    slug:"cocoro-home-ai",
-    ext:"jpg",
-    tags:["UIデザイン","IoT家電アプリ","生成AI"],
-    period:"2026.01 ~ 06",
-    overview:"IoT家電アプリ「COCORO HOME」における、生成AIで家電の悩みを解決するアシスタント機能のUIデザインを担当しました。対応機種の取扱説明書やFAQを学習し、シャープの一次情報にもとづいて的確に回答。登録済みの家電型番を参照し、該当する取説ページを画像で提示したり、回答内容に即した設定UIを提示し、その場で機器を操作することで「調べて終わり」にしない体験が実現できました。",
+    title:"ASEAN冷蔵庫 IoTアプリ",
+    slug:"asean-refrigerator-app",
+    tags:["UIデザイン","IoT家電","海外向けUI"],
+    period:"2025.09 ~ 2026.06",
+    overview:"ASEANの冷蔵庫にはじめて搭載されるIoTアプリ「AIoT Refrigerator」のUIデザインを担当しました。価格を据え置いたままシェア獲得を狙う戦略の中、温度設定やモード変更といった基本機能を、迷わず直感的に操作できる体験として設計しました。",
+    overviewImg:{placeholder:true,caption:"アプリの主要画面をまとめた全体像（仮）"},
     pov:[
-      {heading:"「困ってから」ではなく、「もっと良く」を引き出すAIへ",body:"家電の相談は、エラーやトラブルが起きて「困ってから」に偏りがちです。COCORO HOME AIでは、洗濯物を上手に洗いたい・ふわふわに仕上げたいといった「もっと良く」使いたいという前向きな相談も引き出したいと考えました。そのため、ユーザーのやりたいこと優先で控えめに答えるのではなく、「こんなこともできますよ」と積極的に「やれること」を提案するふるまいを軸に据え、家電を楽しく快適に使い続けてもらうことを目指しました。"},
+      {heading:"「自動で冷やす箱」から、\"選べる\"パートナーへ",body:"冷蔵庫は設置したら終わりの、意識の外にある家電になりがちです。ASEAN向けIoTアプリでは、キンキンに冷えたビールを飲みたい、急速冷凍でおいしさを保ちたいといった暮らしの目的に応じて保存方法を\"選べる\"存在として、UIで冷蔵庫とユーザーとの関係性を再構築することを設計の軸に据えました。",placeholder:true,caption:"課題を示すビジュアル（仮）"},
     ],
     design:[
-      {heading:"質問サジェストで、AIとの会話を後押し",body:"家電の相談は「困ってから」に偏りがちですが、生成AIなら使い方や活用法まで幅広く答えられます。そこでCOCORO HOME AIでは、トップに質問事例を並べ、「こんな質問にも答えられる」と気づけるタッチポイントを設けました。事例は開くたびに変わるようにし、家電をより能動的に使いこなすきっかけになるようにしました。さらに、一次情報にもとづく回答には「シャープ公式回答」バッジを添え、気づきだけでなく安心して踏み出せる後押しになるよう工夫しました。",img:"02.jpg"},
-      {heading:"背景アニメーションで、AIの知性と寄り添いを表現",body:"彩度の高いピンクとオレンジの円形グラデーションを、豊かな暮らしのイメージとして背景に敷き、知性的で最先端な機能であることも印象づけました。思考中は横移動、書き出しは拡大縮小、話者交代は右への移動と、AIの状態を有機的な動きで伝えることで、待たされている感覚ではなく寄り添われている安心感を持ちながら、AIとの対話を心地よく続けられる体験を目指しました。",img:"03.jpg"},
-      {heading:"会話の流れを止めず、家電の操作までスムーズに完結",body:"食材の保存方法などの回答には、対応する冷凍モードの設定ボタンを表示。確認モーダルと送信完了フィードバックまで設計し、「調べる」で終わらず「操作する」までを会話の中で完結させました。モードの詳細説明はアコーディオンに畳み、気になる人だけが開いて読める形にすることで、会話画面の文章量もコンパクトに保ちました。",img:"04.jpg"},
+      {heading:"機器の状態を理解し、思い通りに操作できるUIへ",body:"温度設定やモード変更など、冷蔵庫本体でできる操作をアプリでも同じように行えるようにしました。Express freezingやExpress coolなど機能ごとに説明を添え、設定変更時はスナックバーで確定を伝えることで、迷わず安心して操作できるようにしました。",img:"04.png"},
+      {heading:"食材から、最適な保存方法へ迷わず",body:"肉・魚・野菜・飲み物など保存したい食材を選ぶと、最適な保存モードと収納先をアプリが提案。該当ルームへ食材を入れるよう視覚的にガイドし、設定までをその場で完結させることで、専門的なモード名を意識せず保存方法にたどり着けるようにしました。",img:"05.png"},
+      {heading:"全体像",body:"プレースホルダー — UX全体のボリューム感が伝わる全画面ビジュアルを配置予定。",placeholder:true},
     ],
-    process:[],
+    process:[
+      {heading:"複雑な企画仕様を、整理し直す",body:"企画側のMode change・Temperature controlフローはモードごとの分岐が多く、画面同士の情報レベル感もバラバラでタップ数の多い仕様でした。情報設計をFixさせるところから着手し、直感的な導線に整理し直しました。"},
+      {heading:"海外6社をベンチマークし、立ち位置を把握",body:"Toshiba・Samsung・Haier・Midea・LG・Panasonicなど海外の冷蔵庫アプリを比較調査。各社のUIの整理度合いや情報設計の水準を把握した上で、SHARPらしい体験の方向性を検討しました。"},
+    ],
     outcome:[],
-    hue:350,
+    hue:260,
   },
   {
     title:"NEW COCORO HOME",
@@ -333,56 +343,41 @@ const WORKS = [
     tags:["UIデザイン","IoT家電アプリ","情報設計"],
     period:"2025.10 ~ 2026.03",
     overview:"IoT家電アプリ「COCORO HOME」の主要機能を統合した新しい「トップ画面」のUIをデザインしました。リリースから歳月を重ねることで累積した多様な機能とサービスを整理し、再び使いやすいUIにリデザインしました。",
+    overviewImg:{img:"02.png",caption:"アプリの主要画面をまとめた全体像（仮）"},
     pov:[
-      {heading:"増え続ける家電を、迷わず選べる土台へ",body:"本プロジェクトは、機器リストの改善からスタートしました。将来的なMatter対応で接続台数の増加が見込まれる一方、家電ごとに不揃いな情報量やココロピンクの過度な利用で画面は見づらくなっていました。そこで個々の機能を足すのではなく、情報量と配色のルールを揃えて一望性を取り戻し、台数が増えても破綻しない「増えても選びやすい」トップ画面を核に据えることを出発点としました。"},
+      {heading:"増え続ける家電を、迷わず選べる土台へ",body:"本プロジェクトは、機器リストの改善からスタートしました。将来的なMatter対応で接続台数の増加が見込まれる中、個々の機能を足すのではなく、情報量と配色のルールを揃えて一覧性を取り戻し、台数が増えても破綻しない「増えても選びやすい」トップ画面を核に据えることを出発点としました。",placeholder:true,caption:"課題を示すビジュアル（仮）"},
     ],
     design:[
-      {heading:"家電カードUIを再設計し、選びやすく。",body:"入り乱れた機能をTOP画面に再レイアウトし、家電のカードUIをリデザイン。ユーザーがぱっと見で操作したい家電を選べ、より素早く積極的に利用できるカタチを提案しました。",img:"02.png"},
-      {heading:"必要な情報が、埋もれない通知設計へ。",body:"タイムライン画面から家電のお知らせだけをフィルタリングした通知バーをレイアウト。家電ごとにバラバラだった情報量を統一し、必要な情報が埋もれないようにしました。",img:"03.png"},
-      {heading:"家電アイコン可愛くしたよ",body:"家電が未登録の状態も無機質にせず、つないだ後の期待感が伝わるイラストを配置。使い始める前からポジティブな体験を演出しました。"},
+      {heading:"機器ごとの情報量を揃え、一覧性を取り戻す",body:"家電ごとにバラバラだった表示項目を、部屋名・機器名・状態に統一。削った詳細情報はモーダルやボトムシート、遷移先のサービス側に割り切って預けました。カードは「選ぶ」ことに専念させ、台数が増えて積み上がっても崩れない一覧性を確保しています。",img:"04.png"},
+      {heading:"散らばっていた操作の入口を、ひとつに集約",body:"関連サービスの設定や詳しい操作は、カードごとに複数のボタンやアイコンから別々のダイアログ・ページに散らばっていました。これらを1つのメニューアイコンに集約し、開いた先はボトムシートかアプリ遷移のどちらかに統一。操作の入口をひとつに揃えました。",img:"05.png"},
+      {heading:"ココロピンクの使いどころを、絞り込む",body:"視覚的な優先度が高いポイントにだけ、ココロピンクの使いどころを限定。彩度と明度を上げて重たかった印象を軽やかに改善し、警告色に見えてしまう印象も払拭しました。",img:"06.png"},
+      {heading:"記号のアイコンにも、愛着を",body:"全体のデザインテイストに合わせ、抜け感のある軽やかなイラストへ刷新。差し色を加えて記号としてのアイコンにも愛着が持てるようにし、電源ON時は要素を足して家電がユーザーに働きかける楽しさを演出しました。",img:"07.png"},
+      {heading:"全体像",body:"プレースホルダー — UX全体のボリューム感が伝わる全画面ビジュアルを配置予定。",placeholder:true},
     ],
     process:[],
     outcome:[],
     hue:215,
   },
   {
-    title:"COCORO AIR リデザイン",
-    slug:"cocoro-air-redesign",
-    tags:["UIデザイン","リデザイン","IoT家電アプリ"],
-    period:"2020.12 ~ 2021.05",
-    overview:"エアコンや空気清浄機の遠隔操作、消耗度が確認できる「ココロエアー」をリデザイン。誤操作の多い表示部をボタン化し、機能が伝わるアイコンへ変更しました。",
+    title:"COCORO HOME AI",
+    slug:"cocoro-home-ai",
+    ext:"jpg",
+    tags:["UIデザイン","IoT家電アプリ","生成AI"],
+    period:"2025.04 ~ 09",
+    overview:"IoT家電アプリ「COCORO HOME」における、生成AIで家電の悩みを解決するアシスタント機能のUIデザインを担当しました。対応機種の取扱説明書やFAQを学習し、シャープの一次情報にもとづいて的確に回答。登録済みの家電型番を参照し、該当する取説ページを画像で提示したり、回答内容に即した設定UIを提示し、その場で機器を操作することで「調べて終わり」にしない体験が実現できました。",
+    overviewImg:{img:"02.jpg",caption:"アプリの主要画面をまとめた全体像（仮）"},
+    pov:[
+      {heading:"「困ってから」ではなく、「もっと良く」を引き出すAIへ",body:"家電の相談は、エラーやトラブルが起きて「困ってから」に偏りがちです。COCORO HOME AIでは、洗濯物を上手に洗いたい・ふわふわに仕上げたいといった「もっと良く」使いたいという前向きな相談も引き出したいと考えました。そのため、ユーザーのやりたいこと優先で控えめに答えるのではなく、「こんなこともできますよ」と積極的に「やれること」を提案するふるまいを軸に据え、家電を楽しく快適に使い続けてもらうことを目指しました。",placeholder:true,caption:"課題を示すビジュアル（仮）"},
+    ],
     design:[
-      {heading:"操作できる場所が、一目でわかる。",body:"部屋の状態はカラー、機器操作はグレーで、情報の種類を色で区別。設定温度やモードの「表示箇所」と「操作箇所」が離れ、どこを操作できるか分かりづらかった状態を改善しました。",img:"03.png"},
-      {heading:"機能にアクセスしやすいUIへ。",body:"ボトムナビを各機能へのナビゲーションに使い、機器操作以外の価値も前面化。お手入れ・消耗品状況へのリンクをボトムナビゲーションに配置し、様々な機能へのタッチポイントを提供しました。",img:"04.png"},
+      {heading:"質問サジェストで、AIとの会話を後押し",body:"家電の相談は「困ってから」に偏りがちですが、生成AIなら使い方や活用法まで幅広く答えられます。そこでCOCORO HOME AIでは、トップに質問事例を並べ、「こんな質問にも答えられる」と気づけるタッチポイントを設けました。事例は開くたびに変わるようにし、家電をより能動的に使いこなすきっかけになるようにしました。さらに、一次情報にもとづく回答には「シャープ公式回答」バッジを添え、気づきだけでなく安心して踏み出せる後押しになるよう工夫しました。",img:"04.jpg"},
+      {heading:"AIの知性と寄り添いを表現する背景アニメーション",body:"彩度の高いピンクとオレンジの円形グラデーションを、豊かな暮らしのイメージとして背景に敷き、知性的で最先端な機能であることも印象づけました。思考中は横移動、書き出しは拡大縮小、話者交代は右への移動と、AIの状態を有機的な動きで伝えることで、待たされている感覚ではなく寄り添われている安心感を持ちながら、AIとの対話を心地よく続けられる体験を目指しました。",img:"05.jpg"},
+      {heading:"会話の流れを止めず、家電の操作までスムーズに完結",body:"食材の保存方法などの回答には、対応する冷凍モードの設定ボタンを表示。確認モーダルと送信完了フィードバックまで設計し、「調べる」で終わらず「操作する」までを会話の中で完結させました。モードの詳細説明はアコーディオンに畳み、気になる人だけが開いて読める形にすることで、会話画面の文章量もコンパクトに保ちました。",img:"06.jpg"},
+      {heading:"全体像",body:"オンボーディングや設定画面を含めたver.1.0.0の全画面のデザインを担当",img:"07.jpg"},
     ],
-    process:[
-      {heading:"UTで検証し、全員が新デザインを支持。",body:"改善案をユーザーテストにかけたところ、11人中11人が新デザインを支持。深い階層にあった機能も前面化し、迷わず操作できる状態を確認しました。"},
-    ],
-    outcome:[
-      {value:"11/11",label:"UTで全員が新デザインを支持"},
-      {value:"2層",label:"状態と操作を色で分離"},
-      {value:"前面化",label:"深い階層の機能を表に"},
-    ],
-    hue:200,
-  },
-  {
-    title:"家電登録フロー改善",
-    slug:"device-registration-flow",
-    tags:["UIデザイン","UXフロー改善","IoT家電アプリ"],
-    period:"2022.10 ~ 2023.03",
-    overview:"ココロホームの機器登録UIを、一目で操作が分かるフローへ改善。利用頻度が少ないUIだからこそ、直感的に分かるデザインを目指しました。",
-    design:[
-      {heading:"迷わず進める、登録フローへ。",body:"テキストボタンからカードUIに変更し、画像で視覚的に説明。従来はテキスト説明が中心で視覚的な強弱がなく、直感的に操作が分かりませんでした。",img:"02.png"},
-    ],
-    process:[
-      {heading:"100超の遷移を可視化して整理。",body:"家電のジャンルやモデルで分岐する100超の画面遷移をFigmaで可視化。説明文やボタン文言も見直し、最小限の言葉で伝わる設計に整理しました。",img:"03.png"},
-    ],
-    outcome:[
-      {value:"100+",label:"可視化した画面遷移"},
-      {value:"カードUI",label:"テキスト説明から置換"},
-      {value:"最小限",label:"説明文・ボタン文言を削減"},
-    ],
-    hue:30,
+    process:[],
+    outcome:[],
+    hue:350,
   },
   {
     title:"省エネレポート",
@@ -390,12 +385,13 @@ const WORKS = [
     tags:["UIデザイン","IoT家電アプリ","データ可視化"],
     period:"2023.07 ~ 08",
     overview:"冷蔵庫の省エネ運転による削減CO2量を可視化する「省エネレポート」のUIをデザイン。年間削減量14kg（杉の木1本の年間CO2吸収量）を100%とした杉の木インジケーターで、分かりづらい削減量を直感的に伝えます。",
+    overviewImg:{placeholder:true,caption:"アプリの主要画面をまとめた全体像（仮）"},
     design:[
-      {heading:"杉の木インジケーターで、削減量を直感的に。",body:"杉の木1本の年間CO2吸収量を指標としたメーターでCO2削減量を表現。一目で成果が分かり、興味を持てる画面を目指し、イメージしづらい削減量を分かりやすく伝えています。",img:"02.png"},
+      {heading:"杉の木インジケーターで、削減量を直感的に。",body:"杉の木1本の年間CO2吸収量を指標としたメーターでCO2削減量を表現。一目で成果が分かり、興味を持てる画面を目指し、イメージしづらい削減量を分かりやすく伝えています。",img:"03.png"},
       {heading:"小さなご褒美で、続けたくなる仕掛けに。",body:"年間14kg以上のCO2を削減すると小鳥がお祝いしてくれる隠し要素を用意。少しずつ色づいていく杉の木をチェックする楽しさと、達成感を演出しました。"},
     ],
     process:[
-      {heading:"積み上げ型の数値表示から、意図ある体験へ。",body:"初期仕様は週間・年間のCO2削減量とイラストを積み上げただけで、何をすべきか分からない画面でした。企画意図を汲み、プロトタイピングと並行してコンセプトを明確化しました。",img:"03.png"},
+      {heading:"積み上げ型の数値表示から、意図ある体験へ。",body:"初期仕様は週間・年間のCO2削減量とイラストを積み上げただけで、何をすべきか分からない画面でした。企画意図を汲み、プロトタイピングと並行してコンセプトを明確化しました。",img:"05.png"},
       {heading:"振り切った提案で、コンセプトを言語化。",body:"年間ベース・週間ベースそれぞれに振り切った案を提案したところ「年間を見せたい」と回答を得て、コンセプトを明文化し最終調整しました。"},
     ],
     outcome:[],
@@ -407,16 +403,37 @@ const WORKS = [
     tags:["グラフィックデザイン","アプリアイコン","ブランディング"],
     period:"2023.07",
     overview:"シャープ公式ECサイト「COCORO STORE」のアプリアイコンをデザイン。フォーマット化されたココロサービスのアイコン群の中で、立ち位置の異なるCOCORO STOREが埋没しないアイコンを目指しました。",
+    overviewImg:{placeholder:true,caption:"アプリの主要画面をまとめた全体像（仮）"},
     design:[
-      {heading:"エネルギッシュで、目を引くアイコンへ。",body:"「健康にまつわる商品を拡充し、ご年配の健やかな生活に寄与したい」という担当者の想いと、40〜60代がメインユーザーであることから、目を引くアイコンを検討しました。",img:"02.png"},
+      {heading:"エネルギッシュで、目を引くアイコンへ。",body:"「健康にまつわる商品を拡充し、ご年配の健やかな生活に寄与したい」という担当者の想いと、40〜60代がメインユーザーであることから、目を引くアイコンを検討しました。",img:"03.png"},
       {heading:"色とモチーフで、親しみやすさを演出。",body:"最終案は、ココロピンクとビタミンカラーのグラデーションでエネルギッシュな印象を、気軽にお買い物できるイメージを踏襲したショッパーモチーフで表現しました。"},
     ],
     process:[
-      {heading:"シルエットモチーフを軸に、方向性を模索。",body:"他のココロアプリアイコンがシルエットモチーフであることから、COCORO STOREもこれをベースに検討。ECにまつわる要素を具象・抽象さまざまな方向からアイデア展開しました。",img:"03.png"},
-      {heading:"実機プレビューで、見え方を綿密に検証。",body:"ストアやホーム画面での見え方を常にプレビューしながら、既存のアイコン群の中で違和感のないデザインになるよう検討を重ねました。",img:"04.png"},
+      {heading:"シルエットモチーフを軸に、方向性を模索。",body:"他のココロアプリアイコンがシルエットモチーフであることから、COCORO STOREもこれをベースに検討。ECにまつわる要素を具象・抽象さまざまな方向からアイデア展開しました。",img:"05.png"},
+      {heading:"実機プレビューで、見え方を綿密に検証。",body:"ストアやホーム画面での見え方を常にプレビューしながら、既存のアイコン群の中で違和感のないデザインになるよう検討を重ねました。",img:"06.png"},
     ],
     outcome:[],
     hue:330,
+  },
+  {
+    title:"家電登録フロー改善",
+    slug:"device-registration-flow",
+    tags:["UIデザイン","UXフロー改善","IoT家電アプリ"],
+    period:"2022.10 ~ 2023.03",
+    overview:"ココロホームの機器登録UIを、一目で操作が分かるフローへ改善。利用頻度が少ないUIだからこそ、直感的に分かるデザインを目指しました。",
+    overviewImg:{placeholder:true,caption:"アプリの主要画面をまとめた全体像（仮）"},
+    design:[
+      {heading:"迷わず進める、登録フローへ。",body:"テキストボタンからカードUIに変更し、画像で視覚的に説明。従来はテキスト説明が中心で視覚的な強弱がなく、直感的に操作が分かりませんでした。",img:"03.png"},
+    ],
+    process:[
+      {heading:"100超の遷移を可視化して整理。",body:"家電のジャンルやモデルで分岐する100超の画面遷移をFigmaで可視化。説明文やボタン文言も見直し、最小限の言葉で伝わる設計に整理しました。",img:"05.png"},
+    ],
+    outcome:[
+      {value:"100+",label:"可視化した画面遷移"},
+      {value:"カードUI",label:"テキスト説明から置換"},
+      {value:"最小限",label:"説明文・ボタン文言を削減"},
+    ],
+    hue:30,
   },
   {
     title:"データ分析ツール導入提案",
@@ -424,9 +441,10 @@ const WORKS = [
     tags:["データ分析","導入提案","Webアプリ"],
     period:"2022.05 ~ 10",
     overview:"スマホWebアプリ「ココロエアー」へのデータ分析ツール導入を提案し、導入を実現。定性調査が中心だった開発に、データ分析による定量調査のアプローチを持ち込みました。",
+    overviewImg:{placeholder:true,caption:"アプリの主要画面をまとめた全体像（仮）"},
     design:[
-      {heading:"定性に、定量の視点を。",body:"Google Analytics と User Insight を導入する提案をまとめ、事業部にプレゼン。データが語る事実を、デザイン判断の材料に加えられる状態を目指しました。",img:"02.png"},
-      {heading:"リテラシーに寄り添い、丁寧に説明。",body:"事業部にはデータ分析の経験がありませんでした。「初歩的な知識」「ツールでできること」「ココロエアーでできる分析」を、段階を踏んで説明しました。",img:"03.png"},
+      {heading:"定性に、定量の視点を。",body:"Google Analytics と User Insight を導入する提案をまとめ、事業部にプレゼン。データが語る事実を、デザイン判断の材料に加えられる状態を目指しました。",img:"03.png"},
+      {heading:"リテラシーに寄り添い、丁寧に説明。",body:"事業部にはデータ分析の経験がありませんでした。「初歩的な知識」「ツールでできること」「ココロエアーでできる分析」を、段階を踏んで説明しました。",img:"04.png"},
     ],
     process:[],
     outcome:[
@@ -442,13 +460,14 @@ const WORKS = [
     tags:["UIディレクション","IoT家電アプリ","提案"],
     period:"2021.06 ~ 08",
     overview:"長谷工株式会社様のマンション専用IoTアプリ「otomonie」のUIデザインのディレクションとクライアントコミュニケーションを担当しました。otomonieは、自宅の家電の遠隔操作や、宅配ボックスの荷物確認、マンションからのお知らせ確認など、暮らしに寄り添う機能を備えたアプリです。デザインメンバーが参画したタイミングでは、アプリのデザインイメージが明確に描けていませんでした。デザインテイストを幅広く提案してクライアントと一緒に絞り込んでいくことで、納得感のあるデザインに決定することができました。",
+    overviewImg:{placeholder:true,caption:"アプリの主要画面をまとめた全体像（仮）"},
     design:[
-      {heading:"第二の居住空間のような、あたたかいアプリ",body:"単身者からファミリーまで幅広いユーザーを想定し、「第二の居住空間」のようなアプリをデザインしました。透明感ある実写の室内イメージで、シンプルながら温かみのある印象を目指しました。",img:"02.png"},
-      {heading:"部屋のモノ感を、大きなアイコンで表現。",body:"豊富なイラストと「部屋のモノ感」のある大きなアイコンボタンを採用。プライマリーカラーのオレンジで、暮らしに陽気なイメージをプラスしました。",img:"03.png"},
+      {heading:"第二の居住空間のような、あたたかいアプリ",body:"単身者からファミリーまで幅広いユーザーを想定し、「第二の居住空間」のようなアプリをデザインしました。透明感ある実写の室内イメージで、シンプルながら温かみのある印象を目指しました。",img:"03.png"},
+      {heading:"部屋のモノ感を、大きなアイコンで表現。",body:"豊富なイラストと「部屋のモノ感」のある大きなアイコンボタンを採用。プライマリーカラーのオレンジで、暮らしに陽気なイメージをプラスしました。",img:"04.png"},
     ],
     process:[
-      {heading:"中立案を軸に、振れ幅のある提案を。",body:"H社へのOEM製品開発として進行したこのプロジェクトでは、クライアントの中でアプリのデザインイメージが明確に固まっていないという課題がありました。そこで中立な案を軸に、シックな案とユニークな案へ振り切って提案し、2回にわたり計6案を提示しました。",img:"04.png"},
-      {heading:"居住空間のイメージごと、選べるように。",body:"アプリと共に居住空間のイメージも膨らませ、マンションのビジョンに最も合う案を選べるように工夫。クライアントと一緒に絞り込み、納得感のあるデザインへ収束させました。",img:"05.png"},
+      {heading:"中立案を軸に、振れ幅のある提案を。",body:"H社へのOEM製品開発として進行したこのプロジェクトでは、クライアントの中でアプリのデザインイメージが明確に固まっていないという課題がありました。そこで中立な案を軸に、シックな案とユニークな案へ振り切って提案し、2回にわたり計6案を提示しました。",img:"06.png"},
+      {heading:"居住空間のイメージごと、選べるように。",body:"アプリと共に居住空間のイメージも膨らませ、マンションのビジョンに最も合う案を選べるように工夫。クライアントと一緒に絞り込み、納得感のあるデザインへ収束させました。",img:"07.png"},
     ],
     outcome:[
       {value:"6案",label:"2回にわたり幅広いデザインを提示"},
@@ -456,6 +475,27 @@ const WORKS = [
       {value:"リリース済み",label:"otomonieとして提供中"},
     ],
     hue:38,
+  },
+  {
+    title:"COCORO AIR リデザイン",
+    slug:"cocoro-air-redesign",
+    tags:["UIデザイン","リデザイン","IoT家電アプリ"],
+    period:"2020.12 ~ 2021.05",
+    overview:"エアコンや空気清浄機の遠隔操作、消耗度が確認できる「ココロエアー」をリデザイン。誤操作の多い表示部をボタン化し、機能が伝わるアイコンへ変更しました。",
+    overviewImg:{placeholder:true,caption:"アプリの主要画面をまとめた全体像（仮）"},
+    design:[
+      {heading:"操作できる場所が、一目でわかる。",body:"部屋の状態はカラー、機器操作はグレーで、情報の種類を色で区別。設定温度やモードの「表示箇所」と「操作箇所」が離れ、どこを操作できるか分かりづらかった状態を改善しました。",img:"03.png"},
+      {heading:"機能にアクセスしやすいUIへ。",body:"ボトムナビを各機能へのナビゲーションに使い、機器操作以外の価値も前面化。お手入れ・消耗品状況へのリンクをボトムナビゲーションに配置し、様々な機能へのタッチポイントを提供しました。",img:"04.png"},
+    ],
+    process:[
+      {heading:"UTで検証し、全員が新デザインを支持。",body:"改善案をユーザーテストにかけたところ、11人中11人が新デザインを支持。深い階層にあった機能も前面化し、迷わず操作できる状態を確認しました。"},
+    ],
+    outcome:[
+      {value:"11/11",label:"UTで全員が新デザインを支持"},
+      {value:"2層",label:"状態と操作を色で分離"},
+      {value:"前面化",label:"深い階層の機能を表に"},
+    ],
+    hue:200,
   },
 ];
 
@@ -513,34 +553,34 @@ window.addEventListener('resize',measure);
 function sectionImg(slug,hue,seed,img){
   return img ? `<img src="works/images/${slug}/${img}" alt="">` : thumbSvg(hue,seed);
 }
-function povHtml(sections){
-  return sections.map(s=>`
-    <div class="design-block">
-      <h3 class="design-h">${s.heading}</h3>
-      <p class="block-p">${s.body}</p>
-    </div>`).join('');
+function sectionImgBlock(slug,hue,seed,img,caption){
+  return `<div class="sec-img">${sectionImg(slug,hue,seed,img)}</div>${caption?`<p class="sec-caption">${caption}</p>`:''}`;
 }
 function designHtml(sections,seed,hue,slug){
-  return sections.map((s,j)=>`
+  return sections.map((s,j)=>{
+    const imgs = s.img ? (Array.isArray(s.img)?s.img:[s.img]) : (s.placeholder?[null]:[]);
+    return `
     <div class="design-block">
       <h3 class="design-h">${s.heading}</h3>
       <p class="block-p">${s.body}</p>
-      ${s.img?`<div class="sec-img">${sectionImg(slug,hue,seed+j+1,s.img)}</div>`:''}
-    </div>`).join('');
+      ${imgs.map((im,k)=>sectionImgBlock(slug,hue,seed+j+1+k,im,k===0?s.caption:'')).join('')}
+    </div>`;
+  }).join('');
 }
 function processHtml(sections,seed,hue,slug){
   return sections.map((s,j)=>`
     <div class="process-block">
       <h3 class="process-h">${s.heading}</h3>
-      ${s.img?`<div class="sec-img">${sectionImg(slug,hue,seed+j+4,s.img)}</div>`:''}
+      ${s.img?sectionImgBlock(slug,hue,seed+j+4,s.img,s.caption):''}
       <p class="block-p">${s.body}</p>
     </div>`).join('');
 }
-function povHtml(items){
-  return items.map(s=>`
+function povHtml(items,seed,hue,slug){
+  return items.map((s,j)=>`
     <div class="pov-block">
       <h3 class="pov-h">${s.heading}</h3>
       <p class="pov-p">${s.body}</p>
+      ${s.img||s.placeholder?sectionImgBlock(slug,hue,seed+j+1,s.img,s.caption):''}
     </div>`).join('');
 }
 function outcomeHtml(items){
@@ -573,12 +613,13 @@ function slideHtml(w,i){
     <div class="s-section">
       <p class="section-label">OVERVIEW</p>
       <p class="s-overview">${w.overview}</p>
+      ${w.overviewImg?sectionImgBlock(w.slug,w.hue,i,w.overviewImg.img,w.overviewImg.caption):''}
     </div>
 
     ${w.pov&&w.pov.length?`
     <div class="s-section">
       <p class="section-label">POINT OF VIEW</p>
-      ${povHtml(w.pov)}
+      ${povHtml(w.pov,i,w.hue,w.slug)}
     </div>`:''}
 
     ${w.design.length?`
@@ -619,7 +660,8 @@ function buildDots(){
   dotsEl.innerHTML = WORKS.map((_,i)=>`<span class="dot${i===currentIndex?' is-active':''}"></span>`).join('');
 }
 
-function setIndex(i,{animate=true}={}){
+function setIndex(i,{animate=true,resetScroll}={}){
+  const prevIndex=currentIndex;
   currentIndex=Math.max(0,Math.min(WORKS.length-1,i));
   measure();
   track.classList.toggle('is-animating',animate);
@@ -627,14 +669,18 @@ function setIndex(i,{animate=true}={}){
   caseLabel.textContent=`CASE 0${currentIndex+1} / 0${WORKS.length}`;
   caseTitle.textContent=WORKS[currentIndex].title;
   buildDots();
-  // reset scroll on the focused slide
-  const slide=track.children[currentIndex];
-  if(slide) slide.scrollTop=0;
+  // 作品が変わったときだけスクロールを戻す。
+  // タップ（Androidの擬似マウスイベント）やしきい値未満のスワイプでも
+  // setIndexは呼ばれるので、無条件に戻すと読んでいる途中で先頭に飛んでしまう。
+  if(resetScroll ?? (currentIndex!==prevIndex)){
+    const slide=track.children[currentIndex];
+    if(slide) slide.scrollTop=0;
+  }
 }
 
 function openSheet(i){
   measure();
-  setIndex(i,{animate:false});
+  setIndex(i,{animate:false,resetScroll:true});
   document.body.classList.add('sheet-open');
   sheet.setAttribute('aria-hidden','false');
 }

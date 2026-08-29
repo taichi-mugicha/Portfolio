@@ -1,8 +1,9 @@
 # 作品ページ レイアウト仕様
 
 作品詳細をボトムシートで見せるページの仕様と要望をまとめる。
-実装は [work-detail-mock.html](../work-detail-mock.html) 内の `.sheet` 一式。[indexページ](index-layout.md)の作品カードから開く。
-流し込むテキストのフォーマットは [works/work-detail-text-format.md](../works/work-detail-text-format.md) 準拠。
+実装は [index.html](../index.html) 内の `.sheet` 一式。[indexページ](index-layout.md)の作品カードから開く。
+流し込むテキストは [work-detail-text-format.md](work-detail-text-format.md)（項目と分量）と
+[writing-style.md](writing-style.md)（文体）に準拠。
 
 ---
 
@@ -70,5 +71,7 @@ indexと共通（`--ink` `--muted` `--bg` `--ph`）。加えて：
 - 作品間はスワイプでどんどん見比べられるように。
 - テキストは案件ごとに分量が違うので、セクション（PROCESS / OUTCOME 等）が無い作品は自動で詰めたい。
 - DESIGNは「主張→根拠→ビジュアル」、PROCESSは「経緯→ビジュアル→補足」の順にしたい意図で画像位置を変えている。
+- OVERVIEWにはアプリ全体像がわかる画像、POINT OF VIEWにはユーザー/製品の課題がわかる画像を追加したい（[work-detail-text-format.md](work-detail-text-format.md)参照）。
+- 本文中の全画像にキャプションを小さく添えたい。画像の下に控えめなテキストで1行表示するイメージ。
 
 > このセクションはやり取りの中で出た要望を貯めていく欄。決定した仕様は上の各項へ反映する。

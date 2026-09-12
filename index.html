@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Taichi Ito Portfolio</title>
 
 <!-- ============================================================
@@ -254,6 +254,75 @@
   }
   body.sheet-open .swipe-hint{opacity:1;animation:fadeOut .4s var(--ease) 2.6s forwards}
   @keyframes fadeOut{to{opacity:0}}
+  .swipe-hint .for-pointer{display:none}
+
+  /* ============================================================
+     RESPONSIVE
+     ここより上がモバイル（〜639px）の正。以下は幅が広がったときの
+     上書きだけを書く。モバイルの見た目を変える修正は上のブロックへ。
+     ============================================================ */
+
+  /* ---- 640px〜：タブレット。一覧を2カラムに ---- */
+  @media (min-width:640px){
+    .top__inner{
+      max-width:760px;
+      padding:calc(20px + env(safe-area-inset-top)) calc(32px + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(32px + env(safe-area-inset-left));
+    }
+    .hero-h{font-size:46px;margin-bottom:32px}
+    .selected-row{margin-top:38px}
+    .grid{grid-template-columns:repeat(2,1fr);gap:36px 24px}
+  }
+
+  /* ---- 1024px〜：デスクトップ。3カラム＋見出しを一段大きく ---- */
+  @media (min-width:1024px){
+    .top__inner{
+      max-width:1100px;
+      padding:calc(24px + env(safe-area-inset-top)) calc(48px + env(safe-area-inset-right)) calc(120px + env(safe-area-inset-bottom)) calc(48px + env(safe-area-inset-left));
+    }
+    .nav{height:60px}
+    .logo{font-size:16px}
+    .eyebrow{margin-top:40px}
+    .hero-h{font-size:60px;letter-spacing:-.025em;margin-bottom:40px}
+    .selected-row{margin-top:52px;font-size:12px}
+    .grid{grid-template-columns:repeat(3,1fr);gap:44px 28px}
+    .card__title{font-size:17px}
+  }
+
+  /* ---- シート：広い画面では本文の行長が伸びすぎないよう幅を抑える ---- */
+  @media (min-width:768px){
+    .sheet{max-width:720px}
+    .slide{
+      padding:32px calc(48px + env(safe-area-inset-right)) calc(72px + env(safe-area-inset-bottom)) calc(48px + env(safe-area-inset-left));
+    }
+    .s-hero{aspect-ratio:16/10}
+    .related-thumb{height:120px}
+  }
+
+  /* ---- 1024px〜：下に貼り付かせず、中央に浮かぶダイアログとして扱う ---- */
+  @media (min-width:1024px){
+    .sheet{
+      max-width:760px;
+      height:min(88dvh,900px);
+      bottom:32px;
+      border-radius:20px;
+      /* 閉じている間、bottomの余白ぶんも下へ逃がす（24pxの帯が覗くのを防ぐ） */
+      transform:translateY(calc(100% + 32px));
+    }
+  }
+
+  /* ---- マウス環境：タップ前提のUIに hover の手がかりを足す ---- */
+  @media (hover:hover) and (pointer:fine){
+    .card__thumb{transition:transform .25s var(--ease),opacity .25s var(--ease)}
+    .card:hover .card__thumb{opacity:.86}
+    .icon-btn:hover{background:#f4f4f4}
+    .related-thumb{transition:opacity .25s var(--ease)}
+    .related-item:hover .related-thumb{opacity:.86}
+    .backdrop{cursor:pointer}
+    .pager{cursor:grab}
+    .pager:active{cursor:grabbing}
+    .swipe-hint .for-touch{display:none}
+    .swipe-hint .for-pointer{display:inline}
+  }
 </style>
 </head>
 <body>
@@ -305,7 +374,10 @@
 
   <div class="pager" id="pager">
     <div class="pager__track" id="track"></div>
-    <div class="swipe-hint">← swipe →</div>
+    <div class="swipe-hint">
+      <span class="for-touch">← swipe →</span>
+      <span class="for-pointer">← ドラッグ / ← → キー →</span>
+    </div>
   </div>
 </div>
 
@@ -793,6 +865,19 @@ window.addEventListener('mouseup',()=>{
   if(mdx<-threshold || v<-0.4) next=currentIndex+1;
   else if(mdx>threshold || v>0.4) next=currentIndex-1;
   setIndex(next);
+});
+
+/* ============== Resize ==============
+   ページャーの位置は px 換算で持っているため、幅が変わると現在のスライドが
+   ずれる。ブレークポイントをまたぐリサイズや端末回転で追従させる。 */
+let resizeTimer=null;
+window.addEventListener('resize',()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(()=>{
+    measure();
+    track.classList.remove('is-animating');
+    track.style.transform=`translate3d(${-currentIndex*pagerWidth}px,0,0)`;
+  },120);
 });
 
 measure();

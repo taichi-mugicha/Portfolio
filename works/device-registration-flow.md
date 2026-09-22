@@ -5,7 +5,7 @@
 | ヒーローイメージ | ![](./images/device-registration-flow/01.png) |
 | タイトル | 家電登録フロー改善 |
 | 期間 | 2022.10 ~ 2023.03 |
-| タグ | UIデザイン / UXフロー改善 / IoT家電アプリ |
+| タグ | UIデザイン |
 
 ## OVERVIEW
 

@@ -5,7 +5,7 @@
 | ヒーローイメージ | ![](./images/new-cocoro-home/01.png) |
 | タイトル | NEW COCORO HOME |
 | 期間 | 2025.10 ~ 2026.03 |
-| タグ | UIデザイン / IoT家電アプリ / 情報設計 |
+| タグ | UIデザイン |
 
 ## OVERVIEW
 

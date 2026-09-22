@@ -5,7 +5,7 @@
 | ヒーローイメージ | ![](./images/cocoro-home-ai/01.jpg) |
 | タイトル | COCORO HOME AI |
 | 期間 | 2025.04 ~ 09 |
-| タグ | UIデザイン / IoT家電アプリ / 生成AI |
+| タグ | UIデザイン |
 
 ## OVERVIEW
 

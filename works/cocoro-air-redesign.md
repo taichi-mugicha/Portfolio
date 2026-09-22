@@ -5,7 +5,7 @@
 | ヒーローイメージ | ![](./images/cocoro-air-redesign/01.png) |
 | タイトル | COCORO AIR リデザイン |
 | 期間 | 2020.12 ~ 2021.05 |
-| タグ | UIデザイン / リデザイン / IoT家電アプリ |
+| タグ | UIデザイン |
 
 ## OVERVIEW
 

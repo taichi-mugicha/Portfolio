@@ -5,7 +5,7 @@
 | ヒーローイメージ | ![](./images/asean-refrigerator-app/01.png) |
 | タイトル | 東南アジア向け冷蔵庫 IoTアプリ |
 | 期間 | 2025.09 ~ 2026.06 |
-| タグ | UIデザイン / IoT家電 / 海外向けUI |
+| タグ | UIデザイン |
 
 ## OVERVIEW
 

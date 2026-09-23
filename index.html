@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Taichi Ito Portfolio</title>
 
+<!-- 和文フォント：Noto Sans JP（Google Fonts） -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <!-- ============================================================
      GREETING SPLASH
      調整可能な値は :root の変数に集約。詳細は splash-handoff.md 参照。
@@ -38,7 +43,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-family: "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+    font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
     font-size: clamp(30px, 8vw, 52px);
     font-weight: 600;
     letter-spacing: -0.01em;
@@ -87,7 +92,9 @@
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0;background:#dcdcdc;color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Inter","Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+    /* 和文は Noto Sans JP（Google Fonts、<head>で読み込み）。
+       読み込めない環境では端末のゴシックにフォールバックする。 */
+    font-family:-apple-system,BlinkMacSystemFont,"Inter","Helvetica Neue",Arial,"Noto Sans JP","Hiragino Kaku Gothic ProN",sans-serif;
     overflow:hidden;height:100%;width:100%;
     -webkit-font-smoothing:antialiased;
   }
@@ -97,12 +104,12 @@
   .top__inner{max-width:430px;margin:0 auto;padding:14px 20px 80px}
   .top__inner{padding:calc(14px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
   .nav{display:flex;align-items:center;justify-content:space-between;height:52px}
-  .logo{font-weight:700;font-size:15px;letter-spacing:.2px}
+  .logo{font-weight:700;font-size:16px;letter-spacing:.05em}
   .logo::before{content:"■";margin-right:6px}
   .menu{width:28px;height:18px;display:flex;flex-direction:column;justify-content:space-between}
   .menu::before,.menu::after{content:"";display:block;height:1.6px;background:#0a0a0a}
   .menu::before{box-shadow:0 8px 0 0 #0a0a0a}
-  .hero-h{font-weight:700;font-size:36px;line-height:1.02;letter-spacing:-.02em;margin:42px 0 40px}
+  .hero-h{font-weight:700;font-size:36px;line-height:1.1;letter-spacing:-.02em;margin:42px 0 40px}
   .hero-h em{font-style:normal;color:var(--muted)}
 
   .grid{display:grid;grid-template-columns:1fr;gap:28px}
@@ -114,9 +121,9 @@
   .card:active .card__thumb{transform:scale(.985)}
   .card__thumb svg,.card__thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .card__meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;gap:8px}
-  .card__title{font-weight:600;font-size:16px}
-  .card__tag{font-size:12px;color:var(--muted)}
-  .card__num{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .card__title{font-weight:600;font-size:16px;line-height:1.5;letter-spacing:.05em}
+  .card__tag{font-size:12px;line-height:1.5;color:var(--muted)}
+  .card__num{font-size:11px;line-height:1.5;color:var(--muted);font-variant-numeric:tabular-nums}
 
   /* ===== Backdrop ===== */
   .backdrop{
@@ -166,8 +173,8 @@
     padding:0 20px 16px;
     padding:0 calc(20px + env(safe-area-inset-right)) 16px calc(20px + env(safe-area-inset-left));
   }
-  .sheet__title{font-weight:600;font-size:13px;text-align:center;letter-spacing:.12px;color:var(--ink)}
-  .sheet__title small{display:block;font-weight:500;font-size:10px;letter-spacing:1.3px;color:var(--muted);margin-bottom:2px}
+  .sheet__title{font-weight:600;font-size:14px;text-align:center;letter-spacing:.05em;color:var(--ink)}
+  .sheet__title small{display:block;font-weight:600;font-size:11px;letter-spacing:0;color:var(--muted);margin-bottom:2px}
   .icon-btn{
     width:32px;height:32px;border:none;background:transparent;color:var(--ink);
     display:inline-flex;align-items:center;justify-content:center;border-radius:16px;
@@ -196,7 +203,7 @@
   /* 画面幅いっぱい：.slide の上・左右パディングを打ち消す */
   .s-hero{aspect-ratio:335/384;background:var(--ph);overflow:hidden;margin:-24px calc(-20px - env(safe-area-inset-right)) 24px calc(-20px - env(safe-area-inset-left))}
   .s-hero svg,.s-hero img{width:100%;height:100%;display:block;object-fit:cover}
-  .s-title{font-size:32px;line-height:1;letter-spacing:-.02em;font-weight:700;margin:0 0 8px;word-break:break-word}
+  .s-title{font-size:32px;line-height:1.1;letter-spacing:-.02em;font-weight:700;margin:0 0 8px;word-break:break-word}
   .s-meta{font-size:11px;line-height:1.5;color:var(--meta)}
   .s-meta .period{margin:0}
   .s-headgroup{margin-bottom:40px}
@@ -204,23 +211,23 @@
   /* ---- section blocks ---- */
   .s-section{margin-bottom:40px}
   .s-section:last-child{margin-bottom:0}
-  .section-label{font-size:10px;letter-spacing:0;color:var(--ink);font-weight:600;margin:0 0 16px}
+  .section-label{font-size:11px;line-height:1.5;letter-spacing:0;color:var(--ink);font-weight:600;margin:0 0 16px}
 
-  .s-overview{font-size:15px;line-height:1.5;color:var(--meta);margin:20px 0 0}
+  .s-overview{font-size:14px;line-height:1.65;letter-spacing:.05em;color:var(--meta);margin:20px 0 0}
 
   /* POINT OF VIEW — Figma node 391:2064 */
   .pov-block{background:#f3f3f3;border-radius:8px;padding:20px 16px 16px;display:flex;flex-direction:column;gap:8px}
   .pov-block + .pov-block{margin-top:16px}
-  .pov-block .section-label{margin:0;color:#000;font-weight:700}
+  .pov-block .section-label{margin:0;color:#000}
   .design-block .section-label{margin-bottom:8px}
-  .pov-h{font-size:20px;font-weight:700;line-height:1.3;color:#000;margin:0;word-break:break-word}
-  .pov-p{font-size:14px;line-height:1.65;color:#000;margin:0}
+  .pov-h{font-size:20px;font-weight:600;line-height:1.3;letter-spacing:-.02em;color:#000;margin:0;word-break:break-word}
+  .pov-p{font-size:14px;line-height:1.65;letter-spacing:.05em;color:#000;margin:0}
 
   .design-block,.process-block{margin-bottom:32px}
   .design-block:last-child,.process-block:last-child{margin-bottom:0}
-  .design-h{font-size:22px;font-weight:600;letter-spacing:-.005em;line-height:1.3;color:var(--ink);margin:0 0 8px}
-  .process-h{font-size:20px;font-weight:600;line-height:1.25;color:var(--ink);margin:0 0 8px}
-  .block-p{font-size:14px;line-height:1.65;color:var(--ink);margin:0}
+  .design-h{font-size:22px;font-weight:600;letter-spacing:-.02em;line-height:1.3;color:var(--ink);margin:0 0 8px}
+  .process-h{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.3;color:var(--ink);margin:0 0 8px}
+  .block-p{font-size:14px;line-height:1.65;letter-spacing:.05em;color:var(--ink);margin:0}
   /* 画像（キャプション）の後に続く本文は少し離す */
   .sec-img + .block-p,.sec-caption + .block-p{margin-top:12px}
   .sec-img{width:100%;background:var(--ph);border-radius:2px;overflow:hidden;margin-top:8px}
@@ -230,8 +237,8 @@
 
   .outcome-list{display:flex;flex-direction:column;gap:16px}
   .outcome-row{background:#fafafa;border-radius:6px;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px}
-  .outcome-row .n{font-size:32px;font-weight:700;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
-  .outcome-row .l{font-size:13px;color:var(--muted);text-align:right}
+  .outcome-row .n{font-size:32px;font-weight:700;line-height:1.1;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .outcome-row .l{font-size:12px;line-height:1.5;color:var(--muted);text-align:right}
 
   .s-divider{height:1px;background:#e0e0e0;margin:0 0 40px}
 
@@ -239,11 +246,11 @@
   .related-item{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:6px;cursor:pointer;user-select:none}
   .related-thumb{width:100%;height:96px;background:var(--ph);border-radius:2px;overflow:hidden}
   .related-thumb svg,.related-thumb img{width:100%;height:100%;display:block;object-fit:cover}
-  .related-title{font-size:14px;line-height:1;letter-spacing:-.02em;color:#000;padding:0 4px;word-break:break-word}
+  .related-title{font-size:14px;line-height:1.5;letter-spacing:.05em;color:#000;padding:0 4px;word-break:break-word}
 
   .swipe-hint{
     position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
-    font-size:10.5px;color:var(--muted);letter-spacing:.6px;background:rgba(255,255,255,.85);
+    font-size:11px;line-height:1.5;color:var(--muted);letter-spacing:0;background:rgba(255,255,255,.85);
     backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
     padding:7px 12px;border-radius:99px;border:1px solid var(--line);
     pointer-events:none;opacity:0;transition:opacity .35s var(--ease);
@@ -276,10 +283,8 @@
       padding:calc(24px + env(safe-area-inset-top)) calc(48px + env(safe-area-inset-right)) calc(120px + env(safe-area-inset-bottom)) calc(48px + env(safe-area-inset-left));
     }
     .nav{height:60px}
-    .logo{font-size:16px}
-    .hero-h{font-size:60px;letter-spacing:-.025em;margin:60px 0 56px}
+    .hero-h{font-size:60px;margin:60px 0 56px}
     .grid{grid-template-columns:repeat(3,1fr);gap:44px 28px}
-    .card__title{font-size:17px}
   }
 
   /* ---- シート：広い画面では本文の行長が伸びすぎないよう幅を抑える ---- */

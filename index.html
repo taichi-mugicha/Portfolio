@@ -482,6 +482,7 @@ const WORKS = [
     title:"NEW COCORO HOME",
     slug:"new-cocoro-home",
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
+    carouselImg:"01-hero.png", /* カルーセル専用のヒーロー画像。省略時は01.pngを使う */
     tags:["UIデザイン"],
     period:"2025.10 ~ 2026.03",
     overview:"IoT家電アプリ「COCORO HOME」の主要機能を統合した新しい「トップ画面」のUIをデザインしました。リリースから歳月を重ねることで累積した多様な機能とサービスを整理し、再び使いやすいUIにリデザインしました。",
@@ -703,8 +704,9 @@ const HERO_WORKS = WORKS.map((w,i)=>({w,i})).filter(x=>x.w.pickup);
 HERO_WORKS.forEach(({w,i},pos)=>{
   const slide=document.createElement('div');
   slide.className='hero-carousel__slide';
+  const heroImg = w.carouselImg || `01.${w.ext||'png'}`; /* カルーセル専用画像が無ければ01を使う */
   slide.innerHTML = `
-    <img src="works/images/${w.slug}/01.${w.ext||'png'}" alt="">
+    <img src="works/images/${w.slug}/${heroImg}" alt="">
     <div class="hero-carousel__scrim"></div>
     <div class="hero-carousel__caption">
       <div class="hero-carousel__title">${w.title}</div>

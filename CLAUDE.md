@@ -48,6 +48,7 @@
   title, slug, tags:[], period:"YYYY.MM ~ MM",
   ext:"jpg",                      // 画像が .png 以外のときのみ指定（既定 png）
   pickup: true,                   // ヒーローカルーセルに載せる作品にのみ付与（現在5件。付けない作品は省略）
+  carouselImg:"01-hero.png",      // カルーセル専用のヒーロー画像（省略時は01.{ext}を使う）。pickup作品のみ想定
   overview:"…",
   pov:    [{heading, body}],      // 1件のみ
   design: [{heading, body, img}], // img は "02.png" or ["02.png","03.png"]、省略可
@@ -66,6 +67,7 @@
 - 拡張子は作品内で統一する（png以外なら上記 `ext` を指定）。
 - 差し替えはファイル名を変えず上書きするのが基本。HTML側の参照を触らずに済む。
 - `_` 始まりのファイル（`_99.png` など）は作業中の下書き。参照しない。
+- カルーセル専用画像（`carouselImg`）は連番の対象外。`01-hero.png` のように用途がわかる名前を付ける。
 
 ## 要望の記録
 

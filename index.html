@@ -111,15 +111,16 @@
   .menu::before,.menu::after{content:"";display:block;height:1.6px;background:#0a0a0a}
   .menu::before{box-shadow:0 8px 0 0 #0a0a0a}
 
-  .grid{display:grid;grid-template-columns:1fr;gap:28px}
+  /* 作品グリッドだけ左右余白を8pxに。--content-pad（16px）との差分を負のマージンで打ち消す。 */
+  .grid{display:grid;grid-template-columns:1fr;gap:28px;margin:0 -8px}
   .card{cursor:pointer;user-select:none}
   .card__thumb{
-    width:100%;aspect-ratio:4/3;background:var(--ph);border-radius:6px;position:relative;overflow:hidden;
+    width:100%;aspect-ratio:4/3;background:var(--ph);border-radius:4px;position:relative;overflow:hidden;
     transition:transform .25s var(--ease);
   }
   .card:active .card__thumb{transform:scale(.985)}
   .card__thumb svg,.card__thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  .card__meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;gap:8px}
+  .card__meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;gap:8px}
   .card__title{font-weight:600;font-size:16px;line-height:1.5;letter-spacing:.05em;color:var(--text-main)}
   .card__tag{font-size:12px;line-height:1.5;color:var(--text-sub)}
   .card__num{font-size:11px;line-height:1.5;color:var(--text-sub);font-variant-numeric:tabular-nums}
@@ -177,7 +178,7 @@
   /* その年の作品を一言で紹介するテキスト。タブ切り替えごとにJSでディゾルブ（フェード＋ふわっと浮かび上がる）
      表示に切り替える。2行ぶんの min-height を確保し、テキスト長が変わってもガタつかないようにする。 */
   .year-note{
-    font-size:12px;line-height:1.5;color:var(--text-sub);margin:8px 0 20px;min-height:36px;
+    font-size:12px;line-height:1.5;color:var(--text-sub);margin:0 0 16px;min-height:36px;
     opacity:1;transform:translateY(0);transition:opacity .5s var(--ease),transform .5s var(--ease);
   }
   .year-note.is-fading{opacity:0;transform:translateY(6px)}

@@ -81,17 +81,18 @@
 
 <style>
   :root{
-    --ink:#0a0a0a;
-    --muted:#737373;
-    --meta:#404040;
+    --ink:#0a0a0a; /* 装飾の塗り（ドット・タブの下線バーなど）専用。テキスト色は --text-main / --text-sub を使う */
     --line:#e5e5e5;
     --bg:#ffffff;
     --ph:#ececec;
     --sheet-radius:24px;
     --ease:cubic-bezier(.22,1,.36,1);
+    --content-pad:16px; /* カルーセル・年タブ・グリッドが共有する左右余白。全ブレークポイント共通で16pxに固定する */
+    --text-main:rgba(0,0,0,.96); /* メインテキスト */
+    --text-sub:rgba(0,0,0,.54);  /* サブテキスト */
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;padding:0;background:#dcdcdc;color:var(--ink);
+  html,body{margin:0;padding:0;background:#dcdcdc;color:var(--text-main);
     /* 和文は Noto Sans JP（Google Fonts、<head>で読み込み）。
        読み込めない環境では端末のゴシックにフォールバックする。 */
     font-family:-apple-system,BlinkMacSystemFont,"Inter","Helvetica Neue",Arial,"Noto Sans JP","Hiragino Kaku Gothic ProN",sans-serif;
@@ -101,8 +102,8 @@
 
   /* ===== TOP page ===== */
   .top{position:fixed;inset:0;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .top__inner{max-width:430px;margin:0 auto;padding:14px 20px 80px}
-  .top__inner{padding:calc(14px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
+  .top__inner{max-width:430px;margin:0 auto;padding:14px var(--content-pad) 80px}
+  .top__inner{padding:calc(14px + env(safe-area-inset-top)) calc(var(--content-pad) + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(var(--content-pad) + env(safe-area-inset-left))}
   .nav{display:flex;align-items:center;justify-content:space-between;height:52px}
   .menu{width:28px;height:18px;display:flex;flex-direction:column;justify-content:space-between}
   .menu::before,.menu::after{content:"";display:block;height:1.6px;background:#0a0a0a}
@@ -117,41 +118,73 @@
   .card:active .card__thumb{transform:scale(.985)}
   .card__thumb svg,.card__thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .card__meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;gap:8px}
-  .card__title{font-weight:600;font-size:16px;line-height:1.5;letter-spacing:.05em}
-  .card__tag{font-size:12px;line-height:1.5;color:var(--muted)}
-  .card__num{font-size:11px;line-height:1.5;color:var(--muted);font-variant-numeric:tabular-nums}
+  .card__title{font-weight:600;font-size:16px;line-height:1.5;letter-spacing:.05em;color:var(--text-main)}
+  .card__tag{font-size:12px;line-height:1.5;color:var(--text-sub)}
+  .card__num{font-size:11px;line-height:1.5;color:var(--text-sub);font-variant-numeric:tabular-nums}
 
   /* ===== Hero carousel（Figma node 553:186 パターンA） ===== */
-  .hero-carousel{position:relative;border-radius:6px;overflow:hidden;background:var(--ph);aspect-ratio:4/3}
+  /* サムネイル比率は 縦:横 = 3:2（aspect-ratioはwidth/heightなので2/3を指定）。
+     画像は object-fit:contain で切り抜かず全体を見せ、余白（上下 or 左右）は
+     カード背景色 #f5f5f5 の単色塗りにする。.top__inner の左右パディング（--content-pad）を
+     打ち消す負のマージンで画面幅いっぱいに広げる（角丸なし＝端まで塗り切る）。 */
+  .hero-carousel{
+    position:relative;overflow:hidden;background:#f5f5f5;aspect-ratio:2/3;
+    margin:0 calc(var(--content-pad) * -1);
+  }
   .hero-carousel__track{display:flex;height:100%;transition:transform .45s var(--ease)}
-  .hero-carousel__slide{flex:0 0 100%;height:100%;position:relative;cursor:pointer}
-  .hero-carousel__slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .hero-carousel__track.is-dragging{transition:none}
+  .hero-carousel__slide{flex:0 0 100%;height:100%;position:relative;cursor:pointer;background:#f5f5f5}
+  .hero-carousel__slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+
+  /* テキストの下敷きになる「グラデーション座布団」。画面左から不透明、右へ抜けていく白グラデーション。
+     スライドが表示されるたびに transform:scaleX(0)→(1) で左から伸びてくるアニメーションを掛け直す
+     （JS側は is-collapsed の付け外しでtransitionを再トリガーする）。 */
+  .hero-carousel__scrim{
+    position:absolute;left:0;right:0;bottom:0;height:112px;
+    background:linear-gradient(to right,rgba(255,255,255,.94) 0%,rgba(255,255,255,.7) 55%,rgba(255,255,255,0) 100%);
+    transform-origin:left bottom;transform:scaleX(1);
+    transition:transform .55s var(--ease);
+    pointer-events:none;
+  }
+  .hero-carousel__slide.is-collapsed .hero-carousel__scrim{transform:scaleX(0);transition:none}
   .hero-carousel__caption{
     position:absolute;left:0;right:0;bottom:0;padding:16px;
-    background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0) 68%);
-    color:#fff;display:flex;flex-direction:column;gap:4px;
+    display:flex;flex-direction:column;gap:4px;
+    opacity:1;transition:opacity .5s var(--ease) .1s;
   }
-  .hero-carousel__title{font-size:14px;line-height:1.5;letter-spacing:.05em;font-weight:600}
-  .hero-carousel__tag{font-size:10px;line-height:1.5;letter-spacing:.02em;color:rgba(255,255,255,.78)}
+  .hero-carousel__slide.is-collapsed .hero-carousel__caption{opacity:0;transition:none}
+  .hero-carousel__title{font-size:14px;line-height:1.5;letter-spacing:.05em;font-weight:600;color:var(--text-main)}
+  .hero-carousel__concept{font-size:10px;line-height:1.5;letter-spacing:.02em;color:var(--text-sub)}
 
-  .hero-dots{display:flex;gap:5px;align-items:center;justify-content:center;padding:8px 6px 0}
+  .hero-dots{display:flex;gap:5px;align-items:center;justify-content:flex-start;padding:4px 6px;margin-top:16px}
   .hero-dots span{width:5px;height:5px;border-radius:2.5px;background:#d3d3d3;transition:background .2s,width .2s;cursor:pointer}
   .hero-dots span.is-active{background:var(--ink);width:18px;border-radius:99px}
 
   /* ===== Year tabs ===== */
-  .year-tabs{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:28px 0 4px}
+  /* 各タブは可読性のため padding:8px を持つが、そのぶん最初のタブの文字が
+     コンテンツ幅（.top__innerの左パディング = --content-pad、常に16px）より右に寄ってしまう。
+     行全体を calc() で左へ寄せ、カルーセルやグリッドと同じ16pxの余白感で「2025」が揃うようにする。 */
+  .year-tabs{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:48px 0 4px calc(16px - var(--content-pad) - 8px)}
   .year-tabs::-webkit-scrollbar{display:none}
   .year-tab{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px;background:none;border:none;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-  .year-tab__label{font-size:16px;font-weight:400;letter-spacing:.02em;color:var(--muted);white-space:nowrap}
+  .year-tab__label{font-size:16px;font-weight:400;letter-spacing:.02em;color:var(--text-sub);white-space:nowrap}
   .year-tab__bar{height:2px;width:100%;min-width:36px;background:var(--line);opacity:0}
-  .year-tab.is-active .year-tab__label{font-weight:600;color:var(--ink)}
+  .year-tab.is-active .year-tab__label{font-weight:600;color:var(--text-main)}
   .year-tab.is-active .year-tab__bar{background:var(--ink);opacity:1}
 
+  /* その年の作品を一言で紹介するテキスト。タブ切り替えごとにJSでディゾルブ（フェード＋ふわっと浮かび上がる）
+     表示に切り替える。2行ぶんの min-height を確保し、テキスト長が変わってもガタつかないようにする。 */
+  .year-note{
+    font-size:12px;line-height:1.5;color:var(--text-sub);margin:8px 0 20px;min-height:36px;
+    opacity:1;transform:translateY(0);transition:opacity .5s var(--ease),transform .5s var(--ease);
+  }
+  .year-note.is-fading{opacity:0;transform:translateY(6px)}
+
   /* ===== Footer ===== */
-  .top-footer{display:flex;flex-direction:column;gap:4px;padding:40px 0 0}
-  .top-footer__name{font-weight:700;font-size:12px;color:var(--ink)}
+  .top-footer{display:flex;flex-direction:column;gap:4px;padding:32px 0 0}
+  .top-footer__name{font-weight:700;font-size:12px;color:var(--text-main)}
   .top-footer__name::before{content:"■";margin-right:6px}
-  .top-footer__meta{font-size:11px;color:var(--muted)}
+  .top-footer__meta{font-size:11px;color:var(--text-sub)}
 
   /* ===== Backdrop ===== */
   .backdrop{
@@ -201,10 +234,10 @@
     padding:0 20px 16px;
     padding:0 calc(20px + env(safe-area-inset-right)) 16px calc(20px + env(safe-area-inset-left));
   }
-  .sheet__title{font-weight:600;font-size:14px;text-align:center;letter-spacing:.05em;color:var(--ink)}
-  .sheet__title small{display:block;font-weight:600;font-size:11px;letter-spacing:0;color:var(--muted);margin-bottom:2px}
+  .sheet__title{font-weight:600;font-size:14px;text-align:center;letter-spacing:.05em;color:var(--text-main)}
+  .sheet__title small{display:block;font-weight:600;font-size:11px;letter-spacing:0;color:var(--text-sub);margin-bottom:2px}
   .icon-btn{
-    width:32px;height:32px;border:none;background:transparent;color:var(--ink);
+    width:32px;height:32px;border:none;background:transparent;color:var(--text-main);
     display:inline-flex;align-items:center;justify-content:center;border-radius:16px;
     cursor:pointer;font-size:18px;line-height:1;
   }
@@ -231,42 +264,42 @@
   /* 画面幅いっぱい：.slide の上・左右パディングを打ち消す */
   .s-hero{aspect-ratio:335/384;background:var(--ph);overflow:hidden;margin:-24px calc(-20px - env(safe-area-inset-right)) 24px calc(-20px - env(safe-area-inset-left))}
   .s-hero svg,.s-hero img{width:100%;height:100%;display:block;object-fit:cover}
-  .s-title{font-size:32px;line-height:1.1;letter-spacing:-.02em;font-weight:700;margin:0 0 8px;word-break:break-word}
-  .s-meta{font-size:11px;line-height:1.5;color:var(--meta)}
+  .s-title{font-size:24px;line-height:1.1;letter-spacing:-.02em;font-weight:700;margin:0 0 8px;word-break:break-word;color:var(--text-main)}
+  .s-meta{font-size:11px;line-height:1.5;color:var(--text-sub)}
   .s-meta .period{margin:0}
   .s-headgroup{margin-bottom:40px}
 
   /* ---- section blocks ---- */
   .s-section{margin-bottom:40px}
   .s-section:last-child{margin-bottom:0}
-  .section-label{font-size:11px;line-height:1.5;letter-spacing:0;color:var(--ink);font-weight:600;margin:0 0 16px}
+  .section-label{font-size:11px;line-height:1.5;letter-spacing:0;color:var(--text-main);font-weight:600;margin:0 0 16px}
 
-  .s-overview{font-size:14px;line-height:1.65;letter-spacing:.05em;color:var(--meta);margin:20px 0 0}
+  .s-overview{font-size:14px;line-height:1.65;letter-spacing:.05em;color:var(--text-main);margin:20px 0 0}
 
   /* POINT OF VIEW — Figma node 391:2064 */
   .pov-block{background:#f3f3f3;border-radius:8px;padding:20px 16px 16px;display:flex;flex-direction:column;gap:8px}
   .pov-block + .pov-block{margin-top:16px}
-  .pov-block .section-label{margin:0;color:#000}
+  .pov-block .section-label{margin:0}
   .design-block .section-label{margin-bottom:8px}
-  .pov-h{font-size:20px;font-weight:600;line-height:1.3;letter-spacing:-.02em;color:#000;margin:0;word-break:break-word}
-  .pov-p{font-size:14px;line-height:1.65;letter-spacing:.05em;color:#000;margin:0}
+  .pov-h{font-size:20px;font-weight:600;line-height:1.3;letter-spacing:-.02em;color:var(--text-main);margin:0;word-break:break-word}
+  .pov-p{font-size:14px;line-height:1.65;letter-spacing:.05em;color:var(--text-main);margin:0}
 
   .design-block,.process-block{margin-bottom:32px}
   .design-block:last-child,.process-block:last-child{margin-bottom:0}
-  .design-h{font-size:22px;font-weight:600;letter-spacing:-.02em;line-height:1.3;color:var(--ink);margin:0 0 8px}
-  .process-h{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.3;color:var(--ink);margin:0 0 8px}
-  .block-p{font-size:14px;line-height:1.65;letter-spacing:.05em;color:var(--ink);margin:0}
+  .design-h{font-size:22px;font-weight:600;letter-spacing:-.02em;line-height:1.3;color:var(--text-main);margin:0 0 8px}
+  .process-h{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.3;color:var(--text-main);margin:0 0 8px}
+  .block-p{font-size:14px;line-height:1.65;letter-spacing:.05em;color:var(--text-main);margin:0}
   /* 画像（キャプション）の後に続く本文は少し離す */
   .sec-img + .block-p,.sec-caption + .block-p{margin-top:12px}
   .sec-img{width:100%;background:var(--ph);border-radius:2px;overflow:hidden;margin-top:8px}
   .sec-img svg{width:100%;height:auto;aspect-ratio:772/480;display:block}
   .sec-img img{width:100%;height:auto;display:block}
-  .sec-caption{font-size:11px;line-height:1.5;color:var(--muted);margin:6px 2px 0}
+  .sec-caption{font-size:11px;line-height:1.5;color:var(--text-sub);margin:6px 2px 0}
 
   .outcome-list{display:flex;flex-direction:column;gap:16px}
   .outcome-row{background:#fafafa;border-radius:6px;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px}
-  .outcome-row .n{font-size:32px;font-weight:700;line-height:1.1;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
-  .outcome-row .l{font-size:12px;line-height:1.5;color:var(--muted);text-align:right}
+  .outcome-row .n{font-size:32px;font-weight:700;line-height:1.1;letter-spacing:-.02em;color:var(--text-main);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .outcome-row .l{font-size:12px;line-height:1.5;color:var(--text-sub);text-align:right}
 
   .s-divider{height:1px;background:#e0e0e0;margin:0 0 40px}
 
@@ -274,11 +307,11 @@
   .related-item{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:6px;cursor:pointer;user-select:none}
   .related-thumb{width:100%;height:96px;background:var(--ph);border-radius:2px;overflow:hidden}
   .related-thumb svg,.related-thumb img{width:100%;height:100%;display:block;object-fit:cover}
-  .related-title{font-size:14px;line-height:1.5;letter-spacing:.05em;color:#000;padding:0 4px;word-break:break-word}
+  .related-title{font-size:14px;line-height:1.5;letter-spacing:.05em;color:var(--text-main);padding:0 4px;word-break:break-word}
 
   .swipe-hint{
     position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
-    font-size:11px;line-height:1.5;color:var(--muted);letter-spacing:0;background:rgba(255,255,255,.85);
+    font-size:11px;line-height:1.5;color:var(--text-sub);letter-spacing:0;background:rgba(255,255,255,.85);
     backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
     padding:7px 12px;border-radius:99px;border:1px solid var(--line);
     pointer-events:none;opacity:0;transition:opacity .35s var(--ease);
@@ -298,7 +331,7 @@
   @media (min-width:640px){
     .top__inner{
       max-width:760px;
-      padding:calc(20px + env(safe-area-inset-top)) calc(32px + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(32px + env(safe-area-inset-left));
+      padding:calc(20px + env(safe-area-inset-top)) calc(var(--content-pad) + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(var(--content-pad) + env(safe-area-inset-left));
     }
     .grid{grid-template-columns:repeat(2,1fr);gap:36px 24px}
   }
@@ -307,7 +340,7 @@
   @media (min-width:1024px){
     .top__inner{
       max-width:1100px;
-      padding:calc(24px + env(safe-area-inset-top)) calc(48px + env(safe-area-inset-right)) calc(120px + env(safe-area-inset-bottom)) calc(48px + env(safe-area-inset-left));
+      padding:calc(24px + env(safe-area-inset-top)) calc(var(--content-pad) + env(safe-area-inset-right)) calc(120px + env(safe-area-inset-bottom)) calc(var(--content-pad) + env(safe-area-inset-left));
     }
     .nav{height:60px}
     .grid{grid-template-columns:repeat(3,1fr);gap:44px 28px}
@@ -345,6 +378,8 @@
     .backdrop{cursor:pointer}
     .pager{cursor:grab}
     .pager:active{cursor:grabbing}
+    .hero-carousel{cursor:grab}
+    .hero-carousel:active{cursor:grabbing}
     .swipe-hint .for-touch{display:none}
     .swipe-hint .for-pointer{display:inline}
   }
@@ -366,12 +401,13 @@
       <div class="menu" aria-label="menu"></div>
     </div>
 
-    <div class="hero-carousel">
+    <div class="hero-carousel" id="heroCarousel">
       <div class="hero-carousel__track" id="heroTrack"></div>
     </div>
     <div class="hero-dots" id="heroDots"></div>
 
     <div class="year-tabs" id="yearTabs"></div>
+    <p class="year-note" id="yearNote"></p>
     <div class="grid" id="grid"></div>
 
     <div class="top-footer">
@@ -642,28 +678,52 @@ function thumbSvg(hue,seed){
 }
 
 /* ============== HERO CAROUSEL（全作品を自動でめぐる） ============== */
+const heroCarouselEl=document.getElementById('heroCarousel');
 const heroTrack=document.getElementById('heroTrack');
 const heroDots=document.getElementById('heroDots');
+/* キャプション2行目の「コンセプト」。POINT OF VIEW（コンセプト節）の見出しをそのまま流用する。
+   pov未設定の作品（初期に作った作品）はカテゴリタグで代用する。 */
+function conceptOf(w){
+  return (w.pov && w.pov[0]) ? w.pov[0].heading : w.tags.join('・');
+}
 WORKS.forEach((w,i)=>{
   const slide=document.createElement('div');
   slide.className='hero-carousel__slide';
   slide.innerHTML = `
     <img src="works/images/${w.slug}/01.${w.ext||'png'}" alt="">
+    <div class="hero-carousel__scrim"></div>
     <div class="hero-carousel__caption">
       <div class="hero-carousel__title">${w.title}</div>
-      <div class="hero-carousel__tag">${w.tags.join('・')}</div>
+      <div class="hero-carousel__concept">${conceptOf(w)}</div>
     </div>`;
-  slide.addEventListener('click',()=>openSheet(i));
+  slide.addEventListener('click',()=>{
+    if(hcSuppressClick){hcSuppressClick=false;return;}
+    openSheet(i);
+  });
   heroTrack.appendChild(slide);
   const dot=document.createElement('span');
   dot.dataset.i=i;
   heroDots.appendChild(dot);
 });
-let heroIndex=0,heroTimer=null;
+let heroIndex=0,heroTimer=null,heroWidth=0;
+function measureHero(){heroWidth=heroCarouselEl.clientWidth}
+window.addEventListener('resize',measureHero);
+measureHero();
+/* 座布団（グラデーション）とキャプションを、画面左から伸びてくるアニメーションで毎回再表示する。
+   スライドは常にDOM上に存在し続ける（横スライドで見せているだけ）ため、アクティブになるたびに
+   is-collapsed を付け外して transition を再トリガーする。 */
+function playHeroReveal(i){
+  const slide=heroTrack.children[i];
+  if(!slide)return;
+  slide.classList.add('is-collapsed');
+  void slide.offsetWidth;
+  slide.classList.remove('is-collapsed');
+}
 function setHeroIndex(i){
   heroIndex=(i+WORKS.length)%WORKS.length;
   heroTrack.style.transform=`translate3d(${-heroIndex*100}%,0,0)`;
   [...heroDots.children].forEach((d,j)=>d.classList.toggle('is-active',j===heroIndex));
+  playHeroReveal(heroIndex);
 }
 function restartHeroTimer(){
   clearInterval(heroTimer);
@@ -677,10 +737,87 @@ heroDots.addEventListener('click',e=>{
 setHeroIndex(0);
 restartHeroTimer();
 
-/* ============== YEAR TABS + TOP THUMBS ============== */
+/* ---- カルーセルのスワイプ（シートのページャーと同じ考え方：縦スクロールとの
+   衝突を避けるため、動き始めの6pxで横方向のドラッグだけ確定させる） ---- */
+let hcX=0,hcY=0,hcDX=0,hcDY=0,hcStartT=0,hcDir=null,hcDragging=false,hcSuppressClick=false;
+function heroDragStart(x,y){
+  measureHero();
+  hcX=x;hcY=y;hcDX=0;hcDY=0;hcDir=null;hcDragging=true;hcStartT=performance.now();
+  heroTrack.classList.add('is-dragging');
+  clearInterval(heroTimer);
+}
+function heroDragMove(x,y,ev){
+  if(!hcDragging)return;
+  hcDX=x-hcX;hcDY=y-hcY;
+  if(!hcDir && (Math.abs(hcDX)>6||Math.abs(hcDY)>6)) hcDir=Math.abs(hcDX)>Math.abs(hcDY)?'x':'y';
+  if(hcDir==='x'){
+    if(ev&&ev.cancelable)ev.preventDefault();
+    heroTrack.style.transform=`translate3d(${-heroIndex*heroWidth+hcDX}px,0,0)`;
+  }
+}
+function heroDragEnd(){
+  if(!hcDragging)return;hcDragging=false;
+  heroTrack.classList.remove('is-dragging');
+  if(hcDir==='x'){
+    const v=hcDX/(performance.now()-hcStartT);
+    const threshold=heroWidth*0.18;
+    if(hcDX<-threshold||v<-0.4){hcSuppressClick=true;setHeroIndex(heroIndex+1);}
+    else if(hcDX>threshold||v>0.4){hcSuppressClick=true;setHeroIndex(heroIndex-1);}
+    else setHeroIndex(heroIndex);
+  }
+  restartHeroTimer();
+}
+heroCarouselEl.addEventListener('touchstart',e=>{
+  if(e.touches.length!==1)return;
+  heroDragStart(e.touches[0].clientX,e.touches[0].clientY);
+},{passive:true});
+heroCarouselEl.addEventListener('touchmove',e=>{
+  heroDragMove(e.touches[0].clientX,e.touches[0].clientY,e);
+},{passive:false});
+heroCarouselEl.addEventListener('touchend',heroDragEnd);
+heroCarouselEl.addEventListener('mousedown',e=>{
+  heroDragStart(e.clientX,e.clientY);
+  const mm=ev=>heroDragMove(ev.clientX,ev.clientY);
+  const mu=()=>{heroDragEnd();window.removeEventListener('mousemove',mm);window.removeEventListener('mouseup',mu)};
+  window.addEventListener('mousemove',mm);window.addEventListener('mouseup',mu);
+});
+
+/* ============== YEAR TABS + 一言紹介（タイプライター） + TOP THUMBS ============== */
 function yearOf(w){ const m=w.period.match(/^(\d{4})/); return m?m[1]:''; }
 const YEARS=[...new Set(WORKS.map(yearOf))].sort((a,b)=>b-a);
 let activeYear=YEARS[0];
+
+/* 年ごとの一言紹介。作品データからは決まらない読み物用の短いコピーなので、
+   ここで年をキーに手書きする（作品を増減させたら合わせて見直す）。 */
+const YEAR_NOTES={
+  "2025":"IoT家電アプリのUIを、生成AIや海外展開も見据えて磨き続けた一年。",
+  "2023":"液晶UIやデータ可視化、アイコンまで、表現の幅を広げた一年。",
+  "2022":"既存フローの改善と、データ分析という新しい視点の導入に取り組んだ一年。",
+  "2021":"マンション向けアプリのUIディレクションで、クライアントと伴走した一年。",
+  "2020":"エアコンアプリの誤操作を減らす、リデザインに取り組んだ一年。",
+};
+
+const yearNoteEl=document.getElementById('yearNote');
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let yearNoteTimer=null;
+/* いまの文言をフェードアウトしてから差し替え、ふわっと浮かび上がらせて表示する。
+   initial:true は初回表示用で、フェードアウトのステップを飛ばして浮かび上がりだけ行う。 */
+function showYearNote(text,{initial=false}={}){
+  clearTimeout(yearNoteTimer);
+  if(reduceMotion){ yearNoteEl.textContent=text||''; return; }
+  if(initial){
+    yearNoteEl.textContent=text||'';
+    yearNoteEl.classList.add('is-fading');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>yearNoteEl.classList.remove('is-fading')));
+    return;
+  }
+  yearNoteEl.classList.add('is-fading');
+  yearNoteTimer=setTimeout(()=>{
+    yearNoteEl.textContent=text||'';
+    void yearNoteEl.offsetWidth; /* reflowを挟んでフェードインのtransitionを確実に再発火させる */
+    yearNoteEl.classList.remove('is-fading');
+  },260);
+}
 
 const yearTabsEl=document.getElementById('yearTabs');
 YEARS.forEach(y=>{
@@ -693,10 +830,12 @@ YEARS.forEach(y=>{
     if(activeYear===y) return;
     activeYear=y;
     [...yearTabsEl.children].forEach(b=>b.classList.toggle('is-active',b.dataset.year===y));
+    showYearNote(YEAR_NOTES[activeYear]);
     renderGrid();
   });
   yearTabsEl.appendChild(btn);
 });
+showYearNote(YEAR_NOTES[activeYear],{initial:true});
 
 const grid=document.getElementById('grid');
 function renderGrid(){

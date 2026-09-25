@@ -105,6 +105,8 @@
   .top__inner{max-width:430px;margin:0 auto;padding:14px var(--content-pad) 80px}
   .top__inner{padding:calc(14px + env(safe-area-inset-top)) calc(var(--content-pad) + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(var(--content-pad) + env(safe-area-inset-left))}
   .nav{display:flex;align-items:center;justify-content:space-between;height:52px}
+  /* ロゴが入る想定のプレースホルダー。Figma（node 601:508）の"Ta"を参考にしたサイズ・字間。 */
+  .nav__logo{font-size:20px;font-weight:600;line-height:1.05;letter-spacing:-.02em;color:var(--text-main)}
   .menu{width:28px;height:18px;display:flex;flex-direction:column;justify-content:space-between}
   .menu::before,.menu::after{content:"";display:block;height:1.6px;background:#0a0a0a}
   .menu::before{box-shadow:0 8px 0 0 #0a0a0a}
@@ -334,6 +336,8 @@
       padding:calc(20px + env(safe-area-inset-top)) calc(var(--content-pad) + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(var(--content-pad) + env(safe-area-inset-left));
     }
     .grid{grid-template-columns:repeat(2,1fr);gap:36px 24px}
+    /* 横に広い画面ではカルーセルも縦長(2:3)から横長(3:2)に切り替える */
+    .hero-carousel{aspect-ratio:3/2}
   }
 
   /* ---- 1024px〜：デスクトップ。3カラム ---- */
@@ -398,6 +402,7 @@
 <div class="top" id="top">
   <div class="top__inner">
     <div class="nav">
+      <div class="nav__logo">Ta</div>
       <div class="menu" aria-label="menu"></div>
     </div>
 

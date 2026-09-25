@@ -47,6 +47,7 @@
 {
   title, slug, tags:[], period:"YYYY.MM ~ MM",
   ext:"jpg",                      // 画像が .png 以外のときのみ指定（既定 png）
+  pickup: true,                   // ヒーローカルーセルに載せる作品にのみ付与（現在5件。付けない作品は省略）
   overview:"…",
   pov:    [{heading, body}],      // 1件のみ
   design: [{heading, body, img}], // img は "02.png" or ["02.png","03.png"]、省略可

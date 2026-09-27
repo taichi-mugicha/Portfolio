@@ -49,6 +49,7 @@
   ext:"jpg",                      // 画像が .png 以外のときのみ指定（既定 png）
   pickup: true,                   // ヒーローカルーセルに載せる作品にのみ付与（現在5件。付けない作品は省略）
   carouselImg:"01-hero.png",      // カルーセル専用のヒーロー画像（省略時は01.{ext}を使う）。pickup作品のみ想定
+  carouselLegacyRatio: true,      // trueなら画像を16:9 coverで切り抜かず、縦長比率(5:6固定・全幅共通)+containで見せる
   overview:"…",
   pov:    [{heading, body}],      // 1件のみ
   design: [{heading, body, img}], // img は "02.png" or ["02.png","03.png"]、省略可

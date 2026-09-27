@@ -136,8 +136,15 @@
   .hero-carousel__track{display:flex;align-items:flex-start;transition:transform .45s var(--ease)}
   .hero-carousel__track.is-dragging{transition:none}
   .hero-carousel__slide{flex:0 0 100%;display:flex;flex-direction:column;cursor:pointer;background:#f5f5f5}
-  .hero-carousel__media{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;background:#f5f5f5}
+  /* Figmaのオートレイアウトで画像とバンドの間隔が-12px（Figma node 601:621）。
+     バンドが画像の下端に12pxだけ食い込むよう、画像側に負のbottomマージンを付ける。 */
+  .hero-carousel__media{width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;background:#f5f5f5;margin-bottom:-12px}
   .hero-carousel__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  /* 縦長素材（宣伝用の合成画像など）向けの比率。16:9でcoverすると大きく切れてしまう画像に
+     carouselLegacyRatio:true を付けると、元画像の比率（5:6、NEW COCORO HOMEの01-hero.pngが1000×1200）に
+     合わせた縦長比率＋contain（切り抜かず全体表示）に切り替える。全ブレークポイント共通（横長への切り替えなし）。 */
+  .hero-carousel__media.is-legacy-ratio{aspect-ratio:5/6}
+  .hero-carousel__media.is-legacy-ratio img{object-fit:contain}
 
   /* 画像の下に続くバンド。キャプションの「バッジ」はここに左寄せで置く。
      スライドが表示されるたびに clip-path で左から伸びてくる（ワイプイン）アニメーションを掛け直す
@@ -332,6 +339,8 @@
       padding:calc(20px + env(safe-area-inset-top)) calc(var(--content-pad) + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(var(--content-pad) + env(safe-area-inset-left));
     }
     .grid{grid-template-columns:repeat(2,1fr);gap:36px 24px}
+    /* スマホは4:3、640px〜（タブレット・PC）は横比率16:9に切り替える（legacy-ratio作品は対象外） */
+    .hero-carousel__media:not(.is-legacy-ratio){aspect-ratio:16/9}
   }
 
   /* ---- 1024px〜：デスクトップ。3カラム ---- */
@@ -476,6 +485,7 @@ const WORKS = [
     slug:"new-cocoro-home",
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
     carouselImg:"01-hero.png", /* カルーセル専用のヒーロー画像。省略時は01.pngを使う */
+    carouselLegacyRatio:true, /* 縦長の合成画像なので16:9 coverではなく旧比率（2:3→640px〜3:2）+containで見せる */
     tags:["UIデザイン"],
     period:"2025.10 ~ 2026.03",
     overview:"IoT家電アプリ「COCORO HOME」の主要機能を統合した新しい「トップ画面」のUIをデザインしました。リリースから歳月を重ねることで累積した多様な機能とサービスを整理し、再び使いやすいUIにリデザインしました。",
@@ -698,8 +708,9 @@ HERO_WORKS.forEach(({w,i},pos)=>{
   const slide=document.createElement('div');
   slide.className='hero-carousel__slide';
   const heroImg = w.carouselImg || `01.${w.ext||'png'}`; /* カルーセル専用画像が無ければ01を使う */
+  const mediaClass = 'hero-carousel__media'+(w.carouselLegacyRatio?' is-legacy-ratio':'');
   slide.innerHTML = `
-    <div class="hero-carousel__media"><img src="works/images/${w.slug}/${heroImg}" alt=""></div>
+    <div class="${mediaClass}"><img src="works/images/${w.slug}/${heroImg}" alt=""></div>
     <div class="hero-carousel__band">
       <div class="hero-carousel__badge">
         <div class="hero-carousel__title">${w.title}</div>

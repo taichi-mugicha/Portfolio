@@ -2,7 +2,7 @@
 
 | 項目 | 内容 |
 |---|---|
-| ヒーローイメージ | ![](./images/cocoro-air-redesign/01.png) |
+| ヒーローイメージ | ![](./images/cocoro-air-redesign/thumb.png) |
 | タイトル | COCORO AIR リデザイン |
 | 期間 | 2020.12 ~ 2021.05 |
 | タグ | UIデザイン |
@@ -11,7 +11,7 @@
 
 エアコンや空気清浄機の遠隔操作、消耗度が確認できる「ココロエアー」をリデザイン。誤操作の多い表示部をボタン化し、機能が伝わるアイコンへ変更しました。
 
-![](./images/cocoro-air-redesign/02.png)
+![](./images/cocoro-air-redesign/overview-01.png)
 *アプリの主要画面をまとめた全体像（仮）*
 
 ## DESIGN
@@ -19,17 +19,17 @@
 ### 操作できる場所が、一目でわかる。
 部屋の状態はカラー、機器操作はグレーで、情報の種類を色で区別。設定温度やモードの「表示箇所」と「操作箇所」が離れ、どこを操作できるか分かりづらかった状態を改善しました。
 
-![](./images/cocoro-air-redesign/03.png)
+![](./images/cocoro-air-redesign/design-01.png)
 
 ### 機能にアクセスしやすいUIへ。
 ボトムナビを各機能へのナビゲーションに使い、機器操作以外の価値も前面化。お手入れ・消耗品状況へのリンクをボトムナビゲーションに配置し、様々な機能へのタッチポイントを提供しました。
 
-![](./images/cocoro-air-redesign/04.png)
+![](./images/cocoro-air-redesign/design-02.png)
 
 ### 全体像
 プレースホルダー — UX全体のボリューム感が伝わる全画面ビジュアルを配置予定。
 
-![](./images/cocoro-air-redesign/05.png)
+![](./images/cocoro-air-redesign/design-03.png)
 
 ## PROCESS
 

@@ -46,13 +46,13 @@
 ```js
 {
   title, slug, tags:[], period:"YYYY.MM ~ MM",
-  ext:"jpg",                      // 画像が .png 以外のときのみ指定（既定 png）
+  ext:"jpg",                      // サムネ（thumb）が .png 以外のときのみ指定（既定 png）
   pickup: true,                   // ヒーローカルーセルに載せる作品にのみ付与（現在5件。付けない作品は省略）
-  carouselImg:"01-hero.png",      // カルーセル専用のヒーロー画像（省略時は01.{ext}を使う）。pickup作品のみ想定
+  carouselImg:"carousel.png",     // カルーセル専用のヒーロー画像（省略時は thumb.{ext} を使う）。pickup作品のみ想定
   carouselLegacyRatio: true,      // trueなら画像を16:9 coverで切り抜かず、縦長比率(5:6固定・全幅共通)+containで見せる
   overview:"…",
   pov:    [{heading, body}],      // 1件のみ
-  design: [{heading, body, img}], // img は "02.png" or ["02.png","03.png"]、省略可
+  design: [{heading, body, img}], // img は "design-01.png" or ["design-01.png","design-02.png"]、省略可
   process:[{heading, body, img}], // 空配列ならセクションごと非表示
   outcome:[{value, label}],       // 同上
   hue: 215,                       // 画像未設置時のプレースホルダー色
@@ -64,11 +64,21 @@
 
 ## 画像
 
-- 置き場所は `works/images/{slug}/`、連番 `01`,`02`,… 命名。`01` がサムネ兼ヒーロー。
-- 拡張子は作品内で統一する（png以外なら上記 `ext` を指定）。
+- 置き場所は `works/images/{slug}/`。ファイル名は**用途＋セクション内の連番**で付ける。
+
+  | ファイル名 | 用途 |
+  |---|---|
+  | `thumb.{ext}` | 一覧カードのサムネ兼、作品詳細のヒーロー |
+  | `carousel.png` | カルーセル専用のヒーロー画像（`carouselImg`。pickup作品のみ） |
+  | `overview-01`, `overview-02`… | OVERVIEW の画像 |
+  | `pov-01` | POINT OF VIEW の画像 |
+  | `design-01`, `design-02`… | DESIGN の画像（上から順。末尾の「全体像」も含む） |
+  | `process-01`, `process-02`… | PROCESS の画像 |
+
+- 連番は原稿（`works/*.md`）での登場順。画像未設置（`placeholder:true`）のブロックも番号を1つ消費する。
+- 拡張子は画像ごとに異なってよい（`img` には拡張子込みで書く）。`thumb` が png 以外なら上記 `ext` を指定。
 - 差し替えはファイル名を変えず上書きするのが基本。HTML側の参照を触らずに済む。
 - `_` 始まりのファイル（`_99.png` など）は作業中の下書き。参照しない。
-- カルーセル専用画像（`carouselImg`）は連番の対象外。`01-hero.png` のように用途がわかる名前を付ける。
 
 ## 要望の記録
 

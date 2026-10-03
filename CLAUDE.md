@@ -45,7 +45,7 @@
 
 ```js
 {
-  title, slug, tags:[], period:"YYYY.MM ~ MM",
+  title, slug, tags:[], period:"YYYY.MM - MM",
   ext:"jpg",                      // サムネ（thumb）が .png 以外のときのみ指定（既定 png）
   pickup: true,                   // ヒーローカルーセルに載せる作品にのみ付与（現在5件。付けない作品は省略）
   carouselImg:"carousel-sp.png",  // カルーセル専用画像・〜639px用（省略時は thumb.{ext} を使う）。pickup作品のみ想定

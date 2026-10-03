@@ -4,7 +4,7 @@
 |---|---|
 | ヒーローイメージ | ![](./images/cocoro-air-redesign/thumb.png) |
 | タイトル | COCORO AIR リデザイン |
-| 期間 | 2020.12 ~ 2021.05 |
+| 期間 | 2020.12 - 2021.05 |
 | タグ | UIデザイン |
 
 ## OVERVIEW

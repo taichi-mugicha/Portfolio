@@ -130,12 +130,12 @@
      .top__inner の左右パディング（--content-pad）を打ち消す負のマージンで画面幅いっぱいに広げる
      （角丸なし＝端まで塗り切る）。 */
   .hero-carousel{
-    position:relative;overflow:hidden;background:#f5f5f5;
+    position:relative;overflow:hidden;
     margin:0 calc(var(--content-pad) * -1);
   }
   .hero-carousel__track{display:flex;align-items:flex-start;transition:transform .45s var(--ease)}
   .hero-carousel__track.is-dragging{transition:none}
-  .hero-carousel__slide{flex:0 0 100%;display:flex;flex-direction:column;cursor:pointer;background:#f5f5f5}
+  .hero-carousel__slide{flex:0 0 100%;display:flex;flex-direction:column;cursor:pointer}
   /* Figmaのオートレイアウトで画像とバンドの間隔が-12px（Figma node 601:621）。
      バンドが画像の下端に12pxだけ食い込むよう、画像側に負のbottomマージンを付ける。 */
   .hero-carousel__media{width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;background:#f5f5f5;margin-bottom:-12px}
@@ -151,7 +151,7 @@
      スライドが表示されるたびに clip-path で左から伸びてくる（ワイプイン）アニメーションを掛け直す
      （JS側は is-collapsed の付け外しでtransitionを再トリガーする）。テキストは拡大縮小されないので
      scaleX と違って文字がつぶれない。 */
-  .hero-carousel__band{width:100%;background:#f4f4f4;display:flex;align-items:flex-end;padding:8px 0 16px;min-height:84px;box-sizing:border-box}
+  .hero-carousel__band{width:100%;display:flex;align-items:flex-end;position:relative;z-index:1;box-sizing:border-box} /* 高さ＝バッジ。mediaの-12pxでバッジが画像に食い込む。position/z-indexは画像より手前に出すため */
   .hero-carousel__badge{
     background:linear-gradient(to right,#ed23a3,#ff5887 50%,#ee7c54);
     color:#fff;display:flex;flex-direction:column;gap:5px;
@@ -497,7 +497,7 @@ const WORKS = [
     tags:["UIデザイン"],
     period:"2025.10 ~ 2026.03",
     overview:"IoT家電アプリ「COCORO HOME」の主要機能を統合した新しい「トップ画面」のUIをデザインしました。リリースから歳月を重ねることで累積した多様な機能とサービスを整理し、再び使いやすいUIにリデザインしました。",
-    overviewImg:{img:["overview-01.png","overview-02.png"],caption:"アプリの主要画面をまとめた全体像（仮）"},
+    overviewImg:{img:["overview-01.png","overview-02.png"]},
     pov:[
       {heading:"複数台の家電を「迷わず選べる」土台を作る",body:"本プロジェクトは、機器リストのUI改善からスタートしました。将来的なMatter対応で接続台数の増加が見込まれる中、個々の機能を足すのではなく、情報量と配色のルールを揃えて一覧性を取り戻し、台数が増えても破綻しない「増えても選びやすい」トップ画面を核に据えることを出発点としました。",placeholder:true,caption:"課題を示すビジュアル（仮）"},
     ],
@@ -523,7 +523,7 @@ const WORKS = [
     tags:["UIデザイン"],
     period:"2025.04 ~ 09",
     overview:"IoT家電アプリ「COCORO HOME」における、生成AIで家電の悩みを解決するアシスタント機能のUIデザインを担当しました。対応機種の取扱説明書やFAQを学習し、シャープの一次情報にもとづいて的確に回答。登録済みの家電型番を参照し、該当する取説ページを画像で提示したり、回答内容に即した設定UIを提示し、その場で機器を操作することで「調べて終わり」にしない体験が実現できました。",
-    overviewImg:{img:["overview-01.png","overview-02.png"],caption:"アプリの主要画面をまとめた全体像（仮）"},
+    overviewImg:{img:["overview-01.png","overview-02.png"]},
     pov:[
       {heading:"「困ってから」ではなく、「もっと良く」を引き出すAIへ",body:"家電の相談は、エラーやトラブルが起きて「困ってから」に偏りがちです。COCORO HOME AIでは、洗濯物を上手に洗いたい・ふわふわに仕上げたいといった「もっと良く」使いたいという前向きな相談も引き出したいと考えました。そのため、ユーザーのやりたいこと優先で控えめに答えるのではなく、「こんなこともできますよ」と積極的に「やれること」を提案するふるまいを軸に据え、家電を楽しく快適に使い続けてもらうことを目指しました。",placeholder:true,caption:"課題を示すビジュアル（仮）"},
     ],

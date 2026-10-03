@@ -14,7 +14,6 @@ IoT家電アプリ「COCORO HOME」における、生成AIで家電の悩みを�
 
 ![](./images/cocoro-home-ai/overview-01.png)
 ![](./images/cocoro-home-ai/overview-02.png)
-*アプリの主要画面をまとめた全体像（仮）*
 
 ## POINT OF VIEW
 

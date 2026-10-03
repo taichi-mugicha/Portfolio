@@ -13,7 +13,6 @@ IoT家電アプリ「COCORO HOME」の主要機能を統合した新しい「ト
 
 ![](./images/new-cocoro-home/overview-01.png)
 ![](./images/new-cocoro-home/overview-02.png)
-*アプリの主要画面をまとめた全体像（仮）*
 
 ## POINT OF VIEW
 

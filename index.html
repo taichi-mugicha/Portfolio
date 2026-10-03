@@ -450,7 +450,6 @@
       <button class="icon-btn" id="prevBtn" aria-label="prev">‹</button>
       <div class="sheet__title">
         <small id="caseLabel">CASE 01 / 07</small>
-        <span id="caseTitle">—</span>
       </div>
       <button class="icon-btn" id="nextBtn" aria-label="next">›</button>
     </div>
@@ -937,7 +936,6 @@ const sheetHead=document.getElementById('sheetHead');
 const pager=document.getElementById('pager');
 const track=document.getElementById('track');
 const caseLabel=document.getElementById('caseLabel');
-const caseTitle=document.getElementById('caseTitle');
 
 /* シートで回遊する作品（WORKSの通し番号の配列）。開いた入口で決まる：
    カルーセル→ピックアップ5作品、一覧→表示中の年の作品。currentIndexはこの配列内の位置。 */
@@ -1075,7 +1073,6 @@ function setIndex(i,{animate=true,resetScroll}={}){
   }else{
     caseLabel.textContent=`${navLabel} ${pad(currentIndex+1)} / ${pad(navList.length)}`;
   }
-  caseTitle.textContent=WORKS[navList[currentIndex]].title;
   // 作品が変わったときだけスクロールを戻す。
   // タップ（Androidの擬似マウスイベント）やしきい値未満のスワイプでも
   // setIndexは呼ばれるので、無条件に戻すと読んでいる途中で先頭に飛んでしまう。

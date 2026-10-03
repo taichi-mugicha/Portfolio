@@ -136,9 +136,9 @@
   .hero-carousel__track{display:flex;align-items:flex-start;transition:transform .45s var(--ease)}
   .hero-carousel__track.is-dragging{transition:none}
   .hero-carousel__slide{flex:0 0 100%;display:flex;flex-direction:column;cursor:pointer}
-  /* Figmaのオートレイアウトで画像とバンドの間隔が-12px（Figma node 601:621）。
+  /* 画像とバンドの間隔は-24px（Figma node 601:621の-12pxから、食い込みを深くする要望で変更）。
      バンドが画像の下端に12pxだけ食い込むよう、画像側に負のbottomマージンを付ける。 */
-  .hero-carousel__media{width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;background:#f5f5f5;margin-bottom:-12px}
+  .hero-carousel__media{width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;background:#f5f5f5;margin-bottom:-24px}
   .hero-carousel__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   /* 縦長素材（宣伝用の合成画像など）向けの比率。16:9でcoverすると大きく切れてしまう画像に
      carouselLegacyRatio:true を付けると、元画像の比率（5:6、carousel-sp.pngが1000×1200）に
@@ -151,8 +151,13 @@
      スライドが表示されるたびに clip-path で左から伸びてくる（ワイプイン）アニメーションを掛け直す
      （JS側は is-collapsed の付け外しでtransitionを再トリガーする）。テキストは拡大縮小されないので
      scaleX と違って文字がつぶれない。 */
-  .hero-carousel__band{width:100%;display:flex;align-items:flex-end;position:relative;z-index:1;box-sizing:border-box} /* 高さ＝バッジ。mediaの-12pxでバッジが画像に食い込む。position/z-indexは画像より手前に出すため */
+  /* バンドの高さは「バッジ1行ぶん」に固定する（上下パディング8px×2＋作品名10px×1.5＋gap5px＋コンセプト14px×1.5＝57px）。
+     バッジはバンドの下端に絶対配置するので、コンセプトが改行してバッジが高くなっても下へは伸びず、
+     上方向（画像側）へ食い込む量が増えるだけ。インジケーターまでの余白は常に一定になる。
+     mediaの-24pxで1行時も画像に食い込む。position/z-indexは画像より手前に出すため。 */
+  .hero-carousel__band{width:100%;position:relative;z-index:1;height:calc(16px + 10px * 1.5 + 5px + 14px * 1.5)}
   .hero-carousel__badge{
+    position:absolute;left:0;bottom:0;max-width:100%;box-sizing:border-box;
     background:linear-gradient(to right,#ed23a3,#ff5887 50%,#ee7c54);
     color:#fff;display:flex;flex-direction:column;gap:5px;
     padding:8px 16px;border-radius:0;
@@ -471,7 +476,7 @@ const WORKS = [
     tags:["UIデザイン"],
     period:"2025.09 ~ 2026.06",
     overview:"ASEANの冷蔵庫にはじめて搭載されるIoTアプリ「AIoT Refrigerator」のUIデザインを担当しました。価格を据え置いたままシェア獲得を狙う戦略の中、温度設定やモード変更といった基本機能を、迷わず直感的に操作できる体験として設計しました。",
-    overviewImg:{img:"overview-01.png",caption:"温度調整から食材別の保存提案までの主要画面"},
+    overviewImg:{img:["overview-01.png","overview-02.png"],caption:"温度調整から食材別の保存提案までの主要画面"},
     pov:[
       {heading:"「自動で冷やす箱」から、\"選べる\"家電へ",body:"冷蔵庫は設置後ほとんど設定を変えられることなく、一定温度で冷やし続けるだけの受動的な「箱」でした。ASEAN向けIoTアプリでは、「キンキンに冷えたビールを飲みたい」「急速冷凍でおいしさを保ちたい」といった暮らしの目的に応じて保存方法を\"選べる\"存在へ。UIを介して冷蔵庫とユーザーの関係性を再構築することを目指しました。",img:"pov-01.png",caption:"意識の外にあった従来と、目指した関係性の整理"},
     ],

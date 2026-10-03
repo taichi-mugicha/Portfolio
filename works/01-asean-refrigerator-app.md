@@ -12,6 +12,7 @@
 マレーシア、フィリピン、インドネシアなどのASEAN地域に向けた冷蔵庫にはじめて搭載されるIoTアプリ「AIoT Refrigerator」のUIデザインを担当しました。価格を据え置いたままシェア獲得を狙う戦略の中、温度設定やモード変更といった基本機能を、迷わず直感的に操作できる体験として設計しました。
 
 ![](./images/asean-refrigerator-app/overview-01.png)
+![](./images/asean-refrigerator-app/overview-02.png)
 *温度調整から食材別の保存提案までの主要画面*
 
 ## POINT OF VIEW

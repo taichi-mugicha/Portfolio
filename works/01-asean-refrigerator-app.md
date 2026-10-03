@@ -14,7 +14,6 @@
 
 ![](./images/asean-refrigerator-app/overview-01.png)
 ![](./images/asean-refrigerator-app/overview-02.png)
-*温度調整から食材別の保存提案までの主要画面*
 
 ## POINT OF VIEW
 

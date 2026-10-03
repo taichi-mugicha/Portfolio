@@ -139,7 +139,7 @@
   /* 画像とバンドの間隔は-24px（Figma node 601:621の-12pxから、食い込みを深くする要望で変更）。
      バンドが画像の下端に12pxだけ食い込むよう、画像側に負のbottomマージンを付ける。 */
   .hero-carousel__media{width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;background:#f5f5f5;margin-bottom:-24px}
-  .hero-carousel__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .hero-carousel__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;-webkit-user-drag:none;user-select:none}
   /* 縦長素材（宣伝用の合成画像など）向けの比率。16:9でcoverすると大きく切れてしまう画像に
      carouselLegacyRatio:true を付けると、元画像の比率（5:6、carousel-sp.pngが1000×1200）に
      合わせた縦長比率＋contain（切り抜かず全体表示）に切り替える。carouselImgPc が無ければ全ブレークポイント共通。 */
@@ -243,11 +243,11 @@
   }
   .sheet__nav{
     width:100%;display:grid;grid-template-columns:32px 1fr 32px;align-items:center;gap:8px;
-    padding:0 20px 16px;
-    padding:0 calc(20px + env(safe-area-inset-right)) 16px calc(20px + env(safe-area-inset-left));
+    padding:0 20px 8px;
+    padding:0 calc(20px + env(safe-area-inset-right)) 8px calc(20px + env(safe-area-inset-left));
   }
   .sheet__title{font-weight:600;font-size:14px;text-align:center;letter-spacing:.05em;color:var(--text-main)}
-  .sheet__title small{display:block;font-weight:600;font-size:11px;letter-spacing:0;color:var(--text-sub);margin-bottom:2px}
+  .sheet__title small{display:block;font-weight:600;font-size:11px;letter-spacing:0;color:var(--text-sub);margin:8px 0 2px}
   .icon-btn{
     width:32px;height:32px;border:none;background:transparent;color:var(--text-main);
     display:inline-flex;align-items:center;justify-content:center;border-radius:16px;
@@ -302,7 +302,7 @@
   .process-h{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.3;color:var(--text-main);margin:0 0 8px}
   .block-p{font-size:14px;line-height:1.65;letter-spacing:.05em;color:var(--text-main);margin:0}
   /* 画像（キャプション）の後に続く本文は少し離す */
-  .sec-img + .block-p,.sec-caption + .block-p{margin-top:12px}
+  .sec-img + .block-p,.sec-caption + .block-p,.img-grid + .block-p{margin-top:12px}
   .sec-img{width:100%;background:var(--ph);border-radius:2px;overflow:hidden;margin-top:8px}
   .sec-img svg{width:100%;height:auto;aspect-ratio:772/720;display:block}
   .sec-img img{width:100%;aspect-ratio:772/720;object-fit:cover;display:block}
@@ -376,13 +376,17 @@
   /* ---- 1024px〜：下に貼り付かせず、中央に浮かぶダイアログとして扱う ---- */
   @media (min-width:1024px){
     .sheet{
-      max-width:760px;
+      max-width:960px;
       height:min(88dvh,900px);
       bottom:32px;
       border-radius:20px;
       /* 閉じている間、bottomの余白ぶんも下へ逃がす（24pxの帯が覗くのを防ぐ） */
       transform:translateY(calc(100% + 32px));
     }
+    /* 作品詳細で1ブロックに画像が複数あるとき（OVERVIEW・デザイン）、画像だけを2列に並べる。
+       画像1枚のブロックは全幅のまま */
+    .img-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+    .img-grid > :only-child{grid-column:1 / -1}
   }
 
   /* ---- マウス環境：タップ前提のUIに hover の手がかりを足す ---- */
@@ -479,7 +483,7 @@ const WORKS = [
     tags:["UIデザイン"],
     period:"2025.09 ~ 2026.06",
     overview:"ASEANの冷蔵庫にはじめて搭載されるIoTアプリ「AIoT Refrigerator」のUIデザインを担当しました。価格を据え置いたままシェア獲得を狙う戦略の中、温度設定やモード変更といった基本機能を、迷わず直感的に操作できる体験として設計しました。",
-    overviewImg:{img:["overview-01.png","overview-02.png"],caption:"温度調整から食材別の保存提案までの主要画面"},
+    overviewImg:{img:["overview-01.png","overview-02.png"]},
     pov:[
       {heading:"「自動で冷やす箱」から、\"選べる\"家電へ",body:"冷蔵庫は設置後ほとんど設定を変えられることなく、一定温度で冷やし続けるだけの受動的な「箱」でした。ASEAN向けIoTアプリでは、「キンキンに冷えたビールを飲みたい」「急速冷凍でおいしさを保ちたい」といった暮らしの目的に応じて保存方法を\"選べる\"存在へ。UIを介して冷蔵庫とユーザーの関係性を再構築することを目指しました。",img:"pov-01.png",caption:"意識の外にあった従来と、目指した関係性の整理"},
     ],
@@ -551,7 +555,7 @@ const WORKS = [
     title:"空気清浄機 液晶UI",
     slug:"air-purifier-lcd-ui",
     carouselBadgeBg:"linear-gradient(to right,#3D4044,#686C72)", /* カルーセルのバッジ背景（既定のピンク→オレンジを上書き） */
-    concept:"空質の変化を整然と可視化", /* カルーセルのコンセプト行（25字目安） */
+    concept:"空質の変化を整然と伝え続けるタッチポイント", /* カルーセルのコンセプト行（25字目安） */
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
     carouselImg:"carousel-sp.png",
     carouselLegacyRatio:true,
@@ -745,7 +749,7 @@ HERO_WORKS.forEach(({w,i},pos)=>{
   /* 640px〜は横長画像（carouselImgPc）に差し替える。指定が無ければ全幅で同じ画像 */
   const wideSrc = w.carouselImgPc ? `<source media="(min-width:640px)" srcset="works/images/${w.slug}/${w.carouselImgPc}">` : '';
   slide.innerHTML = `
-    <div class="${mediaClass}"><picture>${wideSrc}<img src="works/images/${w.slug}/${heroImg}" alt=""></picture></div>
+    <div class="${mediaClass}"><picture>${wideSrc}<img src="works/images/${w.slug}/${heroImg}" alt="" draggable="false"></picture></div>
     <div class="hero-carousel__band">
       <div class="hero-carousel__badge"${w.carouselBadgeBg?` style="--badge-bg:${w.carouselBadgeBg}"`:''}>
         <div class="hero-carousel__title">${w.title}</div>
@@ -754,7 +758,7 @@ HERO_WORKS.forEach(({w,i},pos)=>{
     </div>`;
   slide.addEventListener('click',()=>{
     if(hcSuppressClick){hcSuppressClick=false;return;}
-    openSheet(i);
+    openSheet(i,HERO_WORKS.map(x=>x.i),'PICK UP'); /* カルーセルからは、ピックアップ5作品の中で回遊 */
   });
   heroTrack.appendChild(slide);
   const dot=document.createElement('span');
@@ -795,26 +799,30 @@ restartHeroTimer();
 
 /* ---- カルーセルのスワイプ（シートのページャーと同じ考え方：縦スクロールとの
    衝突を避けるため、動き始めの6pxで横方向のドラッグだけ確定させる） ---- */
-let hcX=0,hcY=0,hcDX=0,hcDY=0,hcStartT=0,hcDir=null,hcDragging=false,hcSuppressClick=false;
-function heroDragStart(x,y){
+let hcX=0,hcY=0,hcDX=0,hcDY=0,hcStartT=0,hcDir=null,hcDragging=false,hcSuppressClick=false,hcMouse=false;
+function heroDragStart(x,y,mouse=false){
   measureHero();
   hcX=x;hcY=y;hcDX=0;hcDY=0;hcDir=null;hcDragging=true;hcStartT=performance.now();
+  hcMouse=mouse;
+  hcSuppressClick=false; /* タッチのスワイプ後はclickが来ないことがあるので、前回の抑止フラグを持ち越さない */
   heroTrack.classList.add('is-dragging');
   clearInterval(heroTimer);
 }
 function heroDragMove(x,y,ev){
   if(!hcDragging)return;
   hcDX=x-hcX;hcDY=y-hcY;
-  if(!hcDir && (Math.abs(hcDX)>6||Math.abs(hcDY)>6)) hcDir=Math.abs(hcDX)>Math.abs(hcDY)?'x':'y';
+  /* マウスは縦スクロールと競合しないので、少しでも横に動いたら横ドラッグとみなす */
+  if(!hcDir && (Math.abs(hcDX)>6||Math.abs(hcDY)>6)) hcDir=(hcMouse?Math.abs(hcDX)>3:Math.abs(hcDX)>Math.abs(hcDY))?'x':'y';
   if(hcDir==='x'){
     if(ev&&ev.cancelable)ev.preventDefault();
-    heroTrack.style.transform=`translate3d(${-heroIndex*heroWidth+hcDX}px,0,0)`;
+    heroTrack.style.transform=`translate3d(calc(${-heroIndex*100}% + ${hcDX}px),0,0)`;
   }
 }
 function heroDragEnd(){
   if(!hcDragging)return;hcDragging=false;
   heroTrack.classList.remove('is-dragging');
   if(hcDir==='x'){
+    hcSuppressClick=true; /* 横に動かしたら、送らずに戻った場合もクリック（シートを開く）扱いにしない */
     const v=hcDX/(performance.now()-hcStartT);
     const threshold=heroWidth*0.18;
     if(hcDX<-threshold||v<-0.4){hcSuppressClick=true;setHeroIndex(heroIndex+1);}
@@ -832,7 +840,9 @@ heroCarouselEl.addEventListener('touchmove',e=>{
 },{passive:false});
 heroCarouselEl.addEventListener('touchend',heroDragEnd);
 heroCarouselEl.addEventListener('mousedown',e=>{
-  heroDragStart(e.clientX,e.clientY);
+  if(e.button!==0)return;
+  e.preventDefault(); /* 画像のネイティブなドラッグ＆ドロップと文字選択を止め、カルーセル送りに専念させる */
+  heroDragStart(e.clientX,e.clientY,true);
   const mm=ev=>heroDragMove(ev.clientX,ev.clientY);
   const mu=()=>{heroDragEnd();window.removeEventListener('mousemove',mm);window.removeEventListener('mouseup',mu)};
   window.addEventListener('mousemove',mm);window.addEventListener('mouseup',mu);
@@ -910,7 +920,7 @@ function renderGrid(){
         </div>
         <div class="card__num">0${grid.children.length+1}</div>
       </div>`;
-    el.addEventListener('click',()=>openSheet(i));
+    el.addEventListener('click',()=>openSheet(i,YEARS.flatMap(y=>WORKS.map((x,j)=>j).filter(j=>yearOf(WORKS[j])===y)),'YEAR')); /* 一覧からは、年をまたいで全作品を回遊（ヘッダーは今いる作品の年で表示） */
     grid.appendChild(el);
   });
 }
@@ -929,6 +939,10 @@ const track=document.getElementById('track');
 const caseLabel=document.getElementById('caseLabel');
 const caseTitle=document.getElementById('caseTitle');
 
+/* シートで回遊する作品（WORKSの通し番号の配列）。開いた入口で決まる：
+   カルーセル→ピックアップ5作品、一覧→表示中の年の作品。currentIndexはこの配列内の位置。 */
+let navList=[];
+let navLabel='CASE'; /* ヘッダーの番号の前に付ける見出し（カルーセル→'PICK UP'、一覧→'YEAR'＝今いる作品の年で数える） */
 let currentIndex=0;
 let pagerWidth=0;
 function measure(){pagerWidth=pager.clientWidth}
@@ -947,7 +961,7 @@ function designHtml(sections,seed,hue,slug){
     <div class="design-block">
       <p class="section-label">デザイン ${String(j+1).padStart(2,'0')}</p>
       <h3 class="design-h">${s.heading}</h3>
-      ${imgs.map((im,k)=>sectionImgBlock(slug,hue,seed+j+1+k,im,k===0?s.caption:'')).join('')}
+      ${imgs.length?`<div class="img-grid">${imgs.map((im,k)=>`<div>${sectionImgBlock(slug,hue,seed+j+1+k,im,k===0?s.caption:'')}</div>`).join('')}</div>`:''}
       <p class="block-p">${s.body}</p>
     </div>`;
   }).join('');
@@ -993,7 +1007,7 @@ function slideHtml(w,i){
         <p class="period">${w.period}</p>
       </div>
       <p class="s-overview">${w.overview}</p>
-      ${w.overviewImg?(Array.isArray(w.overviewImg.img)?w.overviewImg.img:[w.overviewImg.img]).map((im,k)=>sectionImgBlock(w.slug,w.hue,i+k,im,k===0?w.overviewImg.caption:'')).join(''):''}
+      ${w.overviewImg?`<div class="img-grid">${(Array.isArray(w.overviewImg.img)?w.overviewImg.img:[w.overviewImg.img]).map((im,k)=>`<div>${sectionImgBlock(w.slug,w.hue,i+k,im,k===0?w.overviewImg.caption:'')}</div>`).join('')}</div>`:''}
     </div>
 
     ${w.pov&&w.pov.length?`
@@ -1026,34 +1040,70 @@ function slideHtml(w,i){
   `;
 }
 
+/* 2作品以上ならループさせる。先頭に「最後の作品」、末尾に「最初の作品」の複製を置き、
+   端から複製へ流れたら、アニメーション後に本物の位置へ瞬時に戻す（trackPos＝DOM上の位置）。 */
+function isLoop(){return navList.length>1}
+let trackPos=0;
 function buildSlides(){
-  track.innerHTML = WORKS.map((w,i)=>`<section class="slide" data-i="${i}">${slideHtml(w,i)}</section>`).join('');
+  const order=isLoop()?[navList[navList.length-1],...navList,navList[0]]:navList;
+  track.innerHTML = order.map((i,k)=>`<section class="slide" data-i="${i}"${isLoop()&&(k===0||k===order.length-1)?' aria-hidden="true"':''}>${slideHtml(WORKS[i],i)}</section>`).join('');
   track.querySelectorAll('.related-item').forEach(el=>{
     el.addEventListener('click',()=>window.open(RELATED_URL,'_blank','noopener'));
   });
 }
-buildSlides();
-
 function setIndex(i,{animate=true,resetScroll}={}){
+  const n=navList.length;
   const prevIndex=currentIndex;
-  currentIndex=Math.max(0,Math.min(WORKS.length-1,i));
+  snapTrack();
+  if(isLoop()){
+    i=Math.max(-1,Math.min(n,i));          /* -1 / n は両端の複製 */
+    currentIndex=(i+n)%n;
+    trackPos=animate?i+1:currentIndex+1;   /* アニメーションなしなら直接本物へ */
+  }else{
+    currentIndex=Math.max(0,Math.min(n-1,i));
+    trackPos=currentIndex;
+  }
   measure();
   track.classList.toggle('is-animating',animate);
-  track.style.transform=`translate3d(${-currentIndex*pagerWidth}px,0,0)`;
-  caseLabel.textContent=`CASE 0${currentIndex+1} / 0${WORKS.length}`;
-  caseTitle.textContent=WORKS[currentIndex].title;
+  placeTrack();
+  const pad=n=>String(n).padStart(2,'0');
+  if(navLabel==='YEAR'){
+    /* 年をまたいで回遊するので、年・番号・件数は今いる作品の年の中で数える */
+    const y=yearOf(WORKS[navList[currentIndex]]);
+    const same=navList.filter(j=>yearOf(WORKS[j])===y);
+    caseLabel.textContent=`${y} ${pad(same.indexOf(navList[currentIndex])+1)} / ${pad(same.length)}`;
+  }else{
+    caseLabel.textContent=`${navLabel} ${pad(currentIndex+1)} / ${pad(navList.length)}`;
+  }
+  caseTitle.textContent=WORKS[navList[currentIndex]].title;
   // 作品が変わったときだけスクロールを戻す。
   // タップ（Androidの擬似マウスイベント）やしきい値未満のスワイプでも
   // setIndexは呼ばれるので、無条件に戻すと読んでいる途中で先頭に飛んでしまう。
   if(resetScroll ?? (currentIndex!==prevIndex)){
-    const slide=track.children[currentIndex];
+    const slide=track.children[realPos()];
     if(slide) slide.scrollTop=0;
   }
 }
+function realPos(){return isLoop()?currentIndex+1:currentIndex}
+/* 複製の位置に止まっていたら、本物の位置へアニメーションなしで戻す */
+function snapTrack(){
+  if(trackPos===realPos())return;
+  const clone=track.children[trackPos];
+  track.classList.remove('is-animating');
+  trackPos=realPos();
+  placeTrack();
+  if(clone) clone.scrollTop=0;
+}
+track.addEventListener('transitionend',e=>{if(e.target===track)snapTrack();});
 
-function openSheet(i){
+function openSheet(i,list,label='CASE'){
+  navList=list&&list.length?list:WORKS.map((w,j)=>j);
+  navLabel=label;
+  buildSlides();
+  /* 回遊先が1作品だけなら前後ボタンは出さない */
+  prevBtn.style.visibility=nextBtn.style.visibility=navList.length>1?'':'hidden';
   measure();
-  setIndex(i,{animate:false,resetScroll:true});
+  setIndex(Math.max(0,navList.indexOf(i)),{animate:false,resetScroll:true});
   document.body.classList.add('sheet-open');
   sheet.setAttribute('aria-hidden','false');
 }
@@ -1062,9 +1112,15 @@ function closeSheet(){
   sheet.setAttribute('aria-hidden','true');
 }
 
-prevBtn.addEventListener('click',()=>setIndex((currentIndex-1+WORKS.length)%WORKS.length));
-nextBtn.addEventListener('click',()=>setIndex((currentIndex+1)%WORKS.length));
+prevBtn.addEventListener('click',()=>setIndex(currentIndex-1));
+nextBtn.addEventListener('click',()=>setIndex(currentIndex+1));
 backdrop.addEventListener('click',closeSheet);
+
+/* ページャーの位置は%で指定する。px（clientWidthは整数に丸められる）で持つと、
+   Pixel 7a（約411.4px幅）のような端数のある幅で後ろの作品ほどずれが溜まり、ヒーロー左に隙間が出る。 */
+function placeTrack(dx=0){
+  track.style.transform=`translate3d(calc(${-trackPos*100}% + ${dx}px),0,0)`;
+}
 
 /* ============== Horizontal swipe (pager) ============== */
 let hx=0,hy=0,hdx=0,hdy=0,hStartT=0,hDir=null,hDragging=false;
@@ -1072,6 +1128,7 @@ pager.addEventListener('touchstart',e=>{
   if(e.touches.length!==1)return;
   hx=e.touches[0].clientX;hy=e.touches[0].clientY;hdx=0;hdy=0;hDir=null;hDragging=true;
   hStartT=performance.now();
+  snapTrack();
   track.classList.remove('is-animating');
 },{passive:true});
 pager.addEventListener('touchmove',e=>{
@@ -1085,12 +1142,9 @@ pager.addEventListener('touchmove',e=>{
   }
   if(hDir==='x'){
     e.preventDefault();
-    let x=-currentIndex*pagerWidth+hdx;
-    // resistance at edges
-    if((currentIndex===0&&hdx>0)||(currentIndex===WORKS.length-1&&hdx<0)){
-      x=-currentIndex*pagerWidth+hdx*0.35;
-    }
-    track.style.transform=`translate3d(${x}px,0,0)`;
+    // resistance at edges（ループしないとき＝1作品のみ）
+    const edge=!isLoop();
+    placeTrack(edge?hdx*0.35:hdx);
   }
 },{passive:false});
 pager.addEventListener('touchend',()=>{
@@ -1138,8 +1192,8 @@ sheetHead.addEventListener('mousedown',e=>{onDragStart(e.clientY);
 /* desktop keyboard helpers */
 window.addEventListener('keydown',e=>{
   if(!document.body.classList.contains('sheet-open'))return;
-  if(e.key==='ArrowRight') setIndex(currentIndex+1<WORKS.length?currentIndex+1:currentIndex);
-  if(e.key==='ArrowLeft')  setIndex(currentIndex-1>=0?currentIndex-1:currentIndex);
+  if(e.key==='ArrowRight') setIndex(currentIndex+1);
+  if(e.key==='ArrowLeft')  setIndex(currentIndex-1);
   if(e.key==='Escape') closeSheet();
 });
 
@@ -1147,15 +1201,15 @@ window.addEventListener('keydown',e=>{
 let mDown=false,mx=0,mdx=0,mStartT=0;
 pager.addEventListener('mousedown',e=>{
   mDown=true;mx=e.clientX;mdx=0;mStartT=performance.now();
+  snapTrack();
   track.classList.remove('is-animating');
   e.preventDefault();
 });
 window.addEventListener('mousemove',e=>{
   if(!mDown)return;
   mdx=e.clientX-mx;
-  let x=-currentIndex*pagerWidth+mdx;
-  if((currentIndex===0&&mdx>0)||(currentIndex===WORKS.length-1&&mdx<0)) x=-currentIndex*pagerWidth+mdx*0.35;
-  track.style.transform=`translate3d(${x}px,0,0)`;
+  const edge=!isLoop();
+  placeTrack(edge?mdx*0.35:mdx);
 });
 window.addEventListener('mouseup',()=>{
   if(!mDown)return;mDown=false;
@@ -1169,15 +1223,14 @@ window.addEventListener('mouseup',()=>{
 });
 
 /* ============== Resize ==============
-   ページャーの位置は px 換算で持っているため、幅が変わると現在のスライドが
-   ずれる。ブレークポイントをまたぐリサイズや端末回転で追従させる。 */
+   位置は%指定なので幅の変化には自動で追従するが、スワイプ判定のしきい値（pagerWidth）は測り直す。 */
 let resizeTimer=null;
 window.addEventListener('resize',()=>{
   clearTimeout(resizeTimer);
   resizeTimer=setTimeout(()=>{
     measure();
     track.classList.remove('is-animating');
-    track.style.transform=`translate3d(${-currentIndex*pagerWidth}px,0,0)`;
+    placeTrack();
   },120);
 });
 

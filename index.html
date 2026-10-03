@@ -141,10 +141,11 @@
   .hero-carousel__media{width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;background:#f5f5f5;margin-bottom:-12px}
   .hero-carousel__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   /* 縦長素材（宣伝用の合成画像など）向けの比率。16:9でcoverすると大きく切れてしまう画像に
-     carouselLegacyRatio:true を付けると、元画像の比率（5:6、NEW COCORO HOMEの01-hero.pngが1000×1200）に
-     合わせた縦長比率＋contain（切り抜かず全体表示）に切り替える。全ブレークポイント共通（横長への切り替えなし）。 */
+     carouselLegacyRatio:true を付けると、元画像の比率（5:6、carousel-sp.pngが1000×1200）に
+     合わせた縦長比率＋contain（切り抜かず全体表示）に切り替える。carouselImgPc が無ければ全ブレークポイント共通。 */
   .hero-carousel__media.is-legacy-ratio{aspect-ratio:5/6}
   .hero-carousel__media.is-legacy-ratio img{object-fit:contain}
+  /* carouselImgPc を持つ作品は、640px〜で横長画像に差し替えて他作品と同じ16:9 coverにする（下のRESPONSIVE参照） */
 
   /* 画像の下に続くバンド。キャプションの「バッジ」はここに左寄せで置く。
      スライドが表示されるたびに clip-path で左から伸びてくる（ワイプイン）アニメーションを掛け直す
@@ -341,6 +342,9 @@
     .grid{grid-template-columns:repeat(2,1fr);gap:36px 24px}
     /* スマホは4:3、640px〜（タブレット・PC）は横比率16:9に切り替える（legacy-ratio作品は対象外） */
     .hero-carousel__media:not(.is-legacy-ratio){aspect-ratio:16/9}
+    /* 縦長素材の作品でも、横長画像（carouselImgPc）があれば16:9 coverに揃える */
+    .hero-carousel__media.is-legacy-ratio.has-wide{aspect-ratio:16/9}
+    .hero-carousel__media.is-legacy-ratio.has-wide img{object-fit:cover}
   }
 
   /* ---- 1024px〜：デスクトップ。3カラム ---- */
@@ -461,6 +465,9 @@ const WORKS = [
     title:"海外向けIoT冷蔵庫アプリ",
     slug:"asean-refrigerator-app",
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
+    carouselImg:"carousel-sp.png",
+    carouselLegacyRatio:true,
+    carouselImgPc:"carousel-pc.png", /* 640px〜は横長画像に差し替えて16:9 cover */
     tags:["UIデザイン"],
     period:"2025.09 ~ 2026.06",
     overview:"ASEANの冷蔵庫にはじめて搭載されるIoTアプリ「AIoT Refrigerator」のUIデザインを担当しました。価格を据え置いたままシェア獲得を狙う戦略の中、温度設定やモード変更といった基本機能を、迷わず直感的に操作できる体験として設計しました。",
@@ -484,8 +491,9 @@ const WORKS = [
     title:"NEW COCORO HOME",
     slug:"new-cocoro-home",
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
-    carouselImg:"carousel.png", /* カルーセル専用のヒーロー画像。省略時はthumbを使う */
-    carouselLegacyRatio:true, /* 縦長の合成画像なので16:9 coverではなく旧比率（2:3→640px〜3:2）+containで見せる */
+    carouselImg:"carousel-sp.png", /* カルーセル専用のヒーロー画像。省略時はthumbを使う */
+    carouselLegacyRatio:true, /* 縦長の合成画像なので16:9 coverではなく5:6+containで見せる */
+    carouselImgPc:"carousel-pc.png", /* 640px〜は横長画像に差し替えて16:9 cover */
     tags:["UIデザイン"],
     period:"2025.10 ~ 2026.03",
     overview:"IoT家電アプリ「COCORO HOME」の主要機能を統合した新しい「トップ画面」のUIをデザインしました。リリースから歳月を重ねることで累積した多様な機能とサービスを整理し、再び使いやすいUIにリデザインしました。",
@@ -508,8 +516,9 @@ const WORKS = [
     title:"COCORO HOME AI",
     slug:"cocoro-home-ai",
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
-    carouselImg:"carousel.png",
+    carouselImg:"carousel-sp.png",
     carouselLegacyRatio:true,
+    carouselImgPc:"carousel-pc.jpg", /* 640px〜は横長画像に差し替えて16:9 cover */
     ext:"jpg",
     tags:["UIデザイン"],
     period:"2025.04 ~ 09",
@@ -532,8 +541,9 @@ const WORKS = [
     title:"空気清浄機 液晶UI",
     slug:"air-purifier-lcd-ui",
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
-    carouselImg:"carousel.png",
+    carouselImg:"carousel-sp.png",
     carouselLegacyRatio:true,
+    carouselImgPc:"carousel-pc.png", /* 640px〜は横長画像に差し替えて16:9 cover */
     ext:"webp",
     tags:["UIデザイン"],
     period:"2023.11 ~ 2024.03",
@@ -641,6 +651,9 @@ const WORKS = [
     title:"otomonie UIディレクション",
     slug:"otomonie",
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
+    carouselImg:"carousel-sp.png",
+    carouselLegacyRatio:true,
+    carouselImgPc:"carousel-pc.png", /* 640px〜は横長画像に差し替えて16:9 cover */
     tags:["UIディレクション"],
     period:"2021.06 ~ 08",
     overview:"長谷工株式会社様のマンション専用IoTアプリ「otomonie」のUIデザインのディレクションとクライアントコミュニケーションを担当しました。otomonieは、自宅の家電の遠隔操作や、宅配ボックスの荷物確認、マンションからのお知らせ確認など、暮らしに寄り添う機能を備えたアプリです。デザインメンバーが参画したタイミングでは、アプリのデザインイメージが明確に描けていませんでした。デザインテイストを幅広く提案してクライアントと一緒に絞り込んでいくことで、納得感のあるデザインに決定することができました。",
@@ -713,9 +726,11 @@ HERO_WORKS.forEach(({w,i},pos)=>{
   const slide=document.createElement('div');
   slide.className='hero-carousel__slide';
   const heroImg = w.carouselImg || `thumb.${w.ext||'png'}`; /* カルーセル専用画像が無ければサムネ（thumb）を使う */
-  const mediaClass = 'hero-carousel__media'+(w.carouselLegacyRatio?' is-legacy-ratio':'');
+  const mediaClass = 'hero-carousel__media'+(w.carouselLegacyRatio?' is-legacy-ratio':'')+(w.carouselImgPc?' has-wide':'');
+  /* 640px〜は横長画像（carouselImgPc）に差し替える。指定が無ければ全幅で同じ画像 */
+  const wideSrc = w.carouselImgPc ? `<source media="(min-width:640px)" srcset="works/images/${w.slug}/${w.carouselImgPc}">` : '';
   slide.innerHTML = `
-    <div class="${mediaClass}"><img src="works/images/${w.slug}/${heroImg}" alt=""></div>
+    <div class="${mediaClass}"><picture>${wideSrc}<img src="works/images/${w.slug}/${heroImg}" alt=""></picture></div>
     <div class="hero-carousel__band">
       <div class="hero-carousel__badge">
         <div class="hero-carousel__title">${w.title}</div>

@@ -48,8 +48,9 @@
   title, slug, tags:[], period:"YYYY.MM ~ MM",
   ext:"jpg",                      // サムネ（thumb）が .png 以外のときのみ指定（既定 png）
   pickup: true,                   // ヒーローカルーセルに載せる作品にのみ付与（現在5件。付けない作品は省略）
-  carouselImg:"carousel.png",     // カルーセル専用のヒーロー画像（省略時は thumb.{ext} を使う）。pickup作品のみ想定
+  carouselImg:"carousel-sp.png",  // カルーセル専用画像・〜639px用（省略時は thumb.{ext} を使う）。pickup作品のみ想定
   carouselLegacyRatio: true,      // trueなら画像を16:9 coverで切り抜かず、縦長比率(5:6固定・全幅共通)+containで見せる
+  carouselImgPc:"carousel-pc.png", // カルーセル専用画像・640px〜用（16:9 coverで表示）。省略時は全幅で carouselImg
   overview:"…",
   pov:    [{heading, body}],      // 1件のみ
   design: [{heading, body, img}], // img は "design-01.png" or ["design-01.png","design-02.png"]、省略可
@@ -69,7 +70,8 @@
   | ファイル名 | 用途 |
   |---|---|
   | `thumb.{ext}` | 一覧カードのサムネ兼、作品詳細のヒーロー |
-  | `carousel.png` | カルーセル専用のヒーロー画像（`carouselImg`。pickup作品のみ） |
+  | `carousel-sp.{ext}` | カルーセル専用画像・〜639px用（`carouselImg`。pickup作品のみ） |
+  | `carousel-pc.{ext}` | カルーセル専用画像・640px〜用（`carouselImgPc`。横長16:9） |
   | `overview-01`, `overview-02`… | OVERVIEW の画像 |
   | `pov-01` | POINT OF VIEW の画像 |
   | `design-01`, `design-02`… | DESIGN の画像（上から順。末尾の「全体像」も含む） |

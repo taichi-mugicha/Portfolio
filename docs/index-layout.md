@@ -60,8 +60,11 @@ Figma「Claude-Labo」node 553:186（パターンA）に合わせて2026.09に�
      640px〜（タブレット・PC）は横比率の**16:9**に切り替わる。
      ただし縦長の合成画像（宣伝用ビジュアルなど）を切り抜いてしまう作品には
      `carouselLegacyRatio:true` を付けられる。その場合は**元画像の比率に合わせた縦長比率**（全ブレークポイント共通、
-     横長への切り替えなし）＋`object-fit:contain`（切り抜かず全体表示）になる（現在はNEW COCORO HOME・COCORO HOME AI・空気清浄機 液晶UI、
-     `carousel.png` が1000×1200＝5:6なので `aspect-ratio:5/6`）。
+     横長への切り替えなし）＋`object-fit:contain`（切り抜かず全体表示）になる（現在はピックアップ5作品すべて。
+     `carousel-sp.png` が1000×1200（冷蔵庫は900×1080）＝5:6なので `aspect-ratio:5/6`）。
+     さらに `carouselImgPc`（640px〜用の横長画像 `carousel-pc.{ext}`）を指定した作品は、640px〜でその画像に差し替え、
+     他作品と同じ16:9＋`object-fit:cover` で表示する（`<picture>` の `<source media>` で切り替え）。
+     現在はピックアップ5作品すべて。
    - **キャプション用バンド**：画像の直下に続く背景 `#f4f4f4` の帯（`min-height:84px`）。画像側に
      `margin-bottom:-12px` を付けて、バンドが画像の下端に**12px食い込む**（Figmaのオートレイアウトで
      間隔-12pxに相当。node 601:621）。その中の左下に
@@ -215,5 +218,8 @@ eyebrow（`UI / UX デザイナー — IoT・アプリ`）とSelected行（`Sele
   常に5:6のまま。
 - 2026.10 画像ファイル名を用途＋セクション内連番（`thumb` / `carousel` / `overview-01` / `pov-01` / `design-01` / `process-01`）に変更。
   COCORO HOME AI・空気清浄機 液晶UIにもカルーセル専用画像（1000×1200）を設定し、`carouselLegacyRatio:true` を付与。
+- 2026.10 NEW COCORO HOME・COCORO HOME AIは、640px〜でカルーセル枠に合わせて横長画像（thumb）へ差し替えたい
+  （スマホは縦長のcarousel.png）。`carouselImgPc` を追加して対応。
+- 2026.10 カルーセル画像はブレークポイントごとにファイルを分ける：〜639px＝`carousel-sp`、640px〜＝`carousel-pc`。
 
 > このセクションはやり取りの中で出た要望を貯めていく欄。決定した仕様は上の「構成」側へ反映する。

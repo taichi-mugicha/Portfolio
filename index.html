@@ -1074,9 +1074,9 @@ function setIndex(i,{animate=true,resetScroll}={}){
     /* 年をまたいで回遊するので、年・番号・件数は今いる作品の年の中で数える */
     const y=yearOf(WORKS[navList[currentIndex]]);
     const same=navList.filter(j=>yearOf(WORKS[j])===y);
-    caseLabel.textContent=`${y} ${pad(same.indexOf(navList[currentIndex])+1)} / ${pad(same.length)}`;
+    caseLabel.textContent=`${y} ｜ ${pad(same.indexOf(navList[currentIndex])+1)} / ${pad(same.length)}`;
   }else{
-    caseLabel.textContent=`${navLabel} ${pad(currentIndex+1)} / ${pad(navList.length)}`;
+    caseLabel.textContent=`${navLabel} ｜ ${pad(currentIndex+1)} / ${pad(navList.length)}`;
   }
   caseTitle.textContent=WORKS[navList[currentIndex]].title;
   // 作品が変わったときだけスクロールを戻す。

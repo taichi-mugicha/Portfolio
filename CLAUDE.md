@@ -51,6 +51,7 @@
   carouselImg:"carousel-sp.png",  // カルーセル専用画像・〜639px用（省略時は thumb.{ext} を使う）。pickup作品のみ想定
   carouselLegacyRatio: true,      // trueなら画像を16:9 coverで切り抜かず、縦長比率(5:6固定・全幅共通)+containで見せる
   carouselImgPc:"carousel-pc.png", // カルーセル専用画像・640px〜用（16:9 coverで表示）。省略時は全幅で carouselImg
+  carouselBadgeBg:"linear-gradient(…)", // カルーセルのバッジ背景。省略時は既定のピンク→オレンジ
   overview:"…",
   pov:    [{heading, body}],      // 1件のみ
   design: [{heading, body, img}], // img は "design-01.png" or ["design-01.png","design-02.png"]、省略可

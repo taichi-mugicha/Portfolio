@@ -158,7 +158,8 @@
   .hero-carousel__band{width:100%;position:relative;z-index:1;height:calc(16px + 10px * 1.5 + 5px + 14px * 1.5)}
   .hero-carousel__badge{
     position:absolute;left:0;bottom:0;max-width:calc(100% - 40px);box-sizing:border-box; /* 伸びても画面右端から40pxは空ける */
-    background:linear-gradient(to right,#ed23a3,#ff5887 50%,#ee7c54);
+    /* 既定はピンク→オレンジ。作品ごとに変えたいときは WORKS の carouselBadgeBg で --badge-bg を上書きする */
+    background:var(--badge-bg,linear-gradient(to right,#ed23a3,#ff5887 50%,#ee7c54));
     color:#fff;display:flex;flex-direction:column;gap:5px;
     padding:8px 16px;border-radius:0;
     clip-path:inset(0 0 0 0);transition:clip-path .55s var(--ease);
@@ -469,6 +470,7 @@ const WORKS = [
   {
     title:"海外向けIoT冷蔵庫アプリ",
     slug:"asean-refrigerator-app",
+    carouselBadgeBg:"linear-gradient(to right,#00517D,#79C0E5)", /* カルーセルのバッジ背景（既定のピンク→オレンジを上書き） */
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
     carouselImg:"carousel-sp.png",
     carouselLegacyRatio:true,
@@ -737,7 +739,7 @@ HERO_WORKS.forEach(({w,i},pos)=>{
   slide.innerHTML = `
     <div class="${mediaClass}"><picture>${wideSrc}<img src="works/images/${w.slug}/${heroImg}" alt=""></picture></div>
     <div class="hero-carousel__band">
-      <div class="hero-carousel__badge">
+      <div class="hero-carousel__badge"${w.carouselBadgeBg?` style="--badge-bg:${w.carouselBadgeBg}"`:''}>
         <div class="hero-carousel__title">${w.title}</div>
         <div class="hero-carousel__concept">${conceptOf(w)}</div>
       </div>

@@ -246,8 +246,11 @@
     padding:0 20px 8px;
     padding:0 calc(20px + env(safe-area-inset-right)) 8px calc(20px + env(safe-area-inset-left));
   }
-  .sheet__title{font-weight:600;font-size:14px;text-align:center;letter-spacing:.05em;color:var(--text-main)}
-  .sheet__title small{display:block;font-weight:600;font-size:11px;letter-spacing:0;color:var(--text-sub);margin:8px 0 2px}
+  .sheet__title{min-width:0;font-weight:600;font-size:14px;text-align:center;letter-spacing:.05em;color:var(--text-main)}
+  .sheet__title small{display:block;font-weight:600;font-size:11px;letter-spacing:0;color:var(--text-sub);margin:8px 0 2px;line-height:16px;height:16px}
+  /* 作品名は英字のみ／日本語入りで使われるフォントが変わり、line-height:normal だと行の高さが変わってヘッダーがガタつく。
+     高さを固定し、長いタイトルは1行で省略する */
+  .sheet__title span{display:block;line-height:20px;height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .icon-btn{
     width:32px;height:32px;border:none;background:transparent;color:var(--text-main);
     display:inline-flex;align-items:center;justify-content:center;border-radius:16px;
@@ -450,6 +453,7 @@
       <button class="icon-btn" id="prevBtn" aria-label="prev">‹</button>
       <div class="sheet__title">
         <small id="caseLabel">CASE 01 / 07</small>
+        <span id="caseTitle">—</span>
       </div>
       <button class="icon-btn" id="nextBtn" aria-label="next">›</button>
     </div>
@@ -936,6 +940,7 @@ const sheetHead=document.getElementById('sheetHead');
 const pager=document.getElementById('pager');
 const track=document.getElementById('track');
 const caseLabel=document.getElementById('caseLabel');
+const caseTitle=document.getElementById('caseTitle');
 
 /* シートで回遊する作品（WORKSの通し番号の配列）。開いた入口で決まる：
    カルーセル→ピックアップ5作品、一覧→表示中の年の作品。currentIndexはこの配列内の位置。 */
@@ -1073,6 +1078,7 @@ function setIndex(i,{animate=true,resetScroll}={}){
   }else{
     caseLabel.textContent=`${navLabel} ${pad(currentIndex+1)} / ${pad(navList.length)}`;
   }
+  caseTitle.textContent=WORKS[navList[currentIndex]].title;
   // 作品が変わったときだけスクロールを戻す。
   // タップ（Androidの擬似マウスイベント）やしきい値未満のスワイプでも
   // setIndexは呼ばれるので、無条件に戻すと読んでいる途中で先頭に飛んでしまう。

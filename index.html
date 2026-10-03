@@ -470,6 +470,7 @@ const WORKS = [
   {
     title:"海外向けIoT冷蔵庫アプリ",
     slug:"asean-refrigerator-app",
+    concept:"冷蔵庫を使い続ける保存家電へアップデートする", /* カルーセルのコンセプト行（25字目安） */
     carouselBadgeBg:"linear-gradient(to right,#00517D,#79C0E5)", /* カルーセルのバッジ背景（既定のピンク→オレンジを上書き） */
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
     carouselImg:"carousel-sp.png",
@@ -497,6 +498,7 @@ const WORKS = [
   {
     title:"NEW COCORO HOME",
     slug:"new-cocoro-home",
+    concept:"戦略アップデートに合わせたUIリデザイン", /* カルーセルのコンセプト行（25字目安） */
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
     carouselImg:"carousel-sp.png", /* カルーセル専用のヒーロー画像。省略時はthumbを使う */
     carouselLegacyRatio:true, /* 縦長の合成画像なので16:9 coverではなく5:6+containで見せる */
@@ -522,6 +524,7 @@ const WORKS = [
   {
     title:"COCORO HOME AI",
     slug:"cocoro-home-ai",
+    concept:"エラーも使いこなしも幅広く相談する関係性を築く", /* カルーセルのコンセプト行（25字目安） */
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
     carouselImg:"carousel-sp.png",
     carouselLegacyRatio:true,
@@ -547,6 +550,8 @@ const WORKS = [
   {
     title:"空気清浄機 液晶UI",
     slug:"air-purifier-lcd-ui",
+    carouselBadgeBg:"linear-gradient(to right,#3D4044,#686C72)", /* カルーセルのバッジ背景（既定のピンク→オレンジを上書き） */
+    concept:"空質の変化を整然と可視化", /* カルーセルのコンセプト行（25字目安） */
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
     carouselImg:"carousel-sp.png",
     carouselLegacyRatio:true,
@@ -657,6 +662,7 @@ const WORKS = [
   {
     title:"otomonie UIディレクション",
     slug:"otomonie",
+    concept:"第二の居住空間を彷彿させるインタフェース", /* カルーセルのコンセプト行（25字目安） */
     carouselBadgeBg:"linear-gradient(to right,#5E3600,#865F2F)", /* カルーセルのバッジ背景（既定のピンク→オレンジを上書き） */
     pickup:true, /* ヒーローカルーセルに表示する5作品 */
     carouselImg:"carousel-sp.png",
@@ -725,6 +731,7 @@ const heroDots=document.getElementById('heroDots');
 /* キャプション2行目の「コンセプト」。POINT OF VIEW（コンセプト節）の見出しをそのまま流用する。
    pov未設定の作品（初期に作った作品）はカテゴリタグで代用する。 */
 function conceptOf(w){
+  if(w.concept) return w.concept;
   return (w.pov && w.pov[0]) ? w.pov[0].heading : w.tags.join('・');
 }
 /* カルーセルは全作品ではなく、ピックアップした5作品（pickup:true）だけを表示する。

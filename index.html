@@ -309,6 +309,8 @@
   .sec-img{width:100%;background:var(--ph);border-radius:2px;overflow:hidden;margin-top:8px}
   .sec-img svg{width:100%;height:auto;aspect-ratio:772/720;display:block}
   .sec-img img{width:100%;aspect-ratio:772/720;object-fit:cover;display:block}
+  /* fit:true のブロックは切り抜かず、横幅いっぱい・元画像の比率のまま見せる */
+  .sec-img--fit img{aspect-ratio:auto;height:auto}
   .sec-caption{font-size:11px;line-height:1.5;color:var(--text-sub);margin:6px 2px 0}
 
   .outcome-list{display:flex;flex-direction:column;gap:16px}
@@ -518,11 +520,10 @@ const WORKS = [
       {heading:"複数台の家電を「迷わず選べる」土台を作る",body:"本プロジェクトは、機器リストのUI改善からスタートしました。将来的なMatter対応で接続台数の増加が見込まれる中、個々の機能を足すのではなく、情報量と配色のルールを揃えて一覧性を取り戻し、台数が増えても破綻しない「増えても選びやすい」トップ画面を核に据えることを出発点としました。",placeholder:true,caption:"課題を示すビジュアル（仮）"},
     ],
     design:[
-      {heading:"機器ごとの情報量を揃え、一覧性を取り戻す",body:"家電ごとにバラバラだった表示項目を、部屋名・機器名・状態に統一。削った詳細情報はモーダルやボトムシート、遷移先のサービス側に割り切って預けました。カードは「選ぶ」ことに専念させ、台数が増えて積み上がっても崩れない一覧性を確保しています。",img:"design-01.png"},
-      {heading:"散らばっていた操作の入口を、ひとつに集約",body:"関連サービスの設定や詳しい操作は、カードごとに複数のボタンやアイコンから別々のダイアログ・ページに散らばっていました。これらを1つのメニューアイコンに集約し、開いた先はボトムシートかアプリ遷移のどちらかに統一。操作の入口をひとつに揃えました。",img:"design-02.png"},
-      {heading:"ココロピンクの使いどころを、絞り込む",body:"視覚的な優先度が高いポイントにだけ、ココロピンクの使いどころを限定。彩度と明度を上げて重たかった印象を軽やかに改善し、警告色に見えてしまう印象も払拭しました。",img:"design-03.png"},
-      {heading:"記号のアイコンにも、愛着を",body:"全体のデザインテイストに合わせ、抜け感のある軽やかなイラストへ刷新。差し色を加えて記号としてのアイコンにも愛着が持てるようにし、電源ON時は要素を足して家電がユーザーに働きかける楽しさを演出しました。",img:"design-04.png"},
-      {heading:"全体像",body:"プレースホルダー — UX全体のボリューム感が伝わる全画面ビジュアルを配置予定。",placeholder:true},
+      {heading:"機器ごとの情報量を揃え、一覧性を取り戻す",body:"家電ごとにバラバラだった表示項目を、部屋名・機器名・状態に統一。削った詳細情報はモーダルやボトムシート、遷移先のサービス側に割り切って預けました。カードは「選ぶ」ことに専念させ、台数が増えて積み上がっても崩れない一覧性を確保しています。",img:["design-01.png","design-02.png"]},
+      {heading:"散らばっていた操作の入口を、ひとつに集約",body:"関連サービスの設定や詳しい操作は、カードごとに複数のボタンやアイコンから別々のダイアログ・ページに散らばっていました。これらを1つのメニューアイコンに集約し、開いた先はボトムシートかアプリ遷移のどちらかに統一。操作の入口をひとつに揃えました。",img:"design-03.png"},
+      {heading:"ココロピンクの使いどころを、絞り込む",body:"視覚的な優先度が高いポイントにだけ、ココロピンクの使いどころを限定。彩度と明度を上げて重たかった印象を軽やかに改善し、警告色に見えてしまう印象も払拭しました。",img:"design-04.png"},
+      {heading:"記号のアイコンにも、愛着を",body:"全体のデザインテイストに合わせ、抜け感のある軽やかなイラストへ刷新。差し色を加えて記号としてのアイコンにも愛着が持てるようにし、電源ON時は要素を足して家電がユーザーに働きかける楽しさを演出しました。",img:"design-05.png",fit:true},
     ],
     process:[],
     outcome:[],
@@ -954,8 +955,8 @@ window.addEventListener('resize',measure);
 function sectionImg(slug,hue,seed,img){
   return img ? `<img src="works/images/${slug}/${img}" alt="">` : thumbSvg(hue,seed);
 }
-function sectionImgBlock(slug,hue,seed,img,caption){
-  return `<div class="sec-img">${sectionImg(slug,hue,seed,img)}</div>${caption?`<p class="sec-caption">${caption}</p>`:''}`;
+function sectionImgBlock(slug,hue,seed,img,caption,fit){
+  return `<div class="sec-img${fit?' sec-img--fit':''}">${sectionImg(slug,hue,seed,img)}</div>${caption?`<p class="sec-caption">${caption}</p>`:''}`;
 }
 function designHtml(sections,seed,hue,slug){
   return sections.map((s,j)=>{
@@ -964,7 +965,7 @@ function designHtml(sections,seed,hue,slug){
     <div class="design-block">
       <p class="section-label">デザイン ${String(j+1).padStart(2,'0')}</p>
       <h3 class="design-h">${s.heading}</h3>
-      ${imgs.length?`<div class="img-grid">${imgs.map((im,k)=>`<div>${sectionImgBlock(slug,hue,seed+j+1+k,im,k===0?s.caption:'')}</div>`).join('')}</div>`:''}
+      ${imgs.length?`<div class="img-grid">${imgs.map((im,k)=>`<div>${sectionImgBlock(slug,hue,seed+j+1+k,im,k===0?s.caption:'',s.fit)}</div>`).join('')}</div>`:''}
       <p class="block-p">${s.body}</p>
     </div>`;
   }).join('');

@@ -55,6 +55,7 @@
   overview:"…",
   pov:    [{heading, body}],      // 1件のみ
   design: [{heading, body, img}], // img は "design-01.png" or ["design-01.png","design-02.png"]、省略可
+                                  // fit:true で画像を切り抜かず横幅いっぱい・元の比率で表示（既定は772:720でcover）
   process:[{heading, body, img}], // 空配列ならセクションごと非表示
   outcome:[{value, label}],       // 同上
   hue: 215,                       // 画像未設置時のプレースホルダー色
